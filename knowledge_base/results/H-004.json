@@ -1,0 +1,34 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "mean-reversion-bands",
+  "confidence": 0.1478662878025823,
+  "dsr": 0.524045614733918,
+  "generalization": 0.1286520382593854,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.6463118783252809,
+  "n_bars": 10112,
+  "name": "Bollinger Bands Strategy directed",
+  "num_trades": 165,
+  "provider": "csv",
+  "request_hash": "9b40cf59aac5fd55",
+  "robustness": 0.0,
+  "sharpe": 0.06577501897550808,
+  "sharpe_oos_per_period": 0.0034428218440606165,
+  "stability": 0.46169867151405664,
+  "strategy_id": "H-004",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 64.6% exceeds gate 60%"
+  ]
+}

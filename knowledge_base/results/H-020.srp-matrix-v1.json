@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "mean-reversion-oscillator",
+  "confidence": 6.131337283998839e-05,
+  "dsr": 0.00024525349135995356,
+  "generalization": 0.0,
+  "is_real": true,
+  "matrix_hash": "a740f3acbf6572d6",
+  "max_drawdown": 0.9997839092611033,
+  "n_bars": 10112,
+  "name": "RSI Strategy",
+  "num_trades": 81,
+  "provider": "csv",
+  "request_hash": "b1cb98d98f2fd49a",
+  "robustness": 0.0,
+  "sharpe": -0.2837850745827713,
+  "sharpe_oos_per_period": -0.014853989691067052,
+  "stability": 0.5740002912409443,
+  "strategy_id": "H-020",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 100.0% exceeds gate 60%"
+  ]
+}

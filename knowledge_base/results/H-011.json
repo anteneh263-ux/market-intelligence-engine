@@ -1,0 +1,37 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": null,
+  "class": "price-action-momentum",
+  "confidence": 0.21548746594665427,
+  "dsr": 0.6329974206790174,
+  "generalization": 0.3616956967407577,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.5818715890655791,
+  "n_bars": 10112,
+  "name": "Momentum Strategy",
+  "num_trades": 1151,
+  "provider": "csv",
+  "request_hash": "1990364f4628e93c",
+  "robustness": 0.0,
+  "sharpe": 0.22517703663706828,
+  "sharpe_oos_per_period": 0.011786304779381454,
+  "stability": 0.5084779737690488,
+  "strategy_id": "H-011",
+  "verdict": "Not Supported",
+  "verdict_reasons": [
+    "failed: deflated Sharpe clears bar",
+    "failed: beats buy-and-hold (risk-adjusted)",
+    "failed: beats matched random-timing",
+    "failed: robust across majority of conditions"
+  ]
+}

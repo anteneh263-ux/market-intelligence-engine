@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "breakout",
+  "confidence": 0.2705524894235914,
+  "dsr": 0.720811260595802,
+  "generalization": 0.5013777071127354,
+  "is_real": true,
+  "matrix_hash": "a740f3acbf6572d6",
+  "max_drawdown": 0.8911546556048237,
+  "n_bars": 10112,
+  "name": "ChannelBreakOutStrategy",
+  "num_trades": 396,
+  "provider": "csv",
+  "request_hash": "5cfdb1ca19fb4e0d",
+  "robustness": 0.0,
+  "sharpe": 0.3590439347367181,
+  "sharpe_oos_per_period": 0.01879321847021177,
+  "stability": 0.5239883977024669,
+  "strategy_id": "H-005",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 89.1% exceeds gate 60%"
+  ]
+}

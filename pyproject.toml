@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "market-intelligence-engine"
+version = "0.1.0"
+description = "A reproducible, auditable research platform that treats every trading strategy as a falsifiable scientific hypothesis."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "Market Intelligence Engine" }]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "sqlalchemy>=2.0",
+    "pydantic>=2.5",
+    "pydantic-settings>=2.1",
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+mie = "app.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "trend-crossover",
+  "confidence": 0.0032919168013659053,
+  "dsr": 0.010804822503854561,
+  "generalization": 0.21868426813731826,
+  "is_real": true,
+  "matrix_hash": "a740f3acbf6572d6",
+  "max_drawdown": 0.9738666387419651,
+  "n_bars": 10112,
+  "name": "MACD Strategy",
+  "num_trades": 887,
+  "provider": "csv",
+  "request_hash": "cb21d5ed1234e6eb",
+  "robustness": 0.0,
+  "sharpe": 0.09922231610356655,
+  "sharpe_oos_per_period": 0.005193533390341494,
+  "stability": 0.4580060666591016,
+  "strategy_id": "H-010",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 97.4% exceeds gate 60%"
+  ]
+}

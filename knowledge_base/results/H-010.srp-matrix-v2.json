@@ -1,0 +1,38 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": null,
+  "class": "trend-crossover",
+  "confidence": 0.08018018551926505,
+  "dsr": 0.3207207420770602,
+  "generalization": 0.0,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.5572733659852258,
+  "n_bars": 6000,
+  "name": "MACD Strategy",
+  "num_trades": 548,
+  "provider": "csv",
+  "request_hash": "cc7159ec2f31f4c2",
+  "robustness": 0.0,
+  "sharpe": -0.13782825950810937,
+  "sharpe_oos_per_period": -0.007214260823551652,
+  "stability": 0.4636141505515621,
+  "strategy_id": "H-010",
+  "verdict": "Not Supported",
+  "verdict_reasons": [
+    "failed: deflated Sharpe clears bar",
+    "failed: OOS Sharpe positive",
+    "failed: beats buy-and-hold (risk-adjusted)",
+    "failed: beats matched random-timing",
+    "failed: robust across majority of conditions"
+  ]
+}

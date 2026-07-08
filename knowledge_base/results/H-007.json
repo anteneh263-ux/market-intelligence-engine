@@ -1,0 +1,34 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "price-action-momentum",
+  "confidence": 0.0011003171585219657,
+  "dsr": 0.004401268634087863,
+  "generalization": 0.0,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.9496902086831819,
+  "n_bars": 10112,
+  "name": "Greedy Strategy",
+  "num_trades": 5170,
+  "provider": "csv",
+  "request_hash": "529e25036f9ca33c",
+  "robustness": 0.0,
+  "sharpe": -1.3618794707492576,
+  "sharpe_oos_per_period": -0.07128402946746606,
+  "stability": 0.6326702588738361,
+  "strategy_id": "H-007",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 95.0% exceeds gate 60%"
+  ]
+}

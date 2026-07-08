@@ -1,0 +1,330 @@
+{
+  "entries": {
+    "G-0001": {
+      "id": "G-0001",
+      "priority": 0.4233,
+      "rationale": {
+        "components": {
+          "family_mean_dsr": 0.44306499363972807,
+          "family_non_fragile_rate": 0.0,
+          "gate_bonus": 0.05,
+          "multi_block_bonus": 0.0,
+          "trait_rate": 0.25,
+          "turnover_mean_dsr": 0.05,
+          "turnover_non_fragile_rate": 0.5
+        },
+        "corpus_n_at_proposal": 23,
+        "policy_hash": "627414bcef51",
+        "policy_version": "discovery-v1",
+        "recipe_hash": "634d3ddd7c95",
+        "round": 1,
+        "score": 0.423266248409932,
+        "traits": {
+          "families": [
+            "trend"
+          ],
+          "family": "trend",
+          "n_blocks": 1,
+          "turnover": "low",
+          "uses_gate": true
+        },
+        "why": "family 'trend' (survival 0.00, meanDSR 0.44), turnover 'low' (survival 0.50); +regime-gate \u2192 priority 0.423"
+      },
+      "recipe": {
+        "blocks": [
+          "supertrend"
+        ],
+        "gate": "adx_gate",
+        "hash": "634d3ddd7c95",
+        "label": "FILTER(supertrend|adx_gate)",
+        "rule": "FILTER"
+      },
+      "result": {
+        "dsr": 0.4730303245921732,
+        "generalization": 0.0,
+        "is_real": true,
+        "matrix_version": "srp-matrix-v2",
+        "max_drawdown": 0.7201745016343033,
+        "oos_sharpe_annual": -0.04814270096397418
+      },
+      "round": 1,
+      "status": "tested",
+      "survived": false,
+      "traits": {
+        "families": [
+          "trend"
+        ],
+        "family": "trend",
+        "n_blocks": 1,
+        "turnover": "low",
+        "uses_gate": true
+      },
+      "verdict": "Graveyard"
+    },
+    "G-0002": {
+      "id": "G-0002",
+      "priority": 0.4145,
+      "rationale": {
+        "components": {
+          "family_mean_dsr": 0.40782432071380714,
+          "family_non_fragile_rate": 0.0,
+          "gate_bonus": 0.05,
+          "multi_block_bonus": 0.0,
+          "trait_rate": 0.25,
+          "turnover_mean_dsr": 0.05,
+          "turnover_non_fragile_rate": 0.5
+        },
+        "corpus_n_at_proposal": 23,
+        "policy_hash": "627414bcef51",
+        "policy_version": "discovery-v1",
+        "recipe_hash": "b261593693fb",
+        "round": 1,
+        "score": 0.4144560801784518,
+        "traits": {
+          "families": [
+            "breakout"
+          ],
+          "family": "breakout",
+          "n_blocks": 1,
+          "turnover": "low",
+          "uses_gate": true
+        },
+        "why": "family 'breakout' (survival 0.00, meanDSR 0.41), turnover 'low' (survival 0.50); +regime-gate \u2192 priority 0.414"
+      },
+      "recipe": {
+        "blocks": [
+          "donchian"
+        ],
+        "gate": "adx_gate",
+        "hash": "b261593693fb",
+        "label": "FILTER(donchian|adx_gate)",
+        "rule": "FILTER"
+      },
+      "result": {
+        "dsr": 0.6449813568941966,
+        "generalization": 0.28980446791146813,
+        "is_real": true,
+        "matrix_version": "srp-matrix-v2",
+        "max_drawdown": 0.655319437666958,
+        "oos_sharpe_annual": 0.19858265197350658
+      },
+      "round": 1,
+      "status": "tested",
+      "survived": false,
+      "traits": {
+        "families": [
+          "breakout"
+        ],
+        "family": "breakout",
+        "n_blocks": 1,
+        "turnover": "low",
+        "uses_gate": true
+      },
+      "verdict": "Graveyard"
+    },
+    "G-0003": {
+      "id": "G-0003",
+      "priority": 0.4077,
+      "rationale": {
+        "components": {
+          "family_mean_dsr": 0.05,
+          "family_non_fragile_rate": 0.5,
+          "gate_bonus": 0.05,
+          "multi_block_bonus": 0.0,
+          "trait_rate": 0.25,
+          "turnover_mean_dsr": 0.3808375970578797,
+          "turnover_non_fragile_rate": 0.0
+        },
+        "corpus_n_at_proposal": 23,
+        "policy_hash": "627414bcef51",
+        "policy_version": "discovery-v1",
+        "recipe_hash": "7c0acb2a2cf0",
+        "round": 1,
+        "score": 0.4077093992644699,
+        "traits": {
+          "families": [
+            "volatility"
+          ],
+          "family": "volatility",
+          "n_blocks": 1,
+          "turnover": "high",
+          "uses_gate": true
+        },
+        "why": "family 'volatility' (survival 0.50, meanDSR 0.05), turnover 'high' (survival 0.00); +regime-gate \u2192 priority 0.408"
+      },
+      "recipe": {
+        "blocks": [
+          "atr_expand"
+        ],
+        "gate": "adx_gate",
+        "hash": "7c0acb2a2cf0",
+        "label": "FILTER(atr_expand|adx_gate)",
+        "rule": "FILTER"
+      },
+      "result": {
+        "dsr": 0.3574822999129731,
+        "generalization": 0.0,
+        "is_real": true,
+        "matrix_version": "srp-matrix-v2",
+        "max_drawdown": 0.8045339907295341,
+        "oos_sharpe_annual": -0.36309680994072047
+      },
+      "round": 1,
+      "status": "tested",
+      "survived": false,
+      "traits": {
+        "families": [
+          "volatility"
+        ],
+        "family": "volatility",
+        "n_blocks": 1,
+        "turnover": "high",
+        "uses_gate": true
+      },
+      "verdict": "Graveyard"
+    },
+    "G-0004": {
+      "id": "G-0004",
+      "priority": 0.4033,
+      "rationale": {
+        "components": {
+          "family_mean_dsr": 0.44306499363972807,
+          "family_non_fragile_rate": 0.0,
+          "gate_bonus": 0.0,
+          "multi_block_bonus": 0.03,
+          "trait_rate": 0.25,
+          "turnover_mean_dsr": 0.05,
+          "turnover_non_fragile_rate": 0.5
+        },
+        "corpus_n_at_proposal": 23,
+        "policy_hash": "627414bcef51",
+        "policy_version": "discovery-v1",
+        "recipe_hash": "a79b6ca06c16",
+        "round": 1,
+        "score": 0.40326624840993197,
+        "traits": {
+          "families": [
+            "breakout",
+            "trend"
+          ],
+          "family": "trend",
+          "n_blocks": 2,
+          "turnover": "low",
+          "uses_gate": false
+        },
+        "why": "family 'trend' (survival 0.00, meanDSR 0.44), turnover 'low' (survival 0.50); +multi-block \u2192 priority 0.403"
+      },
+      "recipe": {
+        "blocks": [
+          "donchian",
+          "supertrend"
+        ],
+        "gate": "",
+        "hash": "a79b6ca06c16",
+        "label": "VOTE(donchian+supertrend)",
+        "rule": "VOTE"
+      },
+      "result": {
+        "dsr": 0.5088702244558064,
+        "generalization": 0.0,
+        "is_real": true,
+        "matrix_version": "srp-matrix-v2",
+        "max_drawdown": 0.6895400631663018,
+        "oos_sharpe_annual": -0.010641415024264411
+      },
+      "round": 1,
+      "status": "tested",
+      "survived": false,
+      "traits": {
+        "families": [
+          "breakout",
+          "trend"
+        ],
+        "family": "trend",
+        "n_blocks": 2,
+        "turnover": "low",
+        "uses_gate": false
+      },
+      "verdict": "Graveyard"
+    },
+    "G-0005": {
+      "id": "G-0005",
+      "priority": 0.3733,
+      "rationale": {
+        "components": {
+          "family_mean_dsr": 0.44306499363972807,
+          "family_non_fragile_rate": 0.0,
+          "gate_bonus": 0.0,
+          "multi_block_bonus": 0.0,
+          "trait_rate": 0.25,
+          "turnover_mean_dsr": 0.05,
+          "turnover_non_fragile_rate": 0.5
+        },
+        "corpus_n_at_proposal": 23,
+        "policy_hash": "627414bcef51",
+        "policy_version": "discovery-v1",
+        "recipe_hash": "c153aa941585",
+        "round": 1,
+        "score": 0.373266248409932,
+        "traits": {
+          "families": [
+            "trend"
+          ],
+          "family": "trend",
+          "n_blocks": 1,
+          "turnover": "low",
+          "uses_gate": false
+        },
+        "why": "family 'trend' (survival 0.00, meanDSR 0.44), turnover 'low' (survival 0.50) \u2192 priority 0.373"
+      },
+      "recipe": {
+        "blocks": [
+          "supertrend"
+        ],
+        "gate": "price_ma",
+        "hash": "c153aa941585",
+        "label": "FILTER(supertrend|price_ma)",
+        "rule": "FILTER"
+      },
+      "result": {
+        "dsr": 0.5289652440119086,
+        "generalization": 0.009104867415080355,
+        "is_real": true,
+        "matrix_version": "srp-matrix-v2",
+        "max_drawdown": 0.7060672007573878,
+        "oos_sharpe_annual": 0.005560568870991123
+      },
+      "round": 1,
+      "status": "tested",
+      "survived": false,
+      "traits": {
+        "families": [
+          "trend"
+        ],
+        "family": "trend",
+        "n_blocks": 1,
+        "turnover": "low",
+        "uses_gate": false
+      },
+      "verdict": "Graveyard"
+    }
+  },
+  "next_id": 6,
+  "rounds": [
+    {
+      "best_dsr": 0.6449813568941966,
+      "generated": 5,
+      "ids": [
+        "G-0001",
+        "G-0002",
+        "G-0003",
+        "G-0004",
+        "G-0005"
+      ],
+      "round": 1,
+      "survival_rate": 0.0,
+      "survived": 0,
+      "tested": 5
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Market Intelligence Engine — runtime dependencies.
+# Prefer `pip install -e ".[dev]"` (reads pyproject.toml). This file is provided
+# as an alternative for `pip install -r requirements.txt`.
+numpy>=1.24
+pandas>=2.0
+fastapi>=0.110
+uvicorn[standard]>=0.27
+sqlalchemy>=2.0
+pydantic>=2.5
+pydantic-settings>=2.1
+requests>=2.31
+python-dotenv>=1.0
+
+# Testing (optional)
+pytest>=7.4

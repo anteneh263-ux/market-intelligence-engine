@@ -1,0 +1,93 @@
+{
+  "version": "lit-v1",
+  "note": "Structured literature store. Real, verified citations only. The dossier generator reads from here and never invents references. Keyed by canonical strategy-class.",
+  "references": {
+    "BLR1992": {"authors": "Brock, Lakonishok & LeBaron", "year": 1992, "title": "Simple Technical Trading Rules and the Stochastic Properties of Stock Returns", "venue": "Journal of Finance 47(5)", "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1992.tb04681.x"},
+    "STW1999": {"authors": "Sullivan, Timmermann & White", "year": 1999, "title": "Data-Snooping, Technical Trading Rule Performance, and the Bootstrap", "venue": "Journal of Finance 54(5)", "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00163"},
+    "Zakamulin2014": {"authors": "Zakamulin", "year": 2014, "title": "The Real-Life Performance of Market Timing with Moving Average and Time-Series Momentum Rules", "venue": "Journal of Asset Management 15(4)", "url": "https://link.springer.com/article/10.1057/jam.2014.25"},
+    "BajgrowiczScaillet2012": {"authors": "Bajgrowicz & Scaillet", "year": 2012, "title": "Technical Trading Revisited: False Discoveries, Persistence Tests, and Transaction Costs", "venue": "Journal of Financial Economics 106(3)", "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X1200116X"},
+    "ParkIrwin2007": {"authors": "Park & Irwin", "year": 2007, "title": "What Do We Know About the Profitability of Technical Analysis?", "venue": "Journal of Economic Surveys 21(4)", "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-6419.2007.00519.x"},
+    "ChongNg2008": {"authors": "Chong & Ng", "year": 2008, "title": "Technical Analysis and the London Stock Exchange: Testing the MACD and RSI Rules Using the FT30", "venue": "Applied Economics Letters 15(14)", "url": "https://www.tandfonline.com/doi/full/10.1080/13504850600993598"},
+    "Jegadeesh1990": {"authors": "Jegadeesh", "year": 1990, "title": "Evidence of Predictable Behavior of Security Returns", "venue": "Journal of Finance 45(3)", "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.1990.tb05110.x"},
+    "Lehmann1990": {"authors": "Lehmann", "year": 1990, "title": "Fads, Martingales, and Market Efficiency", "venue": "Quarterly Journal of Economics 105(1)", "url": "https://academic.oup.com/qje/article-abstract/105/1/1/1928416"},
+    "LoMacKinlay1990": {"authors": "Lo & MacKinlay", "year": 1990, "title": "When Are Contrarian Profits Due to Stock Market Overreaction?", "venue": "Review of Financial Studies 3(2)", "url": "https://academic.oup.com/rfs/article-abstract/3/2/175/1595488"},
+    "GinerZakamulin2023": {"authors": "Giner & Zakamulin", "year": 2023, "title": "A Regime-Switching Model of Stock Returns with Momentum and Mean Reversion", "venue": "Economic Modelling 122", "url": "https://www.sciencedirect.com/science/article/pii/S0264999323000494"},
+    "AvramovChordiaGoyal2006": {"authors": "Avramov, Chordia & Goyal", "year": 2006, "title": "Liquidity and Autocorrelations in Individual Stock Returns", "venue": "Journal of Finance 61(5)", "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.2006.01060.x"},
+    "MoskowitzOoiPedersen2012": {"authors": "Moskowitz, Ooi & Pedersen", "year": 2012, "title": "Time Series Momentum", "venue": "Journal of Financial Economics 104(2)", "url": "https://www.sciencedirect.com/science/article/pii/S0304405X11002613"},
+    "HurstOoiPedersen2017": {"authors": "Hurst, Ooi & Pedersen", "year": 2017, "title": "A Century of Evidence on Trend-Following Investing", "venue": "Journal of Portfolio Management / AQR", "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2993026"},
+    "Szakmary2010": {"authors": "Szakmary, Shen & Sharma", "year": 2010, "title": "Trend-Following Trading Strategies in Commodity Futures: A Re-Examination", "venue": "Journal of Banking & Finance 34(2)", "url": "https://www.sciencedirect.com/science/article/abs/pii/S037842660900199X"},
+    "Roll1984": {"authors": "Roll", "year": 1984, "title": "A Simple Implicit Measure of the Effective Bid-Ask Spread in an Efficient Market", "venue": "Journal of Finance 39(4)", "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1984.tb03897.x"},
+    "LoMacKinlay1988": {"authors": "Lo & MacKinlay", "year": 1988, "title": "Stock Market Prices Do Not Follow Random Walks: Evidence from a Simple Specification Test", "venue": "Review of Financial Studies 1(1)", "url": "https://academic.oup.com/rfs/article-abstract/1/1/41/1601244"},
+    "FrenchRoll1986": {"authors": "French & Roll", "year": 1986, "title": "Stock Return Variances: The Arrival of Information and the Reaction of Traders", "venue": "Journal of Financial Economics 17(1)", "url": "https://www.sciencedirect.com/science/article/abs/pii/0304405X86900048"},
+    "LesmondSchillZhou2004": {"authors": "Lesmond, Schill & Zhou", "year": 2004, "title": "The Illusory Nature of Momentum Profits", "venue": "Journal of Financial Economics 71(2)", "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X0300206X"}
+  },
+  "class_aliases": {
+    "trend-crossover": "trend", "trend-following": "trend",
+    "mean-reversion-oscillator": "mean-reversion", "mean-reversion-bands": "mean-reversion",
+    "breakout": "breakout", "volatility": "breakout",
+    "price-action-momentum": "price-action", "bar-pattern": "bar-pattern", "composite": "composite"
+  },
+  "classes": {
+    "trend": {
+      "refs": [
+        {"key": "BLR1992", "direction": "supports", "finding": "MA-crossover and trading-range rules had significant in-sample predictive power on the DJIA 1897-1986 (before costs)."},
+        {"key": "ChongNg2008", "direction": "supports", "finding": "MACD/RSI rules beat buy-and-hold on the FT30 over ~60 years, gross of costs."},
+        {"key": "STW1999", "direction": "contradicts", "finding": "After correcting for the universe of rules searched, the best rules' superiority weakens sharply and does not persist post-1986."},
+        {"key": "Zakamulin2014", "direction": "contradicts", "finding": "Genuine walk-forward MA/momentum timing falls far below in-sample backtests and generally fails to beat buy-and-hold."},
+        {"key": "BajgrowiczScaillet2012", "direction": "contradicts", "finding": "After false-discovery control and realistic costs, technical-rule profits vanish and do not persist."},
+        {"key": "ParkIrwin2007", "direction": "mixed", "finding": "~56/95 surveyed studies found profitability, but flag data-snooping and a clear post-1980s decline in equity-market profitability."}
+      ],
+      "failure_modes": ["whipsaw in ranging markets", "crossover lag giving back gains at reversals", "edge concentrated in trending regimes", "transaction-cost and turnover sensitivity", "out-of-sample and temporal decay"]
+    },
+    "mean-reversion": {
+      "refs": [
+        {"key": "Jegadeesh1990", "direction": "supports", "finding": "Strong negative short-horizon serial correlation — the reversal these rules target is real in the data."},
+        {"key": "Lehmann1990", "direction": "supports", "finding": "Weekly contrarian portfolios earn positive abnormal returns, consistent with short-term overreaction/reversal."},
+        {"key": "ChongNg2008", "direction": "supports", "finding": "RSI overbought/oversold rules beat buy-and-hold on the FT30 in-sample, gross of costs."},
+        {"key": "LoMacKinlay1990", "direction": "mixed", "finding": "Contrarian profits arise substantially from cross-stock lead-lag, so single-name own-reversal is overstated."},
+        {"key": "GinerZakamulin2023", "direction": "mixed", "finding": "Returns switch between a trending and a mean-reverting regime, so reversal pays only in the ranging regime and loses in trends."},
+        {"key": "AvramovChordiaGoyal2006", "direction": "contradicts", "finding": "Short-term reversal profits concentrate in illiquid high-turnover names and are essentially eliminated by realistic costs."}
+      ],
+      "failure_modes": ["gets run over in trending regimes (oversold to more oversold)", "transaction-cost and bid-ask-bounce erosion", "overbought/oversold threshold sensitivity", "edge concentrated in illiquid names (limited capacity)", "strong regime-dependence"]
+    },
+    "breakout": {
+      "refs": [
+        {"key": "MoskowitzOoiPedersen2012", "direction": "supports", "finding": "Persistent 1-12 month time-series momentum across 58 futures — the trend that breakout systems exploit."},
+        {"key": "HurstOoiPedersen2017", "direction": "supports", "finding": "A simple trend strategy earned positive risk-adjusted returns every decade 1880-2016, strongest in crises."},
+        {"key": "Szakmary2010", "direction": "supports", "finding": "Channel and dual-MA rules were significantly profitable out-of-sample across 28 commodity futures, net of costs."},
+        {"key": "BLR1992", "direction": "supports", "finding": "Trading-range-breakout rules had in-sample predictive power on the DJIA, before costs."},
+        {"key": "STW1999", "direction": "contradicts", "finding": "Correcting for ~7,846 rules searched, the best rules' superiority weakens and fails to persist out-of-sample."},
+        {"key": "BajgrowiczScaillet2012", "direction": "contradicts", "finding": "After false-discovery control and realistic costs, no technical rules show persistent profitability."}
+      ],
+      "failure_modes": ["false breakouts / whipsaw in range-bound markets", "edge concentrated in a few trending / high-volatility episodes", "cost and turnover sensitivity", "parameter sensitivity of the channel/lookback length", "alpha decay post-1990s and post-publication"]
+    },
+    "price-action": {
+      "refs": [
+        {"key": "Jegadeesh1990", "direction": "contradicts", "finding": "Strong negative short-horizon serial correlation — recent winners reverse, so buying up-bars is on the wrong side."},
+        {"key": "Lehmann1990", "direction": "contradicts", "finding": "Weekly contrarian (buy losers) earns positive returns — the opposite of a follow-the-bar rule."},
+        {"key": "Roll1984", "direction": "mixed", "finding": "Bid-ask bounce mechanically induces spurious negative serial covariance, so much 1-bar dependence is a non-tradable artifact."},
+        {"key": "LoMacKinlay1988", "direction": "mixed", "finding": "Random walk rejected, but the sign of autocorrelation differs between indices and single stocks — predictability is weak and level-dependent."},
+        {"key": "FrenchRoll1986", "direction": "mixed", "finding": "Small negative daily autocorrelation from pricing errors reversing — any short-horizon signal is dominated by transient noise."},
+        {"key": "LesmondSchillZhou2004", "direction": "contradicts", "finding": "Trading costs on high-turnover return-based strategies consume or exceed gross profits — fatal for a rule that trades nearly every bar."}
+      ],
+      "failure_modes": ["extreme turnover so transaction costs dominate any gross edge", "wrong side of short-term reversal", "bid-ask-bounce microstructure artifact (non-tradable)", "no persistent, level-stable edge"]
+    },
+    "bar-pattern": {
+      "refs": [
+        {"key": "STW1999", "direction": "contradicts", "finding": "Once the full universe of candidate rules is priced in, apparent pattern edges weaken sharply and fail out-of-sample."},
+        {"key": "Roll1984", "direction": "mixed", "finding": "Microstructure bid-ask bounce can manufacture spurious short-horizon signals that patterns may pick up but cannot trade net of the spread."},
+        {"key": "LoMacKinlay1988", "direction": "mixed", "finding": "Short-horizon predictability is weak and level-dependent, limiting what discrete bar patterns can extract."},
+        {"key": "BajgrowiczScaillet2012", "direction": "contradicts", "finding": "After false-discovery control and costs, no technical rules show persistent profitability."}
+      ],
+      "failure_modes": ["too few and too noisy signals to establish a credible edge", "data-snooping over the large space of possible patterns", "transaction-cost sensitivity", "no documented persistent edge for the class"]
+    },
+    "composite": {
+      "refs": [
+        {"key": "ParkIrwin2007", "direction": "mixed", "finding": "A survey of 95 studies finds mixed profitability and stresses data-snooping and post-1980s decline."},
+        {"key": "STW1999", "direction": "contradicts", "finding": "Aggregating many rules amplifies data-snooping; corrected performance of the best combinations is far weaker."},
+        {"key": "BajgrowiczScaillet2012", "direction": "contradicts", "finding": "After false-discovery control and costs, combined technical signals show no persistent profitability."}
+      ],
+      "failure_modes": ["does not beat its best single component after correction", "multiple-signal data-snooping inflates apparent performance", "transaction-cost sensitivity", "component redundancy / correlated errors"]
+    }
+  }
+}

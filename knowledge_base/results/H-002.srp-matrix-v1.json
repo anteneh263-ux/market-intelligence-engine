@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "price-action-momentum",
+  "confidence": 1.021194406813919e-09,
+  "dsr": 4.084777627255676e-09,
+  "generalization": 0.0,
+  "is_real": true,
+  "matrix_hash": "a740f3acbf6572d6",
+  "max_drawdown": 0.9999999988415649,
+  "n_bars": 10112,
+  "name": "BarUpDn Strategy",
+  "num_trades": 5230,
+  "provider": "csv",
+  "request_hash": "09174afb49eccccc",
+  "robustness": 0.0,
+  "sharpe": -1.1006079765582837,
+  "sharpe_oos_per_period": -0.057608454432421484,
+  "stability": 0.6422449581361731,
+  "strategy_id": "H-002",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 100.0% exceeds gate 60%"
+  ]
+}

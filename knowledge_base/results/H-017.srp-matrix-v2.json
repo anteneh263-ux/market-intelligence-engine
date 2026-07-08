@@ -1,0 +1,34 @@
+{
+  "assets": [
+    "AAPL",
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "bar-pattern",
+  "confidence": 0.0867599726806291,
+  "dsr": 0.3470398907225164,
+  "generalization": 0.0,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.7086061051765904,
+  "n_bars": 10112,
+  "name": "Pivot Reversal Strategy",
+  "num_trades": 1402,
+  "provider": "csv",
+  "request_hash": "aa65101f3253d7c9",
+  "robustness": 0.0,
+  "sharpe": -0.17705651019604166,
+  "sharpe_oos_per_period": -0.00926756130869463,
+  "stability": 0.5064283217066039,
+  "strategy_id": "H-017",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 70.9% exceeds gate 60%"
+  ]
+}

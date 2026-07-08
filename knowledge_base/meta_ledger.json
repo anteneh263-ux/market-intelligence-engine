@@ -1,0 +1,163 @@
+{
+  "H-002": {
+    "meta": "M-002",
+    "request_hash": "df7ec7406b12dcd4",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-003": {
+    "meta": "M-003",
+    "request_hash": "8f53128557a147b4",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-004": {
+    "meta": "M-003",
+    "request_hash": "9b40cf59aac5fd55",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-005": {
+    "meta": "M-004",
+    "request_hash": "887de68a996d9095",
+    "robustness": 0.0,
+    "verdict": "Not Supported",
+    "vote": "supports"
+  },
+  "H-006": {
+    "meta": "M-002",
+    "request_hash": "b0190be9689e5a16",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-007": {
+    "meta": "M-002",
+    "request_hash": "529e25036f9ca33c",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-008": {
+    "meta": "M-005",
+    "request_hash": "e384ea3f9664fcb5",
+    "robustness": 0.022222222222222223,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-009": {
+    "meta": "M-003",
+    "request_hash": "04484b141e68a875",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-010": {
+    "meta": "M-001",
+    "request_hash": "cc7159ec2f31f4c2",
+    "robustness": 0.0,
+    "verdict": "Not Supported",
+    "vote": "supports"
+  },
+  "H-011": {
+    "meta": "M-002",
+    "request_hash": "1990364f4628e93c",
+    "robustness": 0.0,
+    "verdict": "Not Supported",
+    "vote": "supports"
+  },
+  "H-012": {
+    "meta": "M-001",
+    "request_hash": "e8c64dbf2f916288",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-013": {
+    "meta": "M-001",
+    "request_hash": "8db9ed24101a5222",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-014": {
+    "meta": "M-005",
+    "request_hash": "fed8c7fd35980c24",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-015": {
+    "meta": "M-001",
+    "request_hash": "d26646d1052c9b17",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-016": {
+    "meta": "M-005",
+    "request_hash": "f91236e44f9ccead",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-017": {
+    "meta": "M-005",
+    "request_hash": "aa65101f3253d7c9",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-018": {
+    "meta": "M-004",
+    "request_hash": "ea4222c8515cfb7e",
+    "robustness": 0.13333333333333333,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-019": {
+    "meta": "M-004",
+    "request_hash": "8be99f2c51191ec6",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-020": {
+    "meta": "M-003",
+    "request_hash": "23c3767d3ddcf4c0",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-021": {
+    "meta": "M-003",
+    "request_hash": "5590a2634fa0049f",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-022": {
+    "meta": "M-001",
+    "request_hash": "f542e110e133136f",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-023": {
+    "meta": "M-006",
+    "request_hash": "de8bef27322b66d5",
+    "robustness": 0.13333333333333333,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  },
+  "H-024": {
+    "meta": "M-004",
+    "request_hash": "aa28d141062581f1",
+    "robustness": 0.0,
+    "verdict": "Graveyard",
+    "vote": "supports"
+  }
+}
