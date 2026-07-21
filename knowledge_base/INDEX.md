@@ -44,6 +44,7 @@ pre-registered as a frozen set of N = 23 on 2026-07-08 (see
 | H-024 | Volty Expan Close Strategy | Volatility breakout | STEP 1–5 done (v2) | Graveyard (v2) | 0.000 | 0.000 | [dossier](./H-024_volty_expan_close_strategy.md) |
 | H-025 | Asset Class Trend Following | Trend-following (200d SMA, long/cash) | STEP 1–5 done (v2) | Not Supported (v2) | 0.917 | 0.914 | [dossier](./H-025_asset_class_trend_following.md) |
 | H-026 | Asset Class Trend Following (Monthly) | Trend-following (10-mo SMA, monthly) | STEP 1–5 done (v2) | Inconclusive (v2) | 0.750 | 1.000 | [dossier](./H-026_asset_class_trend_following_monthly.md) |
+| H-027 | Connors RSI-2 Strategy | Mean-reversion (RSI-2 + 200-SMA filter) | STEP 1–5 done (v2) | Not Supported (v2) | 0.083 | 0.500 | [dossier](./H-027_connors_rsi_2_strategy.md) |
 
 *Universe frozen at N = 23 (H-002…H-024). Adding a strategy later opens a **new** registration with
 its own budget. Update `verdict`, `robustness`, `generalization` as each reaches STEP 5.*
@@ -64,7 +65,7 @@ fast long/short crossovers.*
 |---|---|---|---|
 | **M-001** | Lagging trend/crossover rules show low OOS robustness once search cost is priced in. | H-001, H-010, H-012, H-013, H-015, H-022, H-025, H-026 | 7/8 tested — 6 support / 0 contradict |
 | **M-002** | Simple price-action momentum rules do not survive costs/turnover. | H-002, H-006, H-007, H-011 | 4/4 tested — 4 support / 0 contradict |
-| **M-003** | Mean-reversion oscillator/band rules are strongly regime-dependent. | H-003, H-004, H-009, H-020, H-021 | 5/5 tested — 5 support / 0 contradict |
+| **M-003** | Mean-reversion oscillator/band rules are strongly regime-dependent. | H-003, H-004, H-009, H-020, H-021, H-027 | 6/6 tested — 6 support / 0 contradict |
 | **M-004** | Breakout/volatility rules concentrate their edge in **trending** regimes (refined 2026-07-08: on 5 assets the edge was trend-concentrated, **not** crisis-concentrated — crisis Sharpe ≈ 0). | H-005, H-018, H-019, H-024 | 4/4 tested — 4 support / 0 contradict |
 | **M-005** | Bar-pattern/pivot rules have too few, too-noisy signals for a credible edge. | H-008, H-014, H-016, H-017 | 4/4 tested — 4 support / 0 contradict |
 | **M-006** | Composite signals do not beat their best single component after correction. | H-023 | 1/1 tested — 1 support / 0 contradict |

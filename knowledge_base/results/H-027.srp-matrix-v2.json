@@ -1,0 +1,36 @@
+{
+  "assets": [
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": null,
+  "class": "mean-reversion-oscillator",
+  "confidence": 0.22552013656085296,
+  "dsr": 0.5551264899959457,
+  "generalization": 0.5,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.3716889234664427,
+  "n_bars": 8401,
+  "name": "Connors RSI-2 Strategy",
+  "num_trades": 336,
+  "provider": "csv",
+  "request_hash": "50414b43a21b2127",
+  "robustness": 0.08333333333333333,
+  "sharpe": 0.2384321413862977,
+  "sharpe_oos_per_period": 0.012480108671600038,
+  "stability": 0.4697870517772794,
+  "strategy_id": "H-027",
+  "verdict": "Not Supported",
+  "verdict_reasons": [
+    "failed: deflated Sharpe clears bar",
+    "failed: beats buy-and-hold (risk-adjusted)",
+    "failed: beats matched random-timing",
+    "failed: robust across majority of conditions"
+  ]
+}

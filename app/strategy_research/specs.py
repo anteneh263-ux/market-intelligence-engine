@@ -158,6 +158,21 @@ STRATEGY_SPECS: Dict[str, Dict] = {
                               "monthly evaluation (low turnover) is the intended cadence",
                               "SINGLE-ASSET SCOPE: the multi-ETF equal-weight allocation is NOT modelled"],
               "lookahead": "decision uses only COMPLETED monthly closes (shift(1), never shift(-1)); engine shifts positions forward one bar — no look-ahead"},
+    "H-027": {"source": "Larry Connors 2-period-RSI ('RSI(2)') mean-reversion system — canonical LONG/SHORT variant as documented by StockCharts ChartSchool (https://chartschool.stockcharts.com/table-of-contents/trading-strategies-and-models/trading-strategies/rsi-2); method also published in Connors & Alvarez, 'Short Term Trading Strategies That Work'. Rules RE-IMPLEMENTED from the public description; NO third-party code copied. Public open-source code implementations also exist: TradingView open-source scripts (MPL-2.0) and GitHub handiko/RSI-2-Stock-Trading-Strategy-Pinescript (a LONG-ONLY variant, no license file present).",
+              "indicators": ["RSI(2) (Wilder)", "SMA(200) trend filter", "SMA(5) exit"],
+              "entry_long": "close > SMA(200) AND RSI(2) < 5 (oversold pullback within an uptrend)",
+              "entry_short": "close < SMA(200) AND RSI(2) > 95 (overbought bounce within a downtrend). PROVENANCE: the short side is part of Connors' CANONICAL documented system (StockCharts: short when below the 200-SMA and RSI(2) above 90/95, exit on the 5-SMA cross) — NOT an invented symmetric add-on. Note: the linked GitHub Pine repo is a long-only variant; this H-027 implements the canonical long/short version.",
+              "exit": "long exits to CASH when close > SMA(5); short exits to CASH when close < SMA(5)",
+              "filters": "200-period SMA regime gate - long only above it, short only below it",
+              "risk": "fast 5-SMA mean-reversion exit; Connors uses no protective stop",
+              "sizing": "single-asset, fixed full-notional per position (original applies the rule per instrument)",
+              "assumptions": ["short-term RSI(2) extremes mean-revert in the direction of the 200-SMA trend",
+                              "the 5-period SMA cross captures the quick reversion exit",
+                              "SINGLE-ASSET SCOPE: original is applied per instrument; no cross-sectional ranking or portfolio allocation modelled",
+                              "ADAPTATION - asset universe: Connors' original targets US equities/ETFs; here evaluated on BTC/USD, ETH/USD, SPY, XAU/USD (daily) as a cross-asset generalization test",
+                              "ADAPTATION - parameter grid: probes buy_below in {5,10} x sell_above in {95,90} as a data-snooping-priced robustness neighbourhood; Connors' canonical extreme is 5/95 (he also cites 10/90); the mixed pairs (5/90, 10/95) are our robustness probe, not Connors' pairing",
+                              "ADAPTATION - the transaction-cost/slippage ladder and walk-forward folds are imposed by the frozen srp-matrix-v2 protocol, not part of Connors' original discretionary description"],
+              "lookahead": "RSI(2), SMA(200) and SMA(5) use only closed bars; the position is built by a causal state machine (data <= t and prior state); engine shifts positions forward one bar"},
 }
 
 

@@ -173,5 +173,12 @@
     "robustness": 0.75,
     "verdict": "Inconclusive",
     "vote": "neither"
+  },
+  "H-027": {
+    "meta": "M-003",
+    "request_hash": "50414b43a21b2127",
+    "robustness": 0.08333333333333333,
+    "verdict": "Not Supported",
+    "vote": "supports"
   }
 }
