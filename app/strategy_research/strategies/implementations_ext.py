@@ -460,6 +460,68 @@ class AssetClassTrendFollowingMonthlyStrategy(Strategy):
         return [dict(self.default_params)]              # fixed 10-month; data-snoop budget = 1
 
 
+class ConnorsRSI2Strategy(Strategy):
+    """H-027 Connors RSI-2 — Larry Connors' 2-period-RSI mean-reversion rule with a
+    200-period SMA regime filter. Rules re-implemented from the publicly documented
+    method (StockCharts ChartSchool; corroborated by open-source TradingView/GitHub
+    implementations); NO third-party code copied.
+
+    Documented rules (long/short):
+      * Long : close > SMA(200) AND RSI(2) < 5  -> enter long; exit to CASH when close > SMA(5)
+      * Short: close < SMA(200) AND RSI(2) > 95 -> enter short; exit to CASH when close < SMA(5)
+    The 200-SMA is a TREND FILTER (regime gate); RSI(2) is the ENTRY oscillator; the
+    5-SMA cross is the fast mean-reversion EXIT. Connors uses no protective stop.
+
+    Look-ahead-free by construction: RSI(2), SMA(200) and SMA(5) use only closed bars,
+    and the position is built by a purely causal state machine (each bar's state depends
+    only on data up to that bar's close and the prior state). The backtester shifts
+    positions forward one bar, so the traded bar can never be peeked at."""
+
+    strategy_id = "H-027"
+    name = "Connors RSI-2 Strategy"
+    strategy_class = "mean-reversion-oscillator"
+    direction = "long_short"
+    default_params = {"rsi_len": 2, "trend_len": 200, "exit_len": 5,
+                      "buy_below": 5.0, "sell_above": 95.0}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        p = {**self.default_params, **(params or {})}
+        c = df["close"]
+        trend = sma(c, int(p["trend_len"]))          # 200-SMA regime filter
+        exit_ma = sma(c, int(p["exit_len"]))         # 5-SMA fast exit
+        r = wilder_rsi(c, int(p["rsi_len"]))         # 2-period RSI entry oscillator
+        long_entry = ((c > trend) & (r < p["buy_below"])).to_numpy()
+        short_entry = ((c < trend) & (r > p["sell_above"])).to_numpy()
+        long_exit = (c > exit_ma).to_numpy()
+        short_exit = (c < exit_ma).to_numpy()
+        ready = (trend.notna() & exit_ma.notna()).to_numpy()   # warm-up guard -> flat
+        n = len(df)
+        out = np.zeros(n, dtype=float)
+        state = 0.0
+        for i in range(n):
+            if not ready[i]:
+                state = 0.0; out[i] = 0.0; continue
+            if state == 0.0:
+                if long_entry[i]:
+                    state = 1.0
+                elif short_entry[i]:
+                    state = -1.0
+            elif state == 1.0:
+                if long_exit[i]:
+                    state = 0.0
+            else:  # state == -1.0
+                if short_exit[i]:
+                    state = 0.0
+            out[i] = state
+        return pd.Series(out, index=df.index)
+
+    def param_grid(self) -> List[Dict]:
+        # Connors tested both the 5/95 and 10/90 extremes; probe that small neighbourhood.
+        # Grid size (4) is the data-snooping budget priced into the deflated Sharpe.
+        return self._grid(rsi_len=[2], trend_len=[200], exit_len=[5],
+                          buy_below=[5.0, 10.0], sell_above=[95.0, 90.0])
+
+
 EXT_STRATEGIES: List[type] = [
     BollingerBandsStrategy, BollingerBandsDirectedStrategy, ConsecutiveUpDownStrategy,
     GreedyStrategy, InSideBarStrategy, KeltnerChannelsStrategy, MomentumStrategy,
@@ -468,4 +530,5 @@ EXT_STRATEGIES: List[type] = [
     PriceChannelStrategy, ADXBreakoutStrategy, StochasticSlowStrategy,
     SupertrendStrategy, TechnicalRatingsStrategy, VoltyExpanCloseStrategy,
     AssetClassTrendFollowingStrategy, AssetClassTrendFollowingMonthlyStrategy,
+    ConnorsRSI2Strategy,
 ]

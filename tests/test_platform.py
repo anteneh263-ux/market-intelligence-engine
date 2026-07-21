@@ -35,7 +35,7 @@ def test_module_registry_has_strategy_evaluation():
     # discovery/workflow tests in the same process) can vary and must not affect this.
     catalogue = module_registry.get_module("strategy_evaluation").catalogue()
     h_strategies = [s for s in catalogue if s.startswith("H-")]
-    assert len(h_strategies) == 25
+    assert len(h_strategies) == 26
 
 
 def test_orchestrator_flow_records_and_learns(tmp_path):

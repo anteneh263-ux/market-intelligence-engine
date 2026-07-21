@@ -51,7 +51,7 @@ def test_registry_lists():
     # registered by earlier tests (discovery/workflow) in the same process and
     # must not affect this count.
     h_ids = [s for s in available_strategies() if s.startswith("H-")]
-    assert len(h_ids) == 25                                   # permanent H-strategy universe
+    assert len(h_ids) == 26                                   # permanent H-strategy universe
     assert {"csv", "binance", "fmp", "coindesk", "synthetic"} <= set(available_providers())
 
 
@@ -255,3 +255,15 @@ def test_h026_monthly_long_only_causal_low_turnover():
     np.testing.assert_array_equal(full[:400], trunc[:400])    # causal: no look-ahead
     changes = int(np.sum(np.abs(np.diff(full)) > 0))
     assert changes <= 24                                       # ~monthly cadence over ~20 months
+
+
+def test_h027_connors_rsi2_long_short_and_causal():
+    """H-027 (Connors RSI-2): positions in {-1,0,1} and look-ahead free (truncating the
+    future does not change past positions). Built by a causal state machine."""
+    df = _synth_df(800)
+    s = get_strategy("H-027")
+    assert s.direction == "long_short"
+    full = s.positions(df).to_numpy()
+    assert set(np.unique(full)) <= {-1.0, 0.0, 1.0}
+    trunc = s.positions(df.iloc[:500].reset_index(drop=True)).to_numpy()
+    np.testing.assert_array_equal(full[:500], trunc[:500])
