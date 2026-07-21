@@ -47,7 +47,11 @@ from app.strategy_research.providers import DataRequest
 def test_registry_lists():
     ids = set(available_strategies())
     assert {"H-002", "H-005", "H-010", "H-020"} <= ids       # the four reference strategies
-    assert len(ids) == 25                                     # full built-in universe implemented
+    # Count only the permanent H-strategies. Generated G-#### strategies may be
+    # registered by earlier tests (discovery/workflow) in the same process and
+    # must not affect this count.
+    h_ids = [s for s in available_strategies() if s.startswith("H-")]
+    assert len(h_ids) == 25                                   # permanent H-strategy universe
     assert {"csv", "binance", "fmp", "coindesk", "synthetic"} <= set(available_providers())
 
 
