@@ -59,6 +59,8 @@ def main(argv=None) -> int:
     p.add_argument("--csv-root", default="data_csv"); p.add_argument("--variants", type=int, default=2)
     p = sub.add_parser("ask"); p.add_argument("question")
     p = sub.add_parser("kb"); p.add_argument("action"); p.add_argument("target", nargs="?")
+    from app.paper.cli_paper import add_paper_parser, run_paper
+    add_paper_parser(sub)
 
     args = ap.parse_args(argv)
     kb = KnowledgeBase()
@@ -142,6 +144,9 @@ def main(argv=None) -> int:
         elif args.action == "results":
             print(json.dumps(kb.all_results(), indent=2))
         return 0
+
+    if args.cmd == "paper":
+        return run_paper(args)
 
     ap.print_help(); return 0
 
