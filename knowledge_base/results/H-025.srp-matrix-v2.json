@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": true,
+  "beats_random": false,
+  "cause_of_death": null,
+  "class": "trend-following",
+  "confidence": 0.891707003247841,
+  "dsr": 0.9724131337973405,
+  "generalization": 0.9137480575168548,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.38985980581881663,
+  "n_bars": 8401,
+  "name": "Asset Class Trend Following",
+  "num_trades": 99,
+  "provider": "csv",
+  "request_hash": "e3dd0f0939dfa2d1",
+  "robustness": 0.9166666666666666,
+  "sharpe": 0.9021281089653594,
+  "sharpe_oos_per_period": 0.04721954334735402,
+  "stability": 0.9323735723708744,
+  "strategy_id": "H-025",
+  "verdict": "Not Supported",
+  "verdict_reasons": [
+    "failed: beats matched random-timing"
+  ]
+}
