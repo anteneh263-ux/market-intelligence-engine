@@ -9,7 +9,8 @@ from typing import Callable, Dict
 
 from .base import DataSource
 from .csv_source import CSVDataSource
-from .http_sources import BinanceDataSource, CoinDeskDataSource, FMPDataSource
+from .http_sources import (BinanceDataSource, CoinbaseDataSource,
+                           CoinDeskDataSource, FMPDataSource)
 from .synthetic_source import SyntheticDataSource
 
 _FACTORIES: Dict[str, Callable[..., DataSource]] = {
@@ -17,6 +18,7 @@ _FACTORIES: Dict[str, Callable[..., DataSource]] = {
     "binance": BinanceDataSource,
     "fmp": FMPDataSource,
     "coindesk": CoinDeskDataSource,
+    "coinbase": CoinbaseDataSource,
     "synthetic": SyntheticDataSource,
 }
 

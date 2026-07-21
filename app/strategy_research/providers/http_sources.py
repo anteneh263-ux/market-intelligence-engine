@@ -120,3 +120,94 @@ class CoinDeskDataSource(DataSource):
             return _rows_to_df(rows)
         except Exception:
             return _rows_to_df([])
+
+
+_TF_COINBASE = {"1h": 3600, "1d": 86400, "1w": 604800}  # granularity in seconds
+
+
+def normalize_coinbase(rows) -> pd.DataFrame:
+    """Normalize a Coinbase Exchange candles payload to the canonical OHLCV schema.
+
+    Coinbase returns an array of arrays in the DOCUMENTED order
+        [ time(seconds), low, high, open, close, volume ]
+    typically NEWEST-FIRST. We map to canonical [open_time(ms), open, high, low,
+    close, volume], sort ascending, and drop duplicate open_times. Malformed rows
+    are skipped (never fabricated)."""
+    out = []
+    for k in rows:
+        if not isinstance(k, (list, tuple)) or len(k) < 6:
+            continue
+        try:
+            ts = int(k[0])
+            low, high, opn, close, vol = (float(k[1]), float(k[2]), float(k[3]),
+                                          float(k[4]), float(k[5]))
+        except (TypeError, ValueError):
+            continue
+        out.append([ts * 1000, opn, high, low, close, vol])
+    df = _rows_to_df(out)
+    if df.empty:
+        return df
+    return (df.drop_duplicates(subset=["open_time"])
+              .sort_values("open_time").reset_index(drop=True))
+
+
+class CoinbaseDataSource(DataSource):
+    """Coinbase Exchange public candles -- FREE, NO API key. USD spot pairs
+    (e.g. BTC-USD, ETH-USD). This is an EXPLICIT provider: the user selects
+    `--provider coinbase`; there is NO hidden automatic fallback from any other
+    provider. Handles Coinbase's 300-candles-per-request cap by paginating
+    backwards so SMA-200 strategies receive enough warm-up history.
+
+    In a sandbox without outbound network it returns an empty frame (never
+    fabricated bars); the engine then reports 'no completed candles' cleanly.
+    """
+
+    name = "coinbase"
+    is_real = True
+    _MAX_PER_REQ = 300
+
+    def __init__(self, base_url: str = "https://api.exchange.coinbase.com"):
+        self.base_url = base_url
+
+    def _fetch(self, req: DataRequest) -> pd.DataFrame:
+        if requests is None or req.timeframe not in _TF_COINBASE:
+            return _rows_to_df([])
+        import datetime as _dt
+
+        gran = _TF_COINBASE[req.timeframe]
+        product = req.asset.replace("/", "-").upper()   # BTC/USD -> BTC-USD
+        want = int(req.limit or 300)
+        raw: List[list] = []
+        seen = set()
+        end = None                                       # first page = most recent
+        guard = 0
+        while len(seen) < want and guard < 25:           # bounded pagination
+            guard += 1
+            params = {"granularity": gran}
+            if end is not None:                          # older window
+                start = end - _dt.timedelta(seconds=gran * self._MAX_PER_REQ)
+                params["start"] = start.strftime("%Y-%m-%dT%H:%M:%SZ")
+                params["end"] = end.strftime("%Y-%m-%dT%H:%M:%SZ")
+            try:
+                r = requests.get(f"{self.base_url}/products/{product}/candles",
+                                 params=params, timeout=15,
+                                 headers={"User-Agent": "mie-paper/1.0"})
+                r.raise_for_status()
+                rows = r.json()
+            except Exception:
+                break
+            if not isinstance(rows, list) or not rows:
+                break
+            added = 0
+            for k in rows:
+                if isinstance(k, (list, tuple)) and len(k) >= 6:
+                    ts = int(k[0])
+                    if ts not in seen:
+                        seen.add(ts)
+                        raw.append(k)
+                        added += 1
+            if added == 0:                               # no forward progress
+                break
+            oldest = min(int(k[0]) for k in raw)
+            end = _dt.datetime.fromtimestamp(oldest, _dt.timezone.utc)
+        return normalize_coinbase(raw)

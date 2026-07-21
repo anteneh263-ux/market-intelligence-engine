@@ -26,3 +26,6 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Paper-trading runtime state (separate from knowledge base)
+paper_trading/
