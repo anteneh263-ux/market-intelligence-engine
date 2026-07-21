@@ -47,7 +47,7 @@ from app.strategy_research.providers import DataRequest
 def test_registry_lists():
     ids = set(available_strategies())
     assert {"H-002", "H-005", "H-010", "H-020"} <= ids       # the four reference strategies
-    assert len(ids) == 23                                     # full built-in universe implemented
+    assert len(ids) == 25                                     # full built-in universe implemented
     assert {"csv", "binance", "fmp", "coindesk", "synthetic"} <= set(available_providers())
 
 
@@ -224,3 +224,30 @@ def test_every_condition_row_has_same_schema():
         assert keys <= set(row)
     # frozen ladder = 3 cost levels x 3 slippage levels
     assert len(rep.condition_rows) == 9
+
+
+def test_h025_is_long_only_and_causal():
+    """H-025 (Asset Class Trend Following) must be long-only (positions in {0,1}) and
+    look-ahead free (truncating the future doesn't change past positions)."""
+    df = _synth_df(600)
+    s = get_strategy("H-025")
+    assert s.direction == "long_only"
+    full = s.positions(df).to_numpy()
+    assert set(np.unique(full)) <= {0.0, 1.0}                 # never shorts
+    trunc = s.positions(df.iloc[:400].reset_index(drop=True)).to_numpy()
+    np.testing.assert_array_equal(full[:400], trunc[:400])
+
+
+def test_h026_monthly_long_only_causal_low_turnover():
+    """H-026 (monthly Faber): long-only {0,1}, look-ahead free (truncation-invariant,
+    since it uses only completed months), and MUCH lower turnover than a daily rule
+    (position changes at most about once per month)."""
+    df = _synth_df(600)                                        # ~20 months of daily bars
+    s = get_strategy("H-026")
+    assert s.direction == "long_only"
+    full = s.positions(df).to_numpy()
+    assert set(np.unique(full)) <= {0.0, 1.0}
+    trunc = s.positions(df.iloc[:400].reset_index(drop=True)).to_numpy()
+    np.testing.assert_array_equal(full[:400], trunc[:400])    # causal: no look-ahead
+    changes = int(np.sum(np.abs(np.diff(full)) > 0))
+    assert changes <= 24                                       # ~monthly cadence over ~20 months

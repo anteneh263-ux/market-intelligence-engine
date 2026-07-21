@@ -390,6 +390,76 @@ class VoltyExpanCloseStrategy(Strategy):
     def param_grid(self): return self._grid(atr_len=[10],mult=[0.5,0.75,1.0])
 
 
+class AssetClassTrendFollowingStrategy(Strategy):
+    """H-025 Asset Class Trend Following — single-asset core of the QuantConnect /
+    Meb Faber tactical-allocation rule (documented rules re-implemented, not copied).
+
+    Documented rule: hold the asset while close > its 10-month SMA, otherwise move to
+    cash; equal weight across the ETFs that pass. Single-asset translation used here:
+    **long-only** timing — position = +1 when close > SMA(length), else 0 (cash).
+    length=200 daily bars ≈ a 10-month SMA. NOT represented (out of engine scope):
+    the equal-weight allocation across 5 asset-class ETFs, and monthly rebalancing
+    (this checks the rule daily, so turnover is somewhat higher than the original)."""
+
+    strategy_id = "H-025"
+    name = "Asset Class Trend Following"
+    strategy_class = "trend-following"
+    direction = "long_only"
+    default_params = {"length": 200}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        p = {**self.default_params, **(params or {})}
+        m = sma(df["close"], int(p["length"]))
+        # +1 while above the SMA, 0 (cash) otherwise; warm-up (SMA=NaN) => 0. Every
+        # bar is a full state, so no carry-forward is needed. Backtester shifts the
+        # position forward one bar => no look-ahead.
+        return (df["close"] > m).astype(float)
+
+    def param_grid(self) -> List[Dict]:
+        # Faber's canonical is a fixed 10-month (~200d) SMA; we also probe stability
+        # to the lookback choice. Data-snooping budget = 3, priced into deflated Sharpe.
+        return self._grid(length=[150, 200, 250])
+
+
+class AssetClassTrendFollowingMonthlyStrategy(Strategy):
+    """H-026 Asset Class Trend Following (Monthly) — a faithful single-asset
+    translation of the QuantConnect / Meb Faber rule: a genuine **10-month** SMA of
+    **monthly** closes, evaluated **only at month boundaries**. Long while the prior
+    month-end close is above the 10-month SMA, else cash; the position is held for the
+    whole month. Re-implemented from the documented rules (code not copied).
+
+    Look-ahead-free by construction: the decision at each new month uses only closed
+    monthly data from *completed* months (via `shift(1)`, never `shift(-1)`), and the
+    backtester shifts positions forward one bar. Still single-asset (no equal-weight
+    allocation across the 5 ETFs — out of engine scope)."""
+
+    strategy_id = "H-026"
+    name = "Asset Class Trend Following (Monthly)"
+    strategy_class = "trend-following"
+    direction = "long_only"
+    default_params = {"months": 10}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        p = {**self.default_params, **(params or {})}
+        m = int(p["months"])
+        t = pd.to_datetime(df["open_time"], unit="ms", utc=True)
+        ym = (t.dt.year * 12 + t.dt.month)
+        # First bar of each new calendar month (causal: compares to the PRIOR bar).
+        is_month_start = ym != ym.shift(1)
+        # The prior month's last close, known at the month-start bar (shift(1) = past only).
+        prev_close = df["close"].shift(1)
+        mc = prev_close[is_month_start]                 # monthly-close series (completed months)
+        sma_m = mc.rolling(m, min_periods=m).mean()     # true 10-month SMA of monthly closes
+        sig = (mc > sma_m).astype(float)                # 1 long / 0 cash; warm-up (SMA=NaN) -> 0
+        full = pd.Series(np.nan, index=df.index)
+        full[is_month_start] = sig
+        # Hold the month-start decision through the month; leading pre-signal bars -> cash.
+        return full.ffill().fillna(0.0)
+
+    def param_grid(self) -> List[Dict]:
+        return [dict(self.default_params)]              # fixed 10-month; data-snoop budget = 1
+
+
 EXT_STRATEGIES: List[type] = [
     BollingerBandsStrategy, BollingerBandsDirectedStrategy, ConsecutiveUpDownStrategy,
     GreedyStrategy, InSideBarStrategy, KeltnerChannelsStrategy, MomentumStrategy,
@@ -397,4 +467,5 @@ EXT_STRATEGIES: List[type] = [
     ParabolicSARStrategy, PivotExtensionStrategy, PivotReversalStrategy,
     PriceChannelStrategy, ADXBreakoutStrategy, StochasticSlowStrategy,
     SupertrendStrategy, TechnicalRatingsStrategy, VoltyExpanCloseStrategy,
+    AssetClassTrendFollowingStrategy, AssetClassTrendFollowingMonthlyStrategy,
 ]

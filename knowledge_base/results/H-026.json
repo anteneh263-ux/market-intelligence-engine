@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": null,
+  "class": "trend-following",
+  "confidence": 0.8416367265151262,
+  "dsr": 0.9618705445887157,
+  "generalization": 1.0,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.4759930058570791,
+  "n_bars": 8401,
+  "name": "Asset Class Trend Following (Monthly)",
+  "num_trades": 27,
+  "provider": "csv",
+  "request_hash": "332e303f380bc5d6",
+  "robustness": 0.75,
+  "sharpe": 0.8048935206635116,
+  "sharpe_oos_per_period": 0.042130052385314254,
+  "stability": 0.850489970377157,
+  "strategy_id": "H-026",
+  "verdict": "Inconclusive",
+  "verdict_reasons": [
+    "Underpowered: 27 OOS trades (< 30) / 8401 OOS bars"
+  ]
+}

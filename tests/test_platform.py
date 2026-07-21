@@ -31,7 +31,7 @@ def test_versioning_v1_preserved_v2_active():
 def test_module_registry_has_strategy_evaluation():
     mods = {m["name"] for m in module_registry.list_modules()}
     assert "strategy_evaluation" in mods
-    assert len(module_registry.get_module("strategy_evaluation").catalogue()) == 23
+    assert len(module_registry.get_module("strategy_evaluation").catalogue()) == 25
 
 
 def test_orchestrator_flow_records_and_learns(tmp_path):

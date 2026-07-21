@@ -159,5 +159,19 @@
     "robustness": 0.0,
     "verdict": "Graveyard",
     "vote": "supports"
+  },
+  "H-025": {
+    "meta": "M-001",
+    "request_hash": "e3dd0f0939dfa2d1",
+    "robustness": 0.9166666666666666,
+    "verdict": "Not Supported",
+    "vote": "supports"
+  },
+  "H-026": {
+    "meta": "M-001",
+    "request_hash": "332e303f380bc5d6",
+    "robustness": 0.75,
+    "verdict": "Inconclusive",
+    "vote": "neither"
   }
 }
