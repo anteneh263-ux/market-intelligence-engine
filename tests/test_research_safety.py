@@ -94,6 +94,30 @@ def test_explicit_economic_identity_separates_changed_evidence(tmp_path):
     assert tl.count_effective_dsr_trials() == 2
 
 
+def test_explicit_identity_reconciles_ambiguous_legacy_baseline(tmp_path):
+    tl = TrialLedger(root=str(tmp_path))
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="legacy")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="baseline-v2",
+              economic_id="economic-baseline")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="changed-data",
+              economic_id="economic-changed-data")
+    assert tl.count_dsr_trials() == 3
+    # Legacy aliases the first explicit baseline; genuinely changed evidence remains.
+    assert tl.count_effective_dsr_trials() == 2
+
+
+def test_explicit_identity_reconciles_ambiguous_legacy_baseline(tmp_path):
+    tl = TrialLedger(root=str(tmp_path))
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="legacy")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="baseline-v2",
+              economic_id="economic-baseline")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="changed-data",
+              economic_id="economic-changed-data")
+    assert tl.count_dsr_trials() == 3
+    # Legacy aliases the first explicit baseline; genuinely changed evidence remains.
+    assert tl.count_effective_dsr_trials() == 2
+
+
 # --------------------------------------------------------------------------- #
 # 3. Declared-versus-actual input audit
 # --------------------------------------------------------------------------- #
