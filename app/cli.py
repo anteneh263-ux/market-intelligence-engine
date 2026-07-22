@@ -63,6 +63,8 @@ def main(argv=None) -> int:
     add_paper_parser(sub)
     from app.research_safety.cli_safety import add_safety_parser, run_safety
     add_safety_parser(sub)
+    from app.forward.cli_forward import add_forward_parser, run_forward
+    add_forward_parser(sub)
 
     args = ap.parse_args(argv)
     kb = KnowledgeBase()
@@ -152,6 +154,9 @@ def main(argv=None) -> int:
 
     if args.cmd == "safety":
         return run_safety(args)
+
+    if args.cmd == "forward":
+        return run_forward(args)
 
     ap.print_help(); return 0
 
