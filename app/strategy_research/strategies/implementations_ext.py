@@ -522,6 +522,70 @@ class ConnorsRSI2Strategy(Strategy):
                           buy_below=[5.0, 10.0], sell_above=[95.0, 90.0])
 
 
+def wma(s: pd.Series, n: int) -> pd.Series:
+    """Linearly-weighted moving average (weights 1..n, most recent heaviest). Trailing/causal."""
+    x = s.to_numpy(dtype=float); w = np.arange(1, n + 1, dtype=float); w = w / w.sum()
+    out = np.full(len(x), np.nan)
+    if len(x) >= n:
+        out[n - 1:] = np.convolve(x, w[::-1], mode="valid")
+    return pd.Series(out, index=s.index)
+
+
+def hma(s: pd.Series, n: int) -> pd.Series:
+    """Hull Moving Average (Alan Hull, 2005) - FROZEN formula:
+    half=floor(n/2), sqrt_p=round(sqrt(n)); HMA = WMA(2*WMA(close,half) - WMA(close,n), sqrt_p).
+    Fully causal (WMA is trailing); NaN through warm-up."""
+    half = int(np.floor(n / 2)); sqrt_p = int(round(np.sqrt(n)))
+    raw = 2.0 * wma(s, half) - wma(s, n)
+    return wma(raw, sqrt_p)
+
+
+class HullMASlopeTrendStrategy(Strategy):
+    """H-028 Hull MA Slope Trend - GRAVEYARD (documented, tested & REJECTED hypothesis; NOT an
+    active strategy, not for paper trading or live execution). Trades the direction of the Hull
+    MA slope. Public indicator (Alan Hull, 2005); surfaced via a free MQL5 market indicator
+    (compiled, no source, no stated license) - rules re-implemented from the public formula,
+    NO MT5 code used or decompiled.
+
+    Pre-registered primary: length n=55, deadband=0, long/short stop-and-reverse. Long +1 when
+    the HMA is rising (HMA_t > HMA_{t-1}), short -1 when falling. Decision on the completed
+    candle; the backtester shifts the position forward one bar -> causal, no look-ahead, no
+    repaint. Verdict Graveyard: OOS max drawdown 64% (> 60% gate), beats neither buy-and-hold nor
+    matched random-timing, and at fixed n=55 the Hull construction is WEAKER than plain SMA/EMA/WMA
+    slope - reduced MA lag increased whipsaw and cost instead of capturing trend (see the H-028
+    dossier + stress-test report). Contributes to M-001."""
+
+    strategy_id = "H-028"
+    name = "Hull MA Slope Trend"
+    strategy_class = "ma-slope-trend"
+    direction = "long_short"
+    default_params = {"length": 55}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        p = {**self.default_params, **(params or {})}
+        n = int(p["length"])
+        hv = hma(df["close"], n).to_numpy()
+        N = len(hv)
+        slope = np.full(N, np.nan)
+        slope[1:] = hv[1:] - hv[:-1]
+        warm = n + int(round(np.sqrt(n)))            # no signal until the HMA is ready
+        out = np.zeros(N); cur = 0.0                 # explicit causal carry (version-independent)
+        for i in range(N):
+            if i < warm or np.isnan(hv[i]) or np.isnan(slope[i]):
+                out[i] = 0.0; cur = 0.0; continue
+            if slope[i] > 0.0:                        # deadband = 0: sign of the HMA slope
+                cur = 1.0
+            elif slope[i] < 0.0:
+                cur = -1.0                            # flat slope -> hold previous
+            out[i] = cur
+        return pd.Series(out, index=df.index)
+
+    def param_grid(self) -> List[Dict]:
+        # FROZEN single config: n=55 in every walk-forward fold (no per-fold re-selection).
+        # {20,34,55,89,100} periods and {0.05%,0.10%} deadbands are SENSITIVITY ONLY.
+        return [dict(self.default_params)]
+
+
 EXT_STRATEGIES: List[type] = [
     BollingerBandsStrategy, BollingerBandsDirectedStrategy, ConsecutiveUpDownStrategy,
     GreedyStrategy, InSideBarStrategy, KeltnerChannelsStrategy, MomentumStrategy,
@@ -531,4 +595,5 @@ EXT_STRATEGIES: List[type] = [
     SupertrendStrategy, TechnicalRatingsStrategy, VoltyExpanCloseStrategy,
     AssetClassTrendFollowingStrategy, AssetClassTrendFollowingMonthlyStrategy,
     ConnorsRSI2Strategy,
+    HullMASlopeTrendStrategy,
 ]

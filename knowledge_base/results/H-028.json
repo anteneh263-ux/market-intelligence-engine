@@ -1,0 +1,33 @@
+{
+  "assets": [
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "beats_buy_hold": false,
+  "beats_random": false,
+  "cause_of_death": "catastrophic drawdown out-of-sample",
+  "class": "ma-slope-trend",
+  "confidence": 0.3116095802172735,
+  "dsr": 0.6574619714474342,
+  "generalization": 0.75,
+  "is_real": true,
+  "matrix_hash": "4c2aa61eccfd276c",
+  "matrix_version": "srp-matrix-v2",
+  "max_drawdown": 0.6367575238126915,
+  "n_bars": 8401,
+  "name": "Hull MA Slope Trend",
+  "num_trades": 391,
+  "provider": "csv",
+  "request_hash": "e8566927315ca824",
+  "robustness": 0.08333333333333333,
+  "sharpe": 0.19659566089406175,
+  "sharpe_oos_per_period": 0.010290287198938528,
+  "stability": 0.503784806025862,
+  "strategy_id": "H-028",
+  "verdict": "Graveyard",
+  "verdict_reasons": [
+    "OOS max drawdown 63.7% exceeds gate 60%"
+  ]
+}

@@ -33,8 +33,14 @@ class PaperDataError(RuntimeError):
 DEFAULT_MARKETS = ["BTC/USD", "ETH/USD"]
 
 
+# Documented, REJECTED hypotheses (Graveyard) recorded for evidence only. They are NOT
+# active strategies: never paper-traded and never connected to a broker/live execution.
+NON_ACTIVE_STRATEGIES = {"H-028"}   # Hull MA Slope Trend (Graveyard)
+
+
 def strategy_ids() -> List[str]:
-    return [s for s in available_strategies() if s.startswith("H-")]
+    return [s for s in available_strategies()
+            if s.startswith("H-") and s not in NON_ACTIVE_STRATEGIES]
 
 
 class PaperEngine:

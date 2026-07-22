@@ -51,7 +51,7 @@ def test_registry_lists():
     # registered by earlier tests (discovery/workflow) in the same process and
     # must not affect this count.
     h_ids = [s for s in available_strategies() if s.startswith("H-")]
-    assert len(h_ids) == 26                                   # permanent H-strategy universe
+    assert len(h_ids) == 27                                   # permanent H-strategy universe
     assert {"csv", "binance", "fmp", "coindesk", "synthetic"} <= set(available_providers())
 
 
@@ -267,3 +267,33 @@ def test_h027_connors_rsi2_long_short_and_causal():
     assert set(np.unique(full)) <= {-1.0, 0.0, 1.0}
     trunc = s.positions(df.iloc[:500].reset_index(drop=True)).to_numpy()
     np.testing.assert_array_equal(full[:500], trunc[:500])
+
+
+def test_h028_hull_ma_slope_long_short_and_causal():
+    """H-028 Hull MA slope-trend: positions in {-1,0,1}, long/short, look-ahead free."""
+    df = _synth_df(600)
+    s = get_strategy("H-028")
+    assert s.direction == "long_short"
+    full = s.positions(df).to_numpy()
+    assert set(np.unique(full)) <= {-1.0, 0.0, 1.0}
+    trunc = s.positions(df.iloc[:400].reset_index(drop=True)).to_numpy()
+    np.testing.assert_array_equal(full[:400], trunc[:400])
+
+
+def test_h028_hma_formula_is_frozen():
+    """Hull MA uses the FROZEN formula half=floor(n/2), sqrt_p=round(sqrt(n))."""
+    from app.strategy_research.strategies.implementations_ext import hma, wma
+    n = 16  # floor=8, round(sqrt)=4
+    x = pd.Series(np.linspace(100.0, 120.0, 80) + np.sin(np.arange(80)))
+    ref = wma(2 * wma(x, 8) - wma(x, 16), 4).to_numpy()
+    got = hma(x, 16).to_numpy()
+    np.testing.assert_allclose(got[25:], ref[25:], rtol=1e-9)
+
+
+def test_h028_verdict_is_graveyard():
+    """H-028 is a documented, REJECTED hypothesis: recorded verdict must be Graveyard."""
+    import json, os
+    path = os.path.join("knowledge_base", "results", "H-028.json")
+    assert os.path.exists(path), "H-028 result record missing"
+    rec = json.load(open(path))
+    assert rec["verdict"] == "Graveyard" and rec["is_real"] is True

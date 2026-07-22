@@ -180,5 +180,12 @@
     "robustness": 0.08333333333333333,
     "verdict": "Not Supported",
     "vote": "supports"
+  },
+  "H-028": {
+    "meta": "M-001",
+    "request_hash": "e8566927315ca824",
+    "robustness": 0.08333333333333333,
+    "verdict": "Graveyard",
+    "vote": "supports"
   }
 }

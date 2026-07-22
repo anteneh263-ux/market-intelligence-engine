@@ -173,6 +173,20 @@ STRATEGY_SPECS: Dict[str, Dict] = {
                               "ADAPTATION - parameter grid: probes buy_below in {5,10} x sell_above in {95,90} as a data-snooping-priced robustness neighbourhood; Connors' canonical extreme is 5/95 (he also cites 10/90); the mixed pairs (5/90, 10/95) are our robustness probe, not Connors' pairing",
                               "ADAPTATION - the transaction-cost/slippage ladder and walk-forward folds are imposed by the frozen srp-matrix-v2 protocol, not part of Connors' original discretionary description"],
               "lookahead": "RSI(2), SMA(200) and SMA(5) use only closed bars; the position is built by a causal state machine (data <= t and prior state); engine shifts positions forward one bar"},
+    "H-028": {"source": "Hull Moving Average (Alan Hull, 2005) - public indicator; surfaced via a free MQL5 market indicator (HMA Scalper Pro, product 184187; compiled, no source, no stated license). Rules RE-IMPLEMENTED from the public HMA formula; NO MT5 code used or decompiled.",
+              "indicators": ["Hull MA(55): WMA(2*WMA(close,27) - WMA(close,55), 7)"],
+              "entry_long": "HMA rising (HMA_t > HMA_{t-1})",
+              "entry_short": "HMA falling (HMA_t < HMA_{t-1})",
+              "exit": "implicit - stop-and-reverse; flips on the opposite HMA slope; flat only during warm-up",
+              "filters": "none (primary deadband = 0)",
+              "risk": "none (no stop/target); fixed full-notional; risk % NOT optimised",
+              "sizing": "single-asset, fixed full-notional long/short",
+              "assumptions": ["a reduced-lag MA (Hull) would track trend turns faster and rescue the fragile MA-trend family",
+                              "REFUTED: at fixed n=55 the Hull construction is WEAKER than SMA/EMA/WMA slope; shorter lag increased whipsaw/turnover and drawdown",
+                              "FROZEN formula: half=floor(n/2), sqrt_p=round(sqrt(n))",
+                              "SENSITIVITY ONLY (excluded from the primary): n in {20,34,89,100}, deadband in {0.05%,0.10%}",
+                              "SINGLE-ASSET SCOPE; daily bars; volume not used"],
+              "lookahead": "HMA uses only trailing closed bars; slope read on completed candles; engine shifts positions forward one bar - no repaint, no look-ahead"},
 }
 
 
