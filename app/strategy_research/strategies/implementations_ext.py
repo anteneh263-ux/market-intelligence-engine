@@ -609,6 +609,48 @@ class HullMASlopeTrendStrategy(Strategy):
         return [dict(self.default_params)]
 
 
+class VolatilityGatedTimeSeriesMomentumStrategy(Strategy):
+    """H-029 — pre-registered volatility-gated time-series momentum.
+
+    Direction is the sign of the trailing close-to-close return over the trend
+    lookback. Exposure is discrete: long/short while recent realised volatility is no
+    more than ``vol_multiplier`` times its slow trailing baseline, otherwise cash.
+    Every rolling window is trailing and the execution engine shifts the completed-bar
+    signal to the next bar.
+    """
+
+    strategy_id = "H-029"
+    declared_inputs = {"close"}
+    name = "Volatility-Gated Time-Series Momentum"
+    strategy_class = "volatility-gated-trend"
+    direction = "long_short"
+    default_params = {"trend_lookback": 252, "volatility_lookback": 60,
+                      "volatility_baseline": 252, "volatility_multiplier": 1.5}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        p = {**self.default_params, **(params or {})}
+        trend_n = int(p["trend_lookback"])
+        vol_n = int(p["volatility_lookback"])
+        baseline_n = int(p["volatility_baseline"])
+        multiplier = float(p["volatility_multiplier"])
+        c = df["close"].astype(float)
+        returns = c.pct_change()
+        fast_vol = returns.rolling(vol_n, min_periods=vol_n).std(ddof=1)
+        baseline_vol = fast_vol.rolling(baseline_n, min_periods=baseline_n).mean()
+        momentum = c / c.shift(trend_n) - 1.0
+        ready = momentum.notna() & fast_vol.notna() & baseline_vol.notna()
+        allowed = fast_vol <= multiplier * baseline_vol
+        out = pd.Series(0.0, index=df.index)
+        out[ready & allowed & (momentum > 0.0)] = 1.0
+        out[ready & allowed & (momentum < 0.0)] = -1.0
+        return out
+
+    def param_grid(self) -> List[Dict]:
+        # Frozen before the first research evaluation: 2 x 2 = four trials.
+        return self._grid(trend_lookback=[126, 252], volatility_lookback=[30, 60],
+                          volatility_baseline=[252], volatility_multiplier=[1.5])
+
+
 EXT_STRATEGIES: List[type] = [
     BollingerBandsStrategy, BollingerBandsDirectedStrategy, ConsecutiveUpDownStrategy,
     GreedyStrategy, InSideBarStrategy, KeltnerChannelsStrategy, MomentumStrategy,
@@ -619,4 +661,5 @@ EXT_STRATEGIES: List[type] = [
     AssetClassTrendFollowingStrategy, AssetClassTrendFollowingMonthlyStrategy,
     ConnorsRSI2Strategy,
     HullMASlopeTrendStrategy,
+    VolatilityGatedTimeSeriesMomentumStrategy,
 ]

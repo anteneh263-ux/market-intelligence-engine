@@ -137,7 +137,26 @@ class TrialLedger:
         return "trial:" + str(entry.get("trial_id"))
 
     def count_effective_dsr_trials(self) -> int:
-        return len({self.effective_key(e) for e in self._read() if e.get("in_dsr")})
+        return len(self._effective_keys(self._read()))
+
+    @classmethod
+    def _effective_keys(cls, entries: Sequence[Dict]) -> set[str]:
+        valid = [e for e in entries if e.get("in_dsr")]
+        explicit_groups = {(str(e.get("strategy")), str(e.get("params_hash")))
+                           for e in valid if e.get("economic_id")}
+        keys: set[str] = set()
+        for entry in valid:
+            if entry.get("economic_id"):
+                keys.add(str(entry["economic_id"]))
+                continue
+            group = (str(entry.get("strategy")), str(entry.get("params_hash")))
+            if (entry.get("trial_type") in {"candidate", "control", "param_combo"}
+                    and group in explicit_groups):
+                # The first explicit economic identity supersedes the ambiguous legacy
+                # representation for this strategy/config; history stays untouched.
+                continue
+            keys.add(cls.effective_key(entry))
+        return keys
 
     def summary(self) -> Dict:
         ents = self._read()
@@ -150,11 +169,9 @@ class TrialLedger:
             "total_trials": len(ents),
             "dsr_trials": sum(1 for e in ents if e.get("in_dsr")),
             "raw_dsr_trials": sum(1 for e in ents if e.get("in_dsr")),
-            "effective_dsr_trials": len({self.effective_key(e) for e in ents
-                                         if e.get("in_dsr")}),
+            "effective_dsr_trials": len(self._effective_keys(ents)),
             "duplicate_dsr_records": (sum(1 for e in ents if e.get("in_dsr")) -
-                                      len({self.effective_key(e) for e in ents
-                                           if e.get("in_dsr")})),
+                                      len(self._effective_keys(ents))),
             "excluded_trials": sum(1 for e in ents if not e.get("in_dsr")),
             "by_type": by_type,
             "by_status": by_status,

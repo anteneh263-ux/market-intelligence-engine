@@ -187,6 +187,16 @@ STRATEGY_SPECS: Dict[str, Dict] = {
                               "SENSITIVITY ONLY (excluded from the primary): n in {20,34,89,100}, deadband in {0.05%,0.10%}",
                               "SINGLE-ASSET SCOPE; daily bars; volume not used"],
               "lookahead": "HMA uses only trailing closed bars; slope read on completed candles; engine shifts positions forward one bar - no repaint, no look-ahead"},
+    "H-029": {"source": "Pre-registered MIE hypothesis: generic time-series momentum with a relative realised-volatility gate; original implementation, no third-party code copied.",
+              "indicators": ["trailing close return over 126 or 252 bars", "rolling return volatility over 30 or 60 bars", "252-observation trailing mean of recent volatility"],
+              "entry_long": "positive trailing momentum AND recent volatility <= 1.5 times its trailing baseline",
+              "entry_short": "negative trailing momentum AND recent volatility <= 1.5 times its trailing baseline",
+              "exit": "move to cash while volatility exceeds the gate; otherwise reverse when momentum changes sign",
+              "filters": "relative volatility gate; discrete {-1,0,+1} exposure",
+              "risk": "cash during unusually high realised volatility; frozen maximum absolute exposure 1.0",
+              "sizing": "fixed full-notional long/short when allowed, otherwise cash; no fractional sizing",
+              "assumptions": ["medium-term own-price trends persist", "unusually high recent volatility weakens trend reliability or raises drawdown", "relative volatility is more comparable across BTC, ETH, SPY and gold than one absolute volatility ceiling", "grid frozen before first evaluation: trend {126,252} x recent volatility {30,60}; baseline 252 and multiplier 1.5 fixed"],
+              "lookahead": "all returns and rolling statistics are trailing; signal uses the completed close and the engine executes next bar"},
 }
 
 

@@ -289,22 +289,22 @@ class PerMarketSource(DataSource):
         return self.by_asset.get(req.asset, empty).copy()
 
 
-def test_init_two_markets_creates_52_unique_strategy_accounts(tmp_path):
+def test_init_two_markets_creates_54_unique_strategy_accounts(tmp_path):
     df = build_candles(285)
     eng, _ = _engine(tmp_path, df, visible=280)
     res = eng.init(markets=["BTC/USD", "ETH/USD"], capital=10_000,
                    fee_bps=FEE_BPS, slippage_bps=SLIP_BPS, warmup=280)
     assert res["markets"] == ["BTC/USD", "ETH/USD"]
-    assert res["strategy_accounts"] == 52          # 26 strategies x 2 markets
+    assert res["strategy_accounts"] == 54          # 27 paper-eligible strategies x 2 markets
     assert res["benchmark_accounts"] == 2          # one buy-and-hold per market
     st = json.load(open(eng.state_path))["accounts"]
     strat_keys = [k for k in st if not k.startswith(BUY_AND_HOLD_ID)]
     bench_keys = [k for k in st if k.startswith(BUY_AND_HOLD_ID)]
-    assert len(strat_keys) == 52 and len(set(strat_keys)) == 52   # unique
+    assert len(strat_keys) == 54 and len(set(strat_keys)) == 54   # unique
     assert len(bench_keys) == 2
     # both markets actually represented
-    assert sum(k.endswith("BTC-USD") for k in strat_keys) == 26
-    assert sum(k.endswith("ETH-USD") for k in strat_keys) == 26
+    assert sum(k.endswith("BTC-USD") for k in strat_keys) == 27
+    assert sum(k.endswith("ETH-USD") for k in strat_keys) == 27
 
 
 def test_missing_market_raises_not_silent(tmp_path):
