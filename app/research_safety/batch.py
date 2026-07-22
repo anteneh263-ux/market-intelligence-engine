@@ -101,6 +101,42 @@ def _data_sha256(assets: Sequence[str], timeframe: str, provider: str, pk: Dict)
     return digest.hexdigest()
 
 
+def _signal_sha256(strategy, params: Dict, assets: Sequence[str], timeframe: str,
+                   provider: str, pk: Dict) -> str:
+    """Hash economic behaviour, so documentation-only code edits do not create trials."""
+    digest = hashlib.sha256()
+    source = get_provider(provider, **pk)
+    for asset in sorted(assets):
+        digest.update(asset.encode())
+        try:
+            df = source.get(DataRequest(asset=asset, timeframe=timeframe)).df
+            pos = strategy.positions(df, params).reindex(df.index).fillna(0.0)
+            digest.update(pd.util.hash_pandas_object(pos, index=True).values.tobytes())
+        except Exception as exc:
+            digest.update(f"ERROR:{type(exc).__name__}:{exc}".encode())
+    return digest.hexdigest()
+
+
+def economic_trial_id(strategy_id: str, params: Dict, assets: Sequence[str],
+                      timeframe: str, matrix: str, cost_bps: float,
+                      slippage_bps: float, provider: str, data_sha256: str,
+                      signal_sha256: str) -> str:
+    core = {"strategy": strategy_id, "params": params, "assets": sorted(assets),
+            "timeframe": timeframe, "matrix": matrix, "cost_bps": float(cost_bps),
+            "slippage_bps": float(slippage_bps), "provider": provider,
+            "data_sha256": data_sha256, "signal_sha256": signal_sha256}
+    blob = json.dumps(core, sort_keys=True, separators=(",", ":"))
+    return "EC-" + hashlib.sha256(blob.encode()).hexdigest()[:20]
+
+
+def _parameter_trial_sharpes(rep) -> List[float]:
+    """One OOS Sharpe observation per parameter configuration, averaged over assets."""
+    grids = [list(x.get("sr_trials", [])) for x in rep.family_dsr_inputs]
+    width = max((len(x) for x in grids), default=0)
+    return [float(sum(x[j] for x in grids if j < len(x)) /
+                  sum(1 for x in grids if j < len(x))) for j in range(width)]
+
+
 def _row(strategy_id: str, *, status: str, headline: Optional[Dict] = None,
          control_verdict: Optional[str] = None, promotion_decision: Optional[str] = None,
          input_audit_promotable=None, in_dsr: bool = False, trial_id: str = "",
@@ -168,6 +204,11 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
 
     h = rep.headline
     strat = get_strategy(sid)
+    default_signal_hash = _signal_sha256(strat, dict(strat.default_params), assets,
+                                         timeframe, provider, pk)
+    candidate_economic_id = economic_trial_id(
+        sid, dict(strat.default_params), assets, timeframe, matrix_name, cost_bps,
+        slippage_bps, provider, data_sha256, default_signal_hash)
 
     # 2) input audit --------------------------------------------------------- #
     audit_promotable = None
@@ -191,7 +232,13 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
                                        cost_bps, slippage_bps, trial_type="control",
                                        provider=provider, data_sha256=data_sha256)
         ledger.record(control_id, "control", status=STATUS_VALID,
-                      params=dict(get_strategy(control_id).default_params), trial_id=control_tid)
+                      params=dict(get_strategy(control_id).default_params), trial_id=control_tid,
+                      economic_id=economic_trial_id(
+                          control_id, dict(get_strategy(control_id).default_params), assets,
+                          timeframe, matrix_name, cost_bps, slippage_bps, provider,
+                          data_sha256, _signal_sha256(get_strategy(control_id),
+                          dict(get_strategy(control_id).default_params), assets,
+                          timeframe, provider, pk)))
     except Exception as e:
         control = None
         control_verdict = f"error:{type(e).__name__}"
@@ -210,13 +257,16 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
 
     # 5) record exactly one valid candidate trial (idempotent on tid) -------- #
     ledger.record(sid, "candidate", status=STATUS_VALID, params=dict(strat.default_params),
-                  trial_id=tid)
+                  trial_id=tid, economic_id=candidate_economic_id)
     for params in strat.param_grid():
         combo_tid = content_trial_id(sid, assets, timeframe, matrix_name, cost_bps,
                                      slippage_bps, trial_type="param_combo", params=params,
                                      provider=provider, data_sha256=data_sha256)
         ledger.record(sid, "param_combo", status=STATUS_VALID, params=dict(params),
-                      trial_id=combo_tid)
+                      trial_id=combo_tid, economic_id=economic_trial_id(
+                          sid, dict(params), assets, timeframe, matrix_name, cost_bps,
+                          slippage_bps, provider, data_sha256,
+                          _signal_sha256(strat, dict(params), assets, timeframe, provider, pk)))
 
     row = _row(sid, status=rep.verdict, headline=h, control_verdict=control_verdict,
                promotion_decision=decision, input_audit_promotable=audit_promotable,
@@ -262,13 +312,19 @@ def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
     # Freeze one final family-wide trial budget, then apply it identically to every
     # candidate. This deliberately happens after all candidates, controls and parameter
     # combinations have been registered.
-    final_trial_count = ledger.count_dsr_trials()
-    family_sr_trials = [
-        float(item["oos_sharpe"])
-        for row in rows if row.get("status") != "technical_failure"
-        for item in row["_evaluation_report"].condition_rows
-        if item.get("cost_bps") == cost_bps and item.get("slippage_bps") == slippage_bps
-    ]
+    final_raw_trial_count = ledger.count_dsr_trials()
+    final_trial_count = ledger.count_effective_dsr_trials()
+    family_sr_trials = [sr for row in rows
+                        if row.get("status") != "technical_failure"
+                        for sr in _parameter_trial_sharpes(row["_evaluation_report"])]
+    if family_sr_trials:
+        try:
+            control_rep = evaluate(EvalRequest(strategy_id=control_id, provider=provider,
+                                   assets=list(assets), timeframe=timeframe,
+                                   matrix_version=m.version), m, pk)
+            family_sr_trials.extend(_parameter_trial_sharpes(control_rep))
+        except Exception:
+            pass
     for row in rows:
         rep = row.pop("_evaluation_report", None)
         if rep is None:
@@ -321,6 +377,9 @@ def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
         "summary": summary,
         "ledger": ledger.summary(),
         "final_dsr_trial_count": final_trial_count,
+        "final_raw_dsr_trial_count": final_raw_trial_count,
+        "final_effective_dsr_trial_count": final_trial_count,
+        "family_sharpe_population_count": len(family_sr_trials),
         "note": ("Research only — no forward test was started, no broker, no orders, no "
                  "private keys. A verdict/decision is a statement about evidence, not advice."),
     }
@@ -344,7 +403,7 @@ def format_batch_human(report: Dict) -> str:
                  f"matrix={report['matrix']}  assets={','.join(report['assets'])}  "
                  f"cost={report['cost_bps']}bps slip={report['slippage_bps']}bps")
     hdr = (f"{'strategy':<8} {'status':<15} {'sharpe':>8} {'return':>9} {'maxDD':>7} "
-           f"{'trades':>6} {'DSR':>6} {'control':<15} {'promo':<8} reasons")
+           f"{'trades':>6} {'sDSR':>6} {'fDSR':>6} {'control':<15} {'promo':<8} reasons")
     lines.append(hdr)
     lines.append("-" * len(hdr))
 
@@ -358,7 +417,8 @@ def format_batch_human(report: Dict) -> str:
             f"{r['strategy_id']:<8} {str(r['status']):<15} "
             f"{_f(r['oos_sharpe'], 8)} {_f(r['total_return'], 9)} "
             f"{_f(r['max_drawdown'], 7, 3)} {int(r['num_trades'] or 0):>6} "
-            f"{_f(r['dsr'], 6, 3)} {str(r['control_verdict'] or '—'):<15} "
+            f"{_f(r.get('strategy_dsr', r.get('dsr')), 6, 3)} "
+            f"{_f(r.get('family_dsr'), 6, 3)} {str(r['control_verdict'] or '—'):<15} "
             f"{str(r['promotion_decision'] or '—'):<8} {reasons}")
     s = report["summary"]
     lines.append("-" * len(hdr))
@@ -366,8 +426,9 @@ def format_batch_human(report: Dict) -> str:
                  f"{s['n_technical_failures']} technical failures · "
                  f"promote {s['n_promote']} / hold {s['n_hold']} / reject {s['n_reject']}")
     lg = report["ledger"]
-    lines.append(f"ledger: {lg['total_trials']} trials · {lg['dsr_trials']} count toward DSR · "
-                 f"{lg['excluded_trials']} excluded")
+    lines.append(f"ledger: {lg['total_trials']} records · {lg['raw_dsr_trials']} raw DSR · "
+                 f"{lg['effective_dsr_trials']} effective · "
+                 f"{lg['duplicate_dsr_records']} duplicates · {lg['excluded_trials']} excluded")
     if report.get("latest_path"):
         lines.append(f"report: {report['latest_path']}")
     lines.append("Research only — no forward test started, no broker, no orders.")
