@@ -45,6 +45,7 @@ pre-registered as a frozen set of N = 23 on 2026-07-08 (see
 | H-025 | Asset Class Trend Following | Trend-following (200d SMA, long/cash) | STEP 1–5 done (v2) | Not Supported (v2) | 0.917 | 0.914 | [dossier](./H-025_asset_class_trend_following.md) |
 | H-026 | Asset Class Trend Following (Monthly) | Trend-following (10-mo SMA, monthly) | STEP 1–5 done (v2) | Inconclusive (v2) | 0.750 | 1.000 | [dossier](./H-026_asset_class_trend_following_monthly.md) |
 | H-027 | Connors RSI-2 Strategy | Mean-reversion (RSI-2 + 200-SMA filter) | STEP 1–5 done (v2) | Not Supported (v2) | 0.083 | 0.500 | [dossier](./H-027_connors_rsi_2_strategy.md) |
+| H-028 | Hull MA Slope Trend | Trend-following (Hull MA slope, n=55) | STEP 1–5 done (v2) | Graveyard (v2) | 0.083 | 0.750 | [dossier](./H-028_hull_ma_slope_trend.md) |
 
 *Universe frozen at N = 23 (H-002…H-024). Adding a strategy later opens a **new** registration with
 its own budget. Update `verdict`, `robustness`, `generalization` as each reaches STEP 5.*
@@ -57,13 +58,21 @@ underpowered). Notably H-025's high robustness (0.917) is the first partial **co
 M-001 — a slow, long-only trend filter with a cash exit behaves very differently from the fragile
 fast long/short crossovers.*
 
+*H-028 (**Hull MA Slope Trend**, added 2026-07-22, imported family surfaced on the MQL5 free market)
+directly tested whether a **reduced-lag** moving average rescues the fragile MA-trend family (M-001).
+It does **not**: verdict **Graveyard** (OOS max drawdown 64%, beats neither buy-and-hold nor matched
+random-timing). At a fixed n=55 the Hull construction was **weaker than plain SMA, EMA and WMA slope**,
+and shorter lag monotonically increased whipsaw, turnover and drawdown. This **sharpens M-001**: the
+fragility is intrinsic to the MA-trend family, and lower lag makes it worse, not better. Documentation
+only — not an active strategy, not connected to paper trading or a broker.*
+
 ---
 
 ## Meta-hypotheses (STEP 7 — grow with the corpus)
 
 | meta_id | statement | member strategies | status |
 |---|---|---|---|
-| **M-001** | Lagging trend/crossover rules show low OOS robustness once search cost is priced in. | H-001, H-010, H-012, H-013, H-015, H-022, H-025, H-026 | 7/8 tested — 6 support / 0 contradict |
+| **M-001** | Lagging trend/crossover rules show low OOS robustness once search cost is priced in. | H-001, H-010, H-012, H-013, H-015, H-022, H-025, H-026, H-028 | 8/9 tested — 7 support / 0 contradict |
 | **M-002** | Simple price-action momentum rules do not survive costs/turnover. | H-002, H-006, H-007, H-011 | 4/4 tested — 4 support / 0 contradict |
 | **M-003** | Mean-reversion oscillator/band rules are strongly regime-dependent. | H-003, H-004, H-009, H-020, H-021, H-027 | 6/6 tested — 6 support / 0 contradict |
 | **M-004** | Breakout/volatility rules concentrate their edge in **trending** regimes (refined 2026-07-08: on 5 assets the edge was trend-concentrated, **not** crisis-concentrated — crisis Sharpe ≈ 0). | H-005, H-018, H-019, H-024 | 4/4 tested — 4 support / 0 contradict |
@@ -103,7 +112,7 @@ real strategy is tested and fails. A full graveyard is a sign the platform is wo
 
 | strategy_id | name | cause of death |
 |---|---|---|
-| *(none yet)* | | |
+| H-028 | Hull MA Slope Trend | reduced-lag MA increased whipsaw/cost; 64% OOS max drawdown; weaker than SMA/EMA/WMA slope (refutes the reduced-lag rescue of M-001) |
 
 ---
 
