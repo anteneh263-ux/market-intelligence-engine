@@ -29,6 +29,10 @@ class Strategy(abc.ABC):
     strategy_class: str = "base"
     direction: str = "long_short"          # "long_only" | "long_short"
     default_params: Dict = {}
+    # OPTIONAL, additive: the OHLCV columns this strategy DECLARES it uses. Used only by
+    # the research-safety input audit / promotion gate; None = undeclared (default,
+    # backward-compatible — existing strategies and their results are unaffected).
+    declared_inputs = None                  # type: set[str] | None
 
     @abc.abstractmethod
     def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:

@@ -14,6 +14,11 @@ The platform is organised as six modules:
 
 See `docs/ARCHITECTURE.md` for the full design.
 
+Research-safety gates (target-only control, full DSR trial-ledger, declared-vs-actual
+input audit, and a pre-paper-trading promotion gate) are documented in
+`docs/RESEARCH_SAFETY.md` — additive tools that reduce false positives without changing
+any existing evaluation result. Research only; no live trading or broker.
+
 ---
 
 ## Requirements

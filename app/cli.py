@@ -61,6 +61,8 @@ def main(argv=None) -> int:
     p = sub.add_parser("kb"); p.add_argument("action"); p.add_argument("target", nargs="?")
     from app.paper.cli_paper import add_paper_parser, run_paper
     add_paper_parser(sub)
+    from app.research_safety.cli_safety import add_safety_parser, run_safety
+    add_safety_parser(sub)
 
     args = ap.parse_args(argv)
     kb = KnowledgeBase()
@@ -147,6 +149,9 @@ def main(argv=None) -> int:
 
     if args.cmd == "paper":
         return run_paper(args)
+
+    if args.cmd == "safety":
+        return run_safety(args)
 
     ap.print_help(); return 0
 
