@@ -27,6 +27,7 @@ class BarUpDnStrategy(Strategy):
     effectively a 1-bar momentum/noise rule and a natural null-ish baseline."""
 
     strategy_id = "H-002"
+    declared_inputs = {"close"}
     name = "BarUpDn Strategy"
     strategy_class = "price-action-momentum"
     direction = "long_short"
@@ -51,6 +52,7 @@ class MACDStrategy(Strategy):
     (i.e. MACD line crossing its signal line). Long/short, always in market."""
 
     strategy_id = "H-010"
+    declared_inputs = {"close"}
     name = "MACD Strategy"
     strategy_class = "trend-crossover"
     direction = "long_short"
@@ -79,6 +81,7 @@ class RSIStrategy(Strategy):
     A classic mean-reversion oscillator rule. Long/short, held until opposite."""
 
     strategy_id = "H-020"
+    declared_inputs = {"close"}
     name = "RSI Strategy"
     strategy_class = "mean-reversion-oscillator"
     direction = "long_short"
@@ -106,6 +109,7 @@ class ChannelBreakOutStrategy(Strategy):
     Stop-and-reverse breakout. Long/short."""
 
     strategy_id = "H-005"
+    declared_inputs = {"high", "low", "close"}
     name = "ChannelBreakOutStrategy"
     strategy_class = "breakout"
     direction = "long_short"

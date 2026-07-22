@@ -26,9 +26,12 @@ Research only: no live trading, no broker, no order execution, no private keys.
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import os
 from typing import Callable, Dict, List, Optional, Sequence
+
+import pandas as pd
 
 from app.strategy_research import EvalRequest, MATRICES, evaluate
 from app.strategy_research.dossier import _KB_ROOT
@@ -49,14 +52,31 @@ _ROW_KEYS = ("strategy_id", "status", "oos_sharpe", "total_return", "max_drawdow
 
 def content_trial_id(strategy_id: str, assets: Sequence[str], timeframe: str,
                      matrix: str, cost_bps: float, slippage_bps: float,
-                     trial_type: str = "candidate") -> str:
+                     trial_type: str = "candidate", *, params: Optional[Dict] = None,
+                     provider: str = "csv", start: Optional[str] = None,
+                     end: Optional[str] = None, data_sha256: str = "unavailable",
+                     rules_version: str = "safety-v2") -> str:
     """Deterministic, content-derived trial id. Identical batch settings for a strategy
     always yield the same id, which is what makes the ledger idempotent on re-run."""
+    try:
+        strategy = get_strategy(strategy_id)
+        effective_params = dict(strategy.default_params if params is None else params)
+        source_path = inspect.getsourcefile(type(strategy))
+        if source_path:
+            with open(source_path, "rb") as source_file:
+                code_hash = hashlib.sha256(source_file.read()).hexdigest()
+        else:
+            code_hash = hashlib.sha256(inspect.getsource(type(strategy)).encode()).hexdigest()
+    except Exception:
+        effective_params = dict(params or {})
+        code_hash = "unavailable"
     core = {"strategy": strategy_id, "assets": sorted(assets), "timeframe": timeframe,
             "matrix": matrix, "cost_bps": float(cost_bps), "slippage_bps": float(slippage_bps),
-            "trial_type": trial_type}
+            "trial_type": trial_type, "params": effective_params, "provider": provider,
+            "start": start, "end": end, "rules_version": rules_version,
+            "strategy_code_sha256": code_hash, "data_sha256": data_sha256}
     blob = json.dumps(core, sort_keys=True, separators=(",", ":"))
-    return "TC-" + hashlib.sha1(blob.encode()).hexdigest()[:12]
+    return "TC-" + hashlib.sha256(blob.encode()).hexdigest()[:16]
 
 
 def _round(x) -> Optional[float]:
@@ -64,6 +84,21 @@ def _round(x) -> Optional[float]:
         return round(float(x), 6)
     except (TypeError, ValueError):
         return None
+
+
+def _data_sha256(assets: Sequence[str], timeframe: str, provider: str, pk: Dict) -> str:
+    """Deterministic fingerprint of the exact prepared frames presented to evaluation."""
+    digest = hashlib.sha256()
+    source = get_provider(provider, **pk)
+    for asset in sorted(assets):
+        digest.update(asset.encode())
+        try:
+            df = source.get(DataRequest(asset=asset, timeframe=timeframe)).df
+            digest.update("|".join(map(str, df.columns)).encode())
+            digest.update(pd.util.hash_pandas_object(df, index=True).values.tobytes())
+        except Exception as exc:
+            digest.update(f"ERROR:{type(exc).__name__}:{exc}".encode())
+    return digest.hexdigest()
 
 
 def _row(strategy_id: str, *, status: str, headline: Optional[Dict] = None,
@@ -109,8 +144,9 @@ def _discover(control_id: str, explicit: Optional[Sequence[str]]) -> List[str]:
 
 def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: str,
                  provider: str, pk: Dict, control_id: str, ledger: TrialLedger,
-                 cost_bps: float, slippage_bps: float) -> Dict:
-    tid = content_trial_id(sid, assets, timeframe, matrix_name, cost_bps, slippage_bps)
+                 cost_bps: float, slippage_bps: float, data_sha256: str) -> Dict:
+    tid = content_trial_id(sid, assets, timeframe, matrix_name, cost_bps, slippage_bps,
+                           provider=provider, data_sha256=data_sha256)
 
     # 1) frozen evaluation (calculations unchanged) --------------------------- #
     try:
@@ -135,21 +171,29 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
 
     # 2) input audit --------------------------------------------------------- #
     audit_promotable = None
+    audit = None
     declared = getattr(strat, "declared_inputs", None)
     if declared is not None:
         try:
             df0 = get_provider(provider, **pk).get(
                 DataRequest(asset=rep.assets_evaluated[0], timeframe=timeframe)).df
-            audit_promotable = bool(run_audit(strat, df0, declared=declared)["promotable"])
+            audit = run_audit(strat, df0, declared=declared)
+            audit_promotable = bool(audit["promotable"])
         except Exception:
             audit_promotable = None
 
     # 3) target-only control comparison -------------------------------------- #
     try:
-        control_verdict = compare(sid, control_id, assets, timeframe=timeframe,
-                                  matrix=matrix_name, provider=provider,
-                                  provider_kwargs=pk)["verdict"]
+        control = compare(sid, control_id, assets, timeframe=timeframe,
+                          matrix=matrix_name, provider=provider, provider_kwargs=pk)
+        control_verdict = control["verdict"]
+        control_tid = content_trial_id(control_id, assets, timeframe, matrix_name,
+                                       cost_bps, slippage_bps, trial_type="control",
+                                       provider=provider, data_sha256=data_sha256)
+        ledger.record(control_id, "control", status=STATUS_VALID,
+                      params=dict(get_strategy(control_id).default_params), trial_id=control_tid)
     except Exception as e:
+        control = None
         control_verdict = f"error:{type(e).__name__}"
 
     # 4) promotion gate ------------------------------------------------------ #
@@ -167,10 +211,29 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
     # 5) record exactly one valid candidate trial (idempotent on tid) -------- #
     ledger.record(sid, "candidate", status=STATUS_VALID, params=dict(strat.default_params),
                   trial_id=tid)
+    for params in strat.param_grid():
+        combo_tid = content_trial_id(sid, assets, timeframe, matrix_name, cost_bps,
+                                     slippage_bps, trial_type="param_combo", params=params,
+                                     provider=provider, data_sha256=data_sha256)
+        ledger.record(sid, "param_combo", status=STATUS_VALID, params=dict(params),
+                      trial_id=combo_tid)
 
-    return _row(sid, status=rep.verdict, headline=h, control_verdict=control_verdict,
-                promotion_decision=decision, input_audit_promotable=audit_promotable,
-                in_dsr=True, trial_id=tid, failure_reasons=failing)
+    row = _row(sid, status=rep.verdict, headline=h, control_verdict=control_verdict,
+               promotion_decision=decision, input_audit_promotable=audit_promotable,
+               in_dsr=True, trial_id=tid, failure_reasons=failing)
+    row.update({"strategy_dsr": _round(h.get("dsr")), "family_dsr": None,
+                "sharpe_per_bar": _round(h.get("oos_sharpe")),
+                "sharpe_annual": _round(h.get("oos_sharpe_annual")),
+                "sharpe_unit": h.get("sharpe_unit", "per_bar"),
+                "bar_frequency": h.get("bar_frequency", timeframe),
+                "periods_per_year": h.get("periods_per_year"),
+                "return_aggregation": h.get("return_aggregation"),
+                "input_audit": audit, "target_control": control,
+                "promotion_eligible": rep.verdict == "Supported",
+                "eligibility_reason": ("evaluation verdict Supported" if rep.verdict == "Supported"
+                                       else f"evaluation verdict {rep.verdict}"),
+                "_evaluation_report": rep})
+    return row
 
 
 def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
@@ -190,10 +253,49 @@ def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
 
     ledger = TrialLedger(root=root, clock=clock)
     ids = _discover(control_id, strategies)
+    data_sha256 = _data_sha256(assets, timeframe, provider, pk)
 
     matrix_name = m.version                    # canonical id (stable across 'v2' alias)
     rows = [_process_one(sid, assets, timeframe, m, matrix_name, provider, pk, control_id,
-                         ledger, cost_bps, slippage_bps) for sid in ids]
+                         ledger, cost_bps, slippage_bps, data_sha256) for sid in ids]
+
+    # Freeze one final family-wide trial budget, then apply it identically to every
+    # candidate. This deliberately happens after all candidates, controls and parameter
+    # combinations have been registered.
+    final_trial_count = ledger.count_dsr_trials()
+    family_sr_trials = [
+        float(item["oos_sharpe"])
+        for row in rows if row.get("status") != "technical_failure"
+        for item in row["_evaluation_report"].condition_rows
+        if item.get("cost_bps") == cost_bps and item.get("slippage_bps") == slippage_bps
+    ]
+    for row in rows:
+        rep = row.pop("_evaluation_report", None)
+        if rep is None:
+            row.update({"strategy_dsr": row.get("dsr"), "family_dsr": None,
+                        "promotion_eligible": False,
+                        "eligibility_reason": "technical failure",
+                        "gate_statuses": {}, "not_available_reasons": []})
+            continue
+        family_values = [ledger.family_dsr(x["returns"], family_sr_trials)["dsr"]
+                         for x in rep.family_dsr_inputs]
+        family_dsr = float(sum(family_values) / len(family_values)) if family_values else 0.0
+        row["family_dsr"] = _round(family_dsr)
+        promo = evaluate_promotion(row["strategy_id"], assets, control_id=control_id,
+                                   timeframe=timeframe, matrix=matrix_name, provider=provider,
+                                   provider_kwargs=pk, write=False, dsr_override=family_dsr)
+        row["gate_statuses"] = {g["gate"]: g["status"] for g in promo["gates"]}
+        row["promotion_gates"] = promo["gates"]
+        row["not_available_reasons"] = [g["gate"] for g in promo["gates"]
+                                        if g["status"] == "NOT_AVAILABLE"]
+        hard_failures = [g["gate"] for g in promo["gates"] if g["status"] == "FAIL"]
+        if rep.verdict == "Supported":
+            row["promotion_decision"] = promo["decision"]
+        elif rep.verdict == "Inconclusive" and not hard_failures:
+            row["promotion_decision"] = "HOLD"
+        else:
+            row["promotion_decision"] = "REJECT"
+        row["failure_reasons"] = hard_failures + row["not_available_reasons"]
 
     decisions = [r["promotion_decision"] for r in rows]
     summary = {
@@ -211,12 +313,14 @@ def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
         "timeframe": timeframe,
         "matrix": m.version,
         "provider": provider,
+        "data_sha256": data_sha256,
         "cost_bps": cost_bps,
         "slippage_bps": slippage_bps,
         "control_id": control_id,
         "strategies": rows,
         "summary": summary,
         "ledger": ledger.summary(),
+        "final_dsr_trial_count": final_trial_count,
         "note": ("Research only — no forward test was started, no broker, no orders, no "
                  "private keys. A verdict/decision is a statement about evidence, not advice."),
     }

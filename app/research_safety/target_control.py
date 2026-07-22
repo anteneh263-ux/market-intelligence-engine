@@ -86,16 +86,23 @@ def compare(candidate_id: str, control_id: str, assets: Sequence[str],
 
     if d_sharpe > sharpe_tol:
         verdict = "candidate_wins"
+        verdict_reason = f"per-bar Sharpe delta {d_sharpe:.6f} exceeds +{sharpe_tol:.6f}"
     elif d_sharpe < -sharpe_tol:
         verdict = "control_wins"
+        verdict_reason = f"per-bar Sharpe delta {d_sharpe:.6f} is below -{sharpe_tol:.6f}"
     else:
         verdict = "inconclusive"
+        verdict_reason = (f"per-bar Sharpe delta {d_sharpe:.6f} is within "
+                          f"±{sharpe_tol:.6f}")
 
     return {
         "kind": "target_control_comparison",
         "note": "Control comparison only - NOT a causal claim.",
         "candidate_id": candidate_id, "control_id": control_id,
         "assets": list(assets), "timeframe": timeframe, "matrix": m.version,
+        "settings": {"provider": provider, "provider_kwargs": pk,
+                     "cost_bps": m.headline_cost_bps,
+                     "slippage_bps": m.headline_slippage_bps},
         "candidate": {"oos_sharpe": ch.get("oos_sharpe"),
                       "oos_sharpe_annual": ch.get("oos_sharpe_annual"),
                       "total_return": c_ret, "max_drawdown": ch.get("max_drawdown"),
@@ -108,5 +115,7 @@ def compare(candidate_id: str, control_id: str, assets: Sequence[str],
                   "total_return": (round(d_ret, 6) if d_ret is not None else None),
                   "max_drawdown": round(d_dd, 6)},
         "sharpe_tolerance": sharpe_tol,
+        "sharpe_unit": "per_bar",
+        "verdict_reason": verdict_reason,
         "verdict": verdict,
     }

@@ -73,7 +73,7 @@ def evaluate_promotion(strategy_id: str, assets: Sequence[str], *,
                        declared: Optional[Set[str]] = None,
                        central: Optional[Set[str]] = None,
                        thresholds: Optional[Dict] = None, root: Optional[str] = None,
-                       write: bool = True) -> Dict:
+                       write: bool = True, dsr_override: Optional[float] = None) -> Dict:
     th = {**DEFAULT_THRESHOLDS, **(thresholds or {})}
     m = MATRICES.get(matrix, MATRICES["v2"])
     pk = provider_kwargs or {}
@@ -108,9 +108,12 @@ def evaluate_promotion(strategy_id: str, assets: Sequence[str], *,
                        {"headline_cost_bps": m.headline_cost_bps, "headline_slippage_bps": m.headline_slippage_bps},
                        "evaluated at the headline cost + slippage", "Frozen cost/slippage ladder applied."))
     # 6) DSR / overfitting
-    dsr = float(h.get("dsr", 0.0) or 0.0)
+    strategy_dsr = float(h.get("dsr", 0.0) or 0.0)
+    dsr = float(dsr_override) if dsr_override is not None else strategy_dsr
     gates.append(_gate("dsr_overfitting", GateStatus.PASS if dsr >= th["dsr"] else GateStatus.FAIL,
-                       round(dsr, 4), f">= {th['dsr']}", "Deflated Sharpe clears the overfitting bar."))
+                       {"family_dsr": round(dsr, 4), "strategy_dsr": round(strategy_dsr, 4),
+                        "source": "trial_ledger" if dsr_override is not None else "strategy_grid"},
+                       f">= {th['dsr']}", "Deflated Sharpe clears the overfitting bar."))
 
     # data frame for audit + causality checks
     asset0 = (rep.assets_evaluated or list(assets))[0]
@@ -137,8 +140,14 @@ def evaluate_promotion(strategy_id: str, assets: Sequence[str], *,
     else:
         tc = compare(strategy_id, control_id, assets, timeframe=timeframe, matrix=matrix,
                      provider=provider, provider_kwargs=pk)
-        gates.append(_gate("target_control", GateStatus.PASS if tc["verdict"] == "candidate_wins" else GateStatus.FAIL,
-                           tc["verdict"], "candidate_wins", "Candidate must beat a target-only control."))
+        tc_status = (GateStatus.PASS if tc["verdict"] == "candidate_wins" else
+                     GateStatus.NOT_AVAILABLE if tc["verdict"] == "inconclusive" else
+                     GateStatus.FAIL)
+        gates.append(_gate("target_control", tc_status,
+                           {"verdict": tc["verdict"], "delta": tc["delta"],
+                            "tolerance": tc["sharpe_tolerance"],
+                            "unit": tc.get("sharpe_unit", "per_bar")},
+                           "candidate_wins", "Candidate must beat a target-only control."))
     # 9) paper vs backtest signal match on a historical tail
     k_tail = max(len(df0) - 3, 50)
     causal_tail = _causal_ok(strat, df0, k_tail)
