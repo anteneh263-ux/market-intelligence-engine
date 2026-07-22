@@ -74,7 +74,7 @@ def test_equal_evaluation_settings(tmp_path):
     for r in rep["strategies"]:
         assert r["trial_id"] == content_trial_id(
             r["strategy_id"], rep["assets"], rep["timeframe"], rep["matrix"],
-            rep["cost_bps"], rep["slippage_bps"])
+            rep["cost_bps"], rep["slippage_bps"], data_sha256=rep["data_sha256"])
 
 
 # --------------------------------------------------------------------------- #
@@ -125,7 +125,7 @@ def test_idempotent_rerun(tmp_path):
     n1 = len(TrialLedger(root=str(tmp_path)).entries())
     b = run_safety_batch(["BTC/USD"], **args)                 # identical re-run
     n2 = len(TrialLedger(root=str(tmp_path)).entries())
-    assert n1 == 2 and n2 == 2                                 # no duplication
+    assert n1 == n2 and n1 > 2                                 # controls/param combos included once
     assert [r["trial_id"] for r in a["strategies"]] == [r["trial_id"] for r in b["strategies"]]
 
 

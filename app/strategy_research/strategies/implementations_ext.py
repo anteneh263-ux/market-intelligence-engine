@@ -114,6 +114,7 @@ class BollingerBandsStrategy(Strategy):
     Long when close crosses **up through** the lower band (bounce); short when it
     crosses **down through** the upper band."""
     strategy_id="H-003"; name="Bollinger Bands Strategy"; strategy_class="mean-reversion-bands"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"length":20,"mult":2.0}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; c=df["close"]
@@ -131,6 +132,7 @@ class BollingerBandsDirectedStrategy(Strategy):
     direction — long when close breaks **above** the upper band, short when it
     breaks **below** the lower band."""
     strategy_id="H-004"; name="Bollinger Bands Strategy directed"; strategy_class="mean-reversion-bands"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"length":20,"mult":2.0}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; c=df["close"]
@@ -147,6 +149,7 @@ class ConsecutiveUpDownStrategy(Strategy):
     """H-006 Consecutive Up/Down: long after N consecutive up closes, short after
     N consecutive down closes (momentum)."""
     strategy_id="H-006"; name="Consecutive Up/Down Strategy"; strategy_class="price-action-momentum"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"n":3}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; n=int(p["n"]); c=df["close"]
@@ -162,6 +165,7 @@ class GreedyStrategy(Strategy):
     """H-007 Greedy: follow the bar body — long on an up-body bar (close>open),
     short on a down-body bar (close<open)."""
     strategy_id="H-007"; name="Greedy Strategy"; strategy_class="price-action-momentum"
+    declared_inputs={"open", "close"}
     direction="long_short"; default_params={}
     def positions(self, df, params=None):
         sig=pd.Series(np.nan,index=df.index)
@@ -174,6 +178,7 @@ class InSideBarStrategy(Strategy):
     compression; trade its break — long when a later close exceeds the mother
     bar's high, short when it breaks the low."""
     strategy_id="H-008"; name="InSide Bar Strategy"; strategy_class="bar-pattern"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={}
     def positions(self, df, params=None):
         inside=(df["high"]<df["high"].shift(1))&(df["low"]>df["low"].shift(1))
@@ -188,6 +193,7 @@ class KeltnerChannelsStrategy(Strategy):
     """H-009 Keltner Channels (breakout): basis=EMA(20), band=mult·ATR(10).
     Long when close breaks above the upper channel, short below the lower."""
     strategy_id="H-009"; name="Keltner Channels Strategy"; strategy_class="mean-reversion-bands"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"length":20,"atr_len":10,"mult":2.0}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; c=df["close"]
@@ -204,6 +210,7 @@ class MomentumStrategy(Strategy):
     """H-011 Momentum: mom = close − close[len]. Long when mom crosses above 0,
     short when it crosses below."""
     strategy_id="H-011"; name="Momentum Strategy"; strategy_class="price-action-momentum"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"length":12}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}
@@ -218,6 +225,7 @@ class MovingAvg2LineCrossStrategy(Strategy):
     """H-012 MovingAvg 2-Line Cross: fast SMA vs slow SMA. Long on fast-over-slow,
     short on fast-under-slow (dual-MA crossover)."""
     strategy_id="H-012"; name="MovingAvg2Line Cross"; strategy_class="trend-crossover"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"fast":9,"slow":18}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; c=df["close"]
@@ -232,6 +240,7 @@ class MovingAvgCrossStrategy(Strategy):
     """H-013 MovingAvg Cross: price vs a single SMA. Long when close crosses above
     the MA, short when below."""
     strategy_id="H-013"; name="MovingAvg Cross"; strategy_class="trend-crossover"
+    declared_inputs={"close"}
     direction="long_short"; default_params={"length":9}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; c=df["close"]
@@ -246,6 +255,7 @@ class OutSideBarStrategy(Strategy):
     """H-014 Outside Bar: an outside/engulfing bar (high>high[1] and low<low[1]);
     trade its direction — long if it closed up, short if it closed down."""
     strategy_id="H-014"; name="OutSide Bar Strategy"; strategy_class="bar-pattern"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={}
     def positions(self, df, params=None):
         outside=(df["high"]>df["high"].shift(1))&(df["low"]<df["low"].shift(1))
@@ -259,6 +269,7 @@ class ParabolicSARStrategy(Strategy):
     """H-015 Parabolic SAR: long while price is above the SAR (up-trend), short
     while below (down-trend); flips on the SAR reversal."""
     strategy_id="H-015"; name="Parabolic SAR Strategy"; strategy_class="trend-following"
+    declared_inputs={"high", "low"}
     direction="long_short"; default_params={"af0":0.02,"step":0.02,"max":0.2}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}
@@ -269,6 +280,7 @@ class PivotExtensionStrategy(Strategy):
     """H-016 Pivot Extension: break beyond the recent confirmed pivot high → long,
     below the recent pivot low → short (breakout past swing extremes)."""
     strategy_id="H-016"; name="Pivot Extension Strategy"; strategy_class="bar-pattern"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"left":5,"right":5}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; L=p["left"]; R=p["right"]; w=L+R+1
@@ -286,6 +298,7 @@ class PivotReversalStrategy(Strategy):
     """H-017 Pivot Reversal: a confirmed swing low → go long (reversal up); a
     confirmed swing high → go short. Confirmation lags by `right` bars (causal)."""
     strategy_id="H-017"; name="Pivot Reversal Strategy"; strategy_class="bar-pattern"
+    declared_inputs={"high", "low"}
     direction="long_short"; default_params={"left":4,"right":2}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; L=p["left"]; R=p["right"]; w=L+R+1
@@ -303,6 +316,7 @@ class PriceChannelStrategy(Strategy):
     """H-018 Price Channel (Donchian): long when close breaks above the prior
     N-bar high, short below the prior N-bar low."""
     strategy_id="H-018"; name="Price Channel Strategy"; strategy_class="breakout"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"length":20}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; n=int(p["length"])
@@ -319,6 +333,7 @@ class ADXBreakoutStrategy(Strategy):
     trending market — long on an N-bar-high breakout with ADX>threshold, short on
     an N-bar-low breakout with ADX>threshold."""
     strategy_id="H-019"; name="Rob Booker - ADX Breakout"; strategy_class="breakout"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"adx_len":14,"thr":20.0,"length":10}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}; n=int(p["length"])
@@ -336,6 +351,7 @@ class StochasticSlowStrategy(Strategy):
     """H-021 Stochastic Slow: long when %K crosses above %D from oversold (<20),
     short when %K crosses below %D from overbought (>80)."""
     strategy_id="H-021"; name="Stochastic Slow Strategy"; strategy_class="mean-reversion-oscillator"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"k":14,"d":3,"os":20.0,"ob":80.0}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}
@@ -351,6 +367,7 @@ class SupertrendStrategy(Strategy):
     """H-022 Supertrend: ATR-band trend filter. Long while price is on the bullish
     side of the Supertrend line, short on the bearish side; flips on crossover."""
     strategy_id="H-022"; name="Supertrend Strategy"; strategy_class="trend-following"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"period":10,"mult":3.0}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}
@@ -363,6 +380,7 @@ class TechnicalRatingsStrategy(Strategy):
     (price vs EMA20/EMA50, RSI vs 50, MACD histogram sign, 12-bar momentum sign).
     Long when the net rating is bullish, short when bearish."""
     strategy_id="H-023"; name="Technical Ratings Strategy"; strategy_class="composite"
+    declared_inputs={"close"}
     direction="long_short"; default_params={}
     def positions(self, df, params=None):
         c=df["close"]
@@ -380,6 +398,7 @@ class VoltyExpanCloseStrategy(Strategy):
     exceeds the prior close by more than mult·ATR, short when it falls by more
     than mult·ATR (a classic 'volatility expansion' entry)."""
     strategy_id="H-024"; name="Volty Expan Close Strategy"; strategy_class="breakout"
+    declared_inputs={"high", "low", "close"}
     direction="long_short"; default_params={"atr_len":10,"mult":0.75}
     def positions(self, df, params=None):
         p={**self.default_params,**(params or {})}
@@ -402,6 +421,7 @@ class AssetClassTrendFollowingStrategy(Strategy):
     (this checks the rule daily, so turnover is somewhat higher than the original)."""
 
     strategy_id = "H-025"
+    declared_inputs = {"close"}
     name = "Asset Class Trend Following"
     strategy_class = "trend-following"
     direction = "long_only"
@@ -434,6 +454,7 @@ class AssetClassTrendFollowingMonthlyStrategy(Strategy):
     allocation across the 5 ETFs — out of engine scope)."""
 
     strategy_id = "H-026"
+    declared_inputs = {"open_time", "close"}
     name = "Asset Class Trend Following (Monthly)"
     strategy_class = "trend-following"
     direction = "long_only"
@@ -478,6 +499,7 @@ class ConnorsRSI2Strategy(Strategy):
     positions forward one bar, so the traded bar can never be peeked at."""
 
     strategy_id = "H-027"
+    declared_inputs = {"close"}
     name = "Connors RSI-2 Strategy"
     strategy_class = "mean-reversion-oscillator"
     direction = "long_short"
@@ -556,6 +578,7 @@ class HullMASlopeTrendStrategy(Strategy):
     dossier + stress-test report). Contributes to M-001."""
 
     strategy_id = "H-028"
+    declared_inputs = {"close"}
     name = "Hull MA Slope Trend"
     strategy_class = "ma-slope-trend"
     direction = "long_short"

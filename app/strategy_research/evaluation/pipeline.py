@@ -102,9 +102,12 @@ class EvaluationReport:
     verdict_reasons: List[str] = field(default_factory=list)
     cause_of_death: str | None = None
     notes: List[str] = field(default_factory=list)
+    family_dsr_inputs: List[Dict] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> Dict:
-        return asdict(self)
+        out = asdict(self)
+        out.pop("family_dsr_inputs", None)
+        return out
 
 
 def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
@@ -122,6 +125,7 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
     headline_rand_p95: List[float] = []
     assets_done: List[str] = []
     notes: List[str] = []
+    family_dsr_inputs: List[Dict] = []
 
     for asset in request.assets:
         frame = source.get(DataRequest(asset, tf, request.start, request.end, request.limit))
@@ -170,6 +174,11 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
                         "num_trades": m["num_trades"], "n_bars": m["n_bars"],
                         "dsr": dsr["dsr"], "bh_sharpe": bh["sharpe_per_period"],
                         "rand_p95": rnd["sharpe_p95"],
+                    })
+                    family_dsr_inputs.append({
+                        "asset": asset,
+                        "returns": wf.oos_net.tolist(),
+                        "sr_trials": list(wf.sr_trials),
                     })
 
     # ----- headline aggregate at the frozen headline cost/slippage ----- #
@@ -220,6 +229,11 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
         "cost_bps": matrix.headline_cost_bps,
         "slippage_bps": matrix.headline_slippage_bps,
         "pooling": matrix.pooling,
+        "sharpe_unit": "per_bar",
+        "bar_frequency": tf,
+        "periods_per_year": PERIODS_PER_YEAR.get(tf, 365.0),
+        "return_aggregation": ("mean_per_asset_cumulative_return"
+                               if matrix.pooling == "per_asset" else "pooled_cumulative_return"),
     }
 
     rob = robustness_score(condition_rows, matrix.dsr_threshold)
@@ -253,4 +267,5 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
         generalization_score=gen, confidence_score=conf,
         verdict=v.label, verdict_reasons=list(v.reasons),
         cause_of_death=getattr(v, "cause_of_death", None), notes=notes,
+        family_dsr_inputs=family_dsr_inputs,
     )

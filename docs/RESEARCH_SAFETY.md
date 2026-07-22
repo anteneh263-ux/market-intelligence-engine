@@ -42,13 +42,15 @@ existing pipeline with stricter accounting and a promotion gate.
    `PASS`.
 
 5. **Batch runner** (`batch.py`). Runs items 3–4 over **every registered strategy** at
-   once, under **identical** assets, date range, costs and slippage, and records exactly
-   **one candidate trial per strategy** in the same append-only trial ledger (technical
-   failures recorded with `in_dsr = false`). Strategies are discovered **dynamically**
+   once, under **identical** assets, date range, costs and slippage. It records the
+   candidate, the shared control and every parameter combination in the append-only
+   ledger (technical failures use `in_dsr = false`). Strategies are discovered **dynamically**
    from the registry — nothing is hard-coded — and processed in a **deterministic**
    (sorted) order, so the JSON is reproducible. Each trial carries a **content-derived
    id**, so re-running the identical batch is **idempotent** and never duplicates trials
-   or rewrites history. It writes an atomic, timestamped report plus `latest.json` under
+   or rewrites history. After registration it freezes one final ledger trial count,
+   computes `family_dsr` for every valid candidate with that same count, and uses this
+   stricter value in the promotion gate. It writes an atomic, timestamped report plus `latest.json` under
    `knowledge_base/research_safety/batches/`. It **never** starts a forward test, and it
    changes no existing evaluation, threshold, strategy behaviour or historical result.
    *Why it helps:* it gives one honest, side-by-side, reproducible safety snapshot of the
@@ -77,8 +79,9 @@ python -m app.cli safety batch --assets BTC/USD,ETH/USD,SPY,XAU/USD
 python -m app.cli safety batch --assets BTC/USD,ETH/USD,SPY,XAU/USD --json
 ```
 
-Each batch row reports: `strategy_id`, evaluation `status`, `oos_sharpe`,
-`total_return`, `max_drawdown`, `num_trades`, `dsr`, the target-control `verdict`, the
+Each batch row reports: `strategy_id`, evaluation `status`, raw `sharpe_per_bar`,
+`sharpe_annual`, bar frequency, return aggregation, `total_return`, `max_drawdown`,
+`num_trades`, both `strategy_dsr` and `family_dsr`, the target-control `verdict`, the
 `promotion_decision`, and the failing gates as `failure_reasons`. A summary line counts
 valid strategies, technical failures and the promote / hold / reject split; a ledger
 line reports how many trials count toward the DSR budget. The report is written to
@@ -96,9 +99,9 @@ line reports how many trials count toward the DSR budget. The report is written 
     {"gate": "valid_backtest", "status": "PASS", "measured": {"n_bars": 8401}, "threshold": "is_real and n_bars > 0"},
     {"gate": "max_drawdown", "status": "FAIL", "measured": 0.6368, "threshold": "<= 0.6",
      "explanation": "OOS max drawdown within the limit."},
-    {"gate": "dsr_overfitting", "status": "FAIL", "measured": 0.657, "threshold": ">= 0.95"},
-    {"gate": "input_audit", "status": "NOT_AVAILABLE", "measured": {"declared_present": false},
-     "explanation": "Strategy did not declare its inputs (declared_inputs is None)."}
+    {"gate": "dsr_overfitting", "status": "FAIL",
+     "measured": {"family_dsr": 0.657, "strategy_dsr": 0.81, "source": "trial_ledger"},
+     "threshold": ">= 0.95"}
   ],
   "note": "Research gate only - no live trading, no broker, no order execution."
 }
@@ -110,12 +113,11 @@ line reports how many trials count toward the DSR budget. The report is written 
   by design and make no causal claim.
 - The input audit tracks column reads (`df[col]`); a strategy that reads data through a
   path other than the passed frame is out of scope — declare inputs explicitly.
-- `family_dsr()` gives a stricter, ledger-wide deflated Sharpe; the pipeline's
-  per-strategy DSR (its `grid_size` budget) is deliberately left unchanged for
-  backward compatibility.
+- The report keeps the pipeline's per-strategy `strategy_dsr` for backward
+  compatibility. Promotion uses the separately labelled ledger-wide `family_dsr`.
 - The gate proves *consistency and causality* on a historical tail; it does not predict
   live performance and does not connect to any broker.
-- The batch runner reuses the frozen evaluation, the same thresholds and the existing
-  ledger; it adds no new calculation. Idempotency is keyed on `(strategy, assets,
-  timeframe, matrix, cost, slippage)` — change any of those and it is a new trial, by
-  design. It never starts a forward test.
+- Trial identity includes strategy code, parameters, provider, period, rules version,
+  assets, timeframe, matrix, cost and slippage. Changing research-relevant content
+  creates a new trial; an identical rerun remains idempotent. It never starts a forward
+  test.
