@@ -15,6 +15,8 @@ from .trial_ledger import TrialLedger
 from .input_audit import TrackingFrame, run_audit
 from .target_control import TargetOnlyControl, compare
 from .promotion_gate import evaluate_promotion, decide, GateStatus, Decision
+from .batch import run_safety_batch, content_trial_id, format_batch_human
 
 __all__ = ["TrialLedger", "TrackingFrame", "run_audit", "TargetOnlyControl",
-           "compare", "evaluate_promotion", "decide", "GateStatus", "Decision"]
+           "compare", "evaluate_promotion", "decide", "GateStatus", "Decision",
+           "run_safety_batch", "content_trial_id", "format_batch_human"]

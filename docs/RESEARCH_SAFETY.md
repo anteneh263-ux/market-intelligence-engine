@@ -41,6 +41,19 @@ existing pipeline with stricter accounting and a promotion gate.
    `NOT_AVAILABLE` → **HOLD**; else **PROMOTE**. `NOT_AVAILABLE` is **never** treated as
    `PASS`.
 
+5. **Batch runner** (`batch.py`). Runs items 3–4 over **every registered strategy** at
+   once, under **identical** assets, date range, costs and slippage, and records exactly
+   **one candidate trial per strategy** in the same append-only trial ledger (technical
+   failures recorded with `in_dsr = false`). Strategies are discovered **dynamically**
+   from the registry — nothing is hard-coded — and processed in a **deterministic**
+   (sorted) order, so the JSON is reproducible. Each trial carries a **content-derived
+   id**, so re-running the identical batch is **idempotent** and never duplicates trials
+   or rewrites history. It writes an atomic, timestamped report plus `latest.json` under
+   `knowledge_base/research_safety/batches/`. It **never** starts a forward test, and it
+   changes no existing evaluation, threshold, strategy behaviour or historical result.
+   *Why it helps:* it gives one honest, side-by-side, reproducible safety snapshot of the
+   whole corpus and keeps the DSR trial budget complete without any manual bookkeeping.
+
 ## CLI example
 
 ```bash
@@ -56,7 +69,21 @@ python -m app.cli safety audit --target H-020 --assets BTC/USD
 
 # Trial-ledger summary
 python -m app.cli safety trials
+
+# Batch: run the safety checks over EVERY registered strategy (human summary)
+python -m app.cli safety batch --assets BTC/USD,ETH/USD,SPY,XAU/USD
+
+# Batch as deterministic JSON
+python -m app.cli safety batch --assets BTC/USD,ETH/USD,SPY,XAU/USD --json
 ```
+
+Each batch row reports: `strategy_id`, evaluation `status`, `oos_sharpe`,
+`total_return`, `max_drawdown`, `num_trades`, `dsr`, the target-control `verdict`, the
+`promotion_decision`, and the failing gates as `failure_reasons`. A summary line counts
+valid strategies, technical failures and the promote / hold / reject split; a ledger
+line reports how many trials count toward the DSR budget. The report is written to
+`knowledge_base/research_safety/batches/batch-<timestamp>.json` and mirrored to
+`latest.json` (both atomic).
 
 ## Example JSON output (promotion gate, abridged)
 
@@ -88,3 +115,7 @@ python -m app.cli safety trials
   backward compatibility.
 - The gate proves *consistency and causality* on a historical tail; it does not predict
   live performance and does not connect to any broker.
+- The batch runner reuses the frozen evaluation, the same thresholds and the existing
+  ledger; it adds no new calculation. Idempotency is keyed on `(strategy, assets,
+  timeframe, matrix, cost, slippage)` — change any of those and it is a new trial, by
+  design. It never starts a forward test.

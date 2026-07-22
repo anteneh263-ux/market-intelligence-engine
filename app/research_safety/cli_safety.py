@@ -8,7 +8,7 @@ from typing import List
 
 def add_safety_parser(sub) -> None:
     p = sub.add_parser("safety", help="research-safety gates & trial auditing (research only)")
-    p.add_argument("action", choices=["control", "promote", "audit", "trials"])
+    p.add_argument("action", choices=["control", "promote", "audit", "trials", "batch"])
     p.add_argument("--target", help="candidate strategy id, e.g. H-025")
     p.add_argument("--control", help="control strategy id (default CTRL-TARGET-ONLY)")
     p.add_argument("--assets", default="BTC/USD,ETH/USD,SPY,XAU/USD")
@@ -16,6 +16,10 @@ def add_safety_parser(sub) -> None:
     p.add_argument("--provider", default="csv")
     p.add_argument("--csv-root", default="data_csv")
     p.add_argument("--timeframe", default="1d")
+    p.add_argument("--root", default=None,
+                   help="research-safety data root (batch: report + ledger)")
+    p.add_argument("--json", action="store_true",
+                   help="batch: machine-readable JSON instead of a human summary")
 
 
 def run_safety(args) -> int:
@@ -40,6 +44,16 @@ def run_safety(args) -> int:
     elif args.action == "trials":
         from app.research_safety import TrialLedger
         out = TrialLedger().summary()
+    elif args.action == "batch":
+        from app.research_safety.batch import run_safety_batch, format_batch_human
+        report = run_safety_batch(assets, timeframe=args.timeframe, matrix=args.matrix,
+                                  provider=args.provider, provider_kwargs=pk,
+                                  root=args.root, control_id=args.control or "CTRL-TARGET-ONLY")
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True, default=str))
+        else:
+            print(format_batch_human(report))
+        return 0
     else:  # pragma: no cover
         out = {"error": f"unknown action {args.action}"}
     print(json.dumps(out, indent=2, default=str))

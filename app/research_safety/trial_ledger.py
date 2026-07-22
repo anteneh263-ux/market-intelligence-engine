@@ -68,12 +68,24 @@ class TrialLedger:
 
     def record(self, strategy: str, trial_type: str, status: str = STATUS_VALID,
                params: Optional[Dict] = None, in_dsr: Optional[bool] = None,
-               reason: str = "", ts: Optional[str] = None) -> Dict:
+               reason: str = "", ts: Optional[str] = None,
+               trial_id: Optional[str] = None) -> Dict:
         """Record ONE trial. `in_dsr` defaults to True for a valid trial and is forced
         False for any non-valid trial (a technical failure can never count). `reason`
-        explains any exclusion."""
+        explains any exclusion.
+
+        `trial_id` is an OPTIONAL content-derived id for idempotency: if given and a
+        trial with that id already exists, the existing record is returned unchanged and
+        NOTHING is appended (so re-running an identical batch never duplicates trials).
+        When omitted the id keeps its original append-order form ``T-00001`` and existing
+        callers are unaffected."""
         if trial_type not in TRIAL_TYPES:
             raise ValueError(f"unknown trial_type {trial_type!r}; expected {sorted(TRIAL_TYPES)}")
+        entries = self._read()
+        if trial_id is not None:
+            for e in entries:                          # idempotent: already recorded
+                if e.get("trial_id") == trial_id:
+                    return e
         if in_dsr is None:
             in_dsr = (status == STATUS_VALID)
         if status != STATUS_VALID:
@@ -81,9 +93,8 @@ class TrialLedger:
         if not in_dsr and not reason:
             reason = ("technical failure produced no valid result"
                       if status != STATUS_VALID else "explicitly excluded from the DSR budget")
-        seq = len(self._read())
         rec: Dict = {
-            "trial_id": f"T-{seq + 1:05d}",
+            "trial_id": trial_id if trial_id is not None else f"T-{len(entries) + 1:05d}",
             "strategy": strategy,
             "trial_type": trial_type,
             "status": status,
