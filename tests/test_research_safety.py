@@ -64,6 +64,36 @@ def test_technical_failures_are_excluded(tmp_path):
     assert tl.summary()["excluded_trials"] == 1
 
 
+def test_effective_trials_reconcile_legacy_reruns_and_default_combo(tmp_path):
+    tl = TrialLedger(root=str(tmp_path), clock=lambda: "2026-01-01T00:00:00Z")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="old")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="rerun")
+    tl.record("H-100", "param_combo", params={"n": 20}, trial_id="default-combo")
+    tl.record("H-100", "param_combo", params={"n": 30}, trial_id="other-combo")
+    tl.record("CTRL", "control", params={"n": 50}, trial_id="control")
+    assert tl.count_dsr_trials() == 5
+    assert tl.count_effective_dsr_trials() == 3
+    summary = tl.summary()
+    assert summary["raw_dsr_trials"] == 5
+    assert summary["effective_dsr_trials"] == 3
+    assert summary["duplicate_dsr_records"] == 2
+    result = tl.family_dsr([0.01, -0.01, 0.02, 0.01], [0.1, 0.2, 0.3])
+    assert result["n_trials"] == 3
+    assert result["n_trials_source"] == "trial_ledger_effective"
+
+
+def test_explicit_economic_identity_separates_changed_evidence(tmp_path):
+    tl = TrialLedger(root=str(tmp_path))
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="a",
+              economic_id="same-economic-trial")
+    tl.record("H-100", "param_combo", params={"n": 20}, trial_id="b",
+              economic_id="same-economic-trial")
+    tl.record("H-100", "candidate", params={"n": 20}, trial_id="c",
+              economic_id="changed-data-or-signals")
+    assert tl.count_dsr_trials() == 3
+    assert tl.count_effective_dsr_trials() == 2
+
+
 # --------------------------------------------------------------------------- #
 # 3. Declared-versus-actual input audit
 # --------------------------------------------------------------------------- #

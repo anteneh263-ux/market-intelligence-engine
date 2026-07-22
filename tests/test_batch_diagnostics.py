@@ -51,7 +51,9 @@ def test_batch_reports_sharpe_units_eligibility_and_fixed_family_dsr(tmp_path):
     rep = run_safety_batch(["BTC/USD"], provider="csv", provider_kwargs=PK,
                            root=str(tmp_path), strategies=["H-002", "H-005"],
                            clock=CLK, write=False)
-    assert rep["final_dsr_trial_count"] == rep["ledger"]["dsr_trials"]
+    assert rep["final_dsr_trial_count"] == rep["ledger"]["effective_dsr_trials"]
+    assert rep["final_raw_dsr_trial_count"] == rep["ledger"]["raw_dsr_trials"]
+    assert rep["family_sharpe_population_count"] == rep["final_dsr_trial_count"]
     for row in rep["strategies"]:
         assert row["sharpe_unit"] == "per_bar"
         assert row["sharpe_annual"] is not None

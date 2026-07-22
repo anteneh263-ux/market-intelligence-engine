@@ -49,7 +49,10 @@ existing pipeline with stricter accounting and a promotion gate.
    (sorted) order, so the JSON is reproducible. Each trial carries a **content-derived
    id**, so re-running the identical batch is **idempotent** and never duplicates trials
    or rewrites history. After registration it freezes one final ledger trial count,
-   computes `family_dsr` for every valid candidate with that same count, and uses this
+   reports both the immutable raw record count and an effective economic-trial count.
+   Exact reruns and the candidate/default-parameter representation remain in history
+   but count once economically. It computes `family_dsr` for every valid candidate with
+   that same effective count and the matching parameter-trial Sharpe population, and uses this
    stricter value in the promotion gate. It writes an atomic, timestamped report plus `latest.json` under
    `knowledge_base/research_safety/batches/`. It **never** starts a forward test, and it
    changes no existing evaluation, threshold, strategy behaviour or historical result.
@@ -81,7 +84,7 @@ python -m app.cli safety batch --assets BTC/USD,ETH/USD,SPY,XAU/USD --json
 
 Each batch row reports: `strategy_id`, evaluation `status`, raw `sharpe_per_bar`,
 `sharpe_annual`, bar frequency, return aggregation, `total_return`, `max_drawdown`,
-`num_trades`, both `strategy_dsr` and `family_dsr`, the target-control `verdict`, the
+`num_trades`, both `strategy_dsr` (`sDSR`) and `family_dsr` (`fDSR`), the target-control `verdict`, the
 `promotion_decision`, and the failing gates as `failure_reasons`. A summary line counts
 valid strategies, technical failures and the promote / hold / reject split; a ledger
 line reports how many trials count toward the DSR budget. The report is written to
@@ -115,6 +118,11 @@ line reports how many trials count toward the DSR budget. The report is written 
   path other than the passed frame is out of scope — declare inputs explicitly.
 - The report keeps the pipeline's per-strategy `strategy_dsr` for backward
   compatibility. Promotion uses the separately labelled ledger-wide `family_dsr`.
+- The ledger is never rewritten. `raw_dsr_trials` is the append-only historical count;
+  `effective_dsr_trials` reconciles exact legacy reruns and candidate/default-parameter
+  aliases. `duplicate_dsr_records` makes the difference visible. New records carry an
+  economic identity derived from data, settings, parameters and realised signal
+  behaviour, so changed evidence or trading logic remains a new trial.
 - The gate proves *consistency and causality* on a historical tail; it does not predict
   live performance and does not connect to any broker.
 - Trial identity includes strategy code, parameters, provider, period, rules version,

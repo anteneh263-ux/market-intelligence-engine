@@ -69,7 +69,8 @@ class TrialLedger:
     def record(self, strategy: str, trial_type: str, status: str = STATUS_VALID,
                params: Optional[Dict] = None, in_dsr: Optional[bool] = None,
                reason: str = "", ts: Optional[str] = None,
-               trial_id: Optional[str] = None) -> Dict:
+               trial_id: Optional[str] = None,
+               economic_id: Optional[str] = None) -> Dict:
         """Record ONE trial. `in_dsr` defaults to True for a valid trial and is forced
         False for any non-valid trial (a technical failure can never count). `reason`
         explains any exclusion.
@@ -104,6 +105,8 @@ class TrialLedger:
             "in_dsr": bool(in_dsr),
             "excluded_reason": "" if in_dsr else reason,
         }
+        if economic_id is not None:
+            rec["economic_id"] = economic_id
         with open(self.path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
             f.flush()
@@ -118,6 +121,24 @@ class TrialLedger:
         """Number of trials that count toward the data-snooping budget."""
         return sum(1 for e in self._read() if e.get("in_dsr"))
 
+    @staticmethod
+    def effective_key(entry: Dict) -> str:
+        """Economic identity used for multiplicity accounting.
+
+        New records carry an explicit economic_id. Legacy candidate/control/parameter
+        records are conservatively reconciled by strategy + parameter hash, which
+        removes exact reruns and candidate/default-parameter double counting without
+        deleting or rewriting a historical line.
+        """
+        if entry.get("economic_id"):
+            return str(entry["economic_id"])
+        if entry.get("trial_type") in {"candidate", "control", "param_combo"}:
+            return "legacy:" + str(entry.get("strategy")) + ":" + str(entry.get("params_hash"))
+        return "trial:" + str(entry.get("trial_id"))
+
+    def count_effective_dsr_trials(self) -> int:
+        return len({self.effective_key(e) for e in self._read() if e.get("in_dsr")})
+
     def summary(self) -> Dict:
         ents = self._read()
         by_type: Dict[str, int] = {}
@@ -128,6 +149,12 @@ class TrialLedger:
         return {
             "total_trials": len(ents),
             "dsr_trials": sum(1 for e in ents if e.get("in_dsr")),
+            "raw_dsr_trials": sum(1 for e in ents if e.get("in_dsr")),
+            "effective_dsr_trials": len({self.effective_key(e) for e in ents
+                                         if e.get("in_dsr")}),
+            "duplicate_dsr_records": (sum(1 for e in ents if e.get("in_dsr")) -
+                                      len({self.effective_key(e) for e in ents
+                                           if e.get("in_dsr")})),
             "excluded_trials": sum(1 for e in ents if not e.get("in_dsr")),
             "by_type": by_type,
             "by_status": by_status,
@@ -136,10 +163,13 @@ class TrialLedger:
     def _write_summary(self) -> None:
         _atomic_write(self.summary_path, json.dumps(self.summary(), indent=2, sort_keys=True))
 
-    def family_dsr(self, returns: Sequence[float], sr_trials: Sequence[float]) -> Dict:
+    def family_dsr(self, returns: Sequence[float], sr_trials: Sequence[float],
+                   *, effective: bool = True) -> Dict:
         """Deflated Sharpe deflated by the FULL trial count from this ledger. The
         pipeline's per-strategy DSR is unchanged; this is a stricter, honest view."""
-        n = max(self.count_dsr_trials(), 1)
+        n = max(self.count_effective_dsr_trials() if effective
+                else self.count_dsr_trials(), 1)
         out = deflated_sharpe(returns, sr_trials, n)
-        out["n_trials_source"] = "trial_ledger"
+        out["n_trials_source"] = ("trial_ledger_effective" if effective
+                                  else "trial_ledger_raw")
         return out
