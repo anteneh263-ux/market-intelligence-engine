@@ -84,3 +84,81 @@ def test_new_report_does_not_rewrite_older_timestamped_evidence(tmp_path):
                      root=str(tmp_path), strategies=["H-005"], clock=CLK, write=True)
     assert old.read_text(encoding="utf-8") == "original evidence"
     assert os.path.exists(batches / "batch-20260723T000000Z.json")
+
+
+# --------------------------------------------------------------------------- #
+# Follow-up regression coverage: explicit Sharpe-unit metadata, eligibility /
+# exclusion_reason separation, control settings-match, undeclared-input audit
+# detection, and idempotent family_dsr. All additive; no gate is weakened.
+# --------------------------------------------------------------------------- #
+def test_sharpe_metadata_has_explicit_named_fields_and_verified_daily_cadence(tmp_path):
+    rep = run_safety_batch(["BTC/USD"], provider="csv", provider_kwargs=PK,
+                           root=str(tmp_path), strategies=["H-005"], clock=CLK, write=False)
+    sm = rep["strategies"][0]["sharpe_metadata"]
+    for key in ("raw_sharpe", "annualized_sharpe", "bars_per_year", "bar_frequency",
+                "start", "end", "observation_count"):
+        assert key in sm, key
+    assert sm["bar_frequency"] == "1d"
+    assert sm["cadence_verified_daily"] is True          # bars proven daily, not assumed
+    assert sm["bars_per_year"] == 365.0                  # calendar-day, never sqrt(252)
+    assert sm["observation_count"] > 0
+    assert sm["raw_sharpe"] == rep["strategies"][0]["oos_sharpe"]   # existing value preserved
+
+
+def test_non_supported_is_ineligible_and_never_promotes(tmp_path):
+    rep = run_safety_batch(["BTC/USD"], provider="csv", provider_kwargs=PK,
+                           root=str(tmp_path), strategies=["H-002", "H-005", "H-020"],
+                           clock=CLK, write=False)
+    for row in rep["strategies"]:
+        # eligibility is reported SEPARATELY from evaluation status
+        assert row["promotion_eligibility"] in {"eligible", "conditional", "ineligible"}
+        assert row["promotion_eligible"] == (row["status"] == "Supported")
+        if row["status"] != "Supported":
+            assert row["promotion_decision"] != "PROMOTE"     # never PASS
+        if row["promotion_eligibility"] == "ineligible":
+            assert row["exclusion_reason"]                    # explicit reason present
+        if row["status"] == "Not Supported":
+            assert row["promotion_eligibility"] == "ineligible"
+            assert "not_supported" in row["exclusion_reason"]
+        if row["status"] == "Graveyard":
+            assert row["promotion_eligibility"] == "ineligible"
+
+
+def test_control_settings_match_is_verified(tmp_path):
+    rep = run_safety_batch(["BTC/USD", "ETH/USD"], provider="csv", provider_kwargs=PK,
+                           root=str(tmp_path), strategies=["H-005"], clock=CLK, write=False)
+    match = rep["strategies"][0]["control_settings_match"]
+    assert match is not None and match["all_match"] is True
+    for key in ("assets", "timeframe", "bar_frequency", "matrix", "cost_bps", "slippage_bps"):
+        assert match[key] is True, key
+
+
+def test_audit_detects_missing_and_undeclared_inputs():
+    df = _btc()
+    strat = get_strategy("H-005")                 # actually reads close/high/low
+    # (a) declaring nothing -> the audit cannot pass (the original all-27 failure mode,
+    #     when declared_inputs was None on every strategy)
+    strat.declared_inputs = None
+    none_declared = run_audit(strat, df, declared=None)
+    assert none_declared["declared_present"] is False
+    assert none_declared["promotable"] is False
+    strat = get_strategy("H-005")                 # fresh instance for part (b)
+    # (b) under-declaring -> used_not_declared is flagged and it is not promotable
+    under = run_audit(strat, df, declared={"open"})
+    assert under["promotable"] is False
+    assert set(under["deviations"]["used_not_declared"]) >= {"close", "high", "low"}
+
+
+def test_family_dsr_is_idempotent_across_identical_reruns(tmp_path):
+    kwargs = dict(provider="csv", provider_kwargs=PK, root=str(tmp_path),
+                  strategies=["H-002", "H-005"], clock=CLK, write=False)
+    a = run_safety_batch(["BTC/USD"], **kwargs)
+    from app.research_safety.trial_ledger import TrialLedger
+    n1 = TrialLedger(root=str(tmp_path)).count_effective_dsr_trials()
+    b = run_safety_batch(["BTC/USD"], **kwargs)
+    n2 = TrialLedger(root=str(tmp_path)).count_effective_dsr_trials()
+    assert n1 == n2                                            # no duplicate trials
+    assert a["final_dsr_trial_count"] == b["final_dsr_trial_count"]
+    fa = {r["strategy_id"]: r["family_dsr"] for r in a["strategies"]}
+    fb = {r["strategy_id"]: r["family_dsr"] for r in b["strategies"]}
+    assert fa == fb                                           # identical DSR values

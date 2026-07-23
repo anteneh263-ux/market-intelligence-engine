@@ -110,6 +110,29 @@ line reports how many trials count toward the DSR budget. The report is written 
 }
 ```
 
+
+### Batch diagnostics — explicit units, eligibility and settings proof
+
+Each batch row carries a `sharpe_metadata` block with **explicitly named** fields so the
+Sharpe unit is never ambiguous: `raw_sharpe` (the preserved per-bar value), plus
+`annualized_sharpe`, `bars_per_year`, `bar_frequency`, `start`, `end` and
+`observation_count`. Annualisation uses the frozen calendar-day constant (365 for daily),
+and `cadence_verified_daily` proves the bars really are daily by inspecting `open_time` —
+the code never assumes `sqrt(252)`.
+
+Eligibility is reported **separately** from evaluation status and from the DSR trial
+universe. `promotion_eligibility` is one of `eligible` (Supported), `conditional`
+(Inconclusive — promotable only with mandatory evidence) or `ineligible` (Graveyard and
+Not Supported), with an explicit `exclusion_reason`. A Not Supported or Graveyard
+strategy is never a promotion candidate and never PASSes, yet **all** of its real trials
+remain in the append-only DSR ledger. The promotion decision itself uses the frozen
+full-ledger `family_dsr` (never the sequential or per-strategy value), and identical
+reruns produce identical `family_dsr`.
+
+`control_settings_match` records proof that the candidate and the target-only control were
+evaluated on identical assets, timeframe, matrix, costs and slippage (bar frequency
+included).
+
 ## Limitations
 
 - The target-control verdict uses a Sharpe tolerance band; near-ties are `inconclusive`

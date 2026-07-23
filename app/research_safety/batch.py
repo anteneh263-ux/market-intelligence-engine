@@ -31,8 +31,10 @@ import json
 import os
 from typing import Callable, Dict, List, Optional, Sequence
 
+import numpy as np
 import pandas as pd
 
+from app.paper.schema import iso_utc
 from app.strategy_research import EvalRequest, MATRICES, evaluate
 from app.strategy_research.dossier import _KB_ROOT
 from app.strategy_research.providers import DataRequest, get_provider
@@ -84,6 +86,86 @@ def _round(x) -> Optional[float]:
         return round(float(x), 6)
     except (TypeError, ValueError):
         return None
+
+
+_DAY_MS = 86_400_000
+_CADENCE_MS = {"1d": 86_400_000, "1h": 3_600_000, "4h": 14_400_000, "1w": 604_800_000}
+
+
+def _sharpe_metadata(headline: Dict, assets_evaluated: Sequence[str], timeframe: str,
+                     provider: str, pk: Dict) -> Dict:
+    """Explicit, self-describing Sharpe units + the data window they were measured on.
+
+    The headline `oos_sharpe` is the RAW per-bar Sharpe (mean/std of per-bar OOS net
+    returns); `annualized_sharpe` = raw x sqrt(bars_per_year). bars_per_year comes from
+    the frozen pipeline constant (calendar-day 365 for 1d), never an assumed sqrt(252):
+    `cadence_verified_daily` proves the bars really are daily by inspecting open_time."""
+    source = get_provider(provider, **pk)
+    starts: List[int] = []
+    ends: List[int] = []
+    deltas: List[int] = []
+    for asset in assets_evaluated:
+        try:
+            ot = source.get(DataRequest(asset=asset, timeframe=timeframe)
+                            ).df["open_time"].to_numpy("int64")
+        except Exception:
+            continue
+        if ot.size:
+            starts.append(int(ot.min()))
+            ends.append(int(ot.max()))
+        if ot.size > 1:
+            deltas.append(int(np.median(np.diff(ot))))
+    cadence = int(round(float(np.median(deltas)))) if deltas else None
+    expected = _CADENCE_MS.get(timeframe)
+    return {
+        "raw_sharpe": _round(headline.get("oos_sharpe")),
+        "annualized_sharpe": _round(headline.get("oos_sharpe_annual")),
+        "sharpe_unit": headline.get("sharpe_unit", "per_bar"),
+        "bar_frequency": headline.get("bar_frequency", timeframe),
+        "bars_per_year": headline.get("periods_per_year"),
+        "cadence_ms": cadence,
+        "cadence_verified_daily": bool(cadence == _DAY_MS),
+        "cadence_matches_declared_frequency": bool(expected is not None and cadence == expected),
+        "start": iso_utc(min(starts))[:10] if starts else None,
+        "end": iso_utc(max(ends))[:10] if ends else None,
+        "observation_count": int(headline.get("n_bars") or 0),
+    }
+
+
+_ELIGIBILITY = {
+    "Supported": ("eligible", None),
+    "Inconclusive": ("conditional",
+                     "inconclusive: promotable only with mandatory evidence "
+                     "(min_trades, out-of-sample, target-control)"),
+    "Not Supported": ("ineligible", "not_supported: explicit ineligible/NOT_AVAILABLE, never PASS"),
+    "Graveyard": ("ineligible", "graveyard: not a promotion candidate"),
+}
+
+
+def _eligibility(verdict: str):
+    """(eligibility_class, exclusion_reason) derived from the evaluation verdict.
+    Kept SEPARATE from the evaluation status and from the DSR trial universe."""
+    return _ELIGIBILITY.get(verdict, ("ineligible", f"verdict {verdict}"))
+
+
+def _control_settings_match(assets, timeframe, matrix_name, cost_bps, slippage_bps,
+                            control: Optional[Dict]) -> Optional[Dict]:
+    """Verify the candidate and control were evaluated on IDENTICAL assets, timeframe,
+    matrix, costs and slippage (compare() runs both through the same EvalRequest; this
+    records the proof)."""
+    if control is None:
+        return None
+    st = control.get("settings", {}) or {}
+    checks = {
+        "assets": list(assets) == list(control.get("assets") or []),
+        "timeframe": timeframe == control.get("timeframe"),
+        "bar_frequency": timeframe == control.get("timeframe"),
+        "matrix": matrix_name == control.get("matrix"),
+        "cost_bps": float(cost_bps) == float(st.get("cost_bps")) if st.get("cost_bps") is not None else False,
+        "slippage_bps": float(slippage_bps) == float(st.get("slippage_bps")) if st.get("slippage_bps") is not None else False,
+    }
+    checks["all_match"] = all(checks.values())
+    return checks
 
 
 def _data_sha256(assets: Sequence[str], timeframe: str, provider: str, pk: Dict) -> str:
@@ -271,6 +353,7 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
     row = _row(sid, status=rep.verdict, headline=h, control_verdict=control_verdict,
                promotion_decision=decision, input_audit_promotable=audit_promotable,
                in_dsr=True, trial_id=tid, failure_reasons=failing)
+    eligibility_class, exclusion_reason = _eligibility(rep.verdict)
     row.update({"strategy_dsr": _round(h.get("dsr")), "family_dsr": None,
                 "sharpe_per_bar": _round(h.get("oos_sharpe")),
                 "sharpe_annual": _round(h.get("oos_sharpe_annual")),
@@ -278,10 +361,16 @@ def _process_one(sid: str, assets: List[str], timeframe: str, m, matrix_name: st
                 "bar_frequency": h.get("bar_frequency", timeframe),
                 "periods_per_year": h.get("periods_per_year"),
                 "return_aggregation": h.get("return_aggregation"),
+                "sharpe_metadata": _sharpe_metadata(h, rep.assets_evaluated, timeframe,
+                                                    provider, pk),
                 "input_audit": audit, "target_control": control,
+                "control_settings_match": _control_settings_match(
+                    assets, timeframe, matrix_name, cost_bps, slippage_bps, control),
                 "promotion_eligible": rep.verdict == "Supported",
+                "promotion_eligibility": eligibility_class,
                 "eligibility_reason": ("evaluation verdict Supported" if rep.verdict == "Supported"
                                        else f"evaluation verdict {rep.verdict}"),
+                "exclusion_reason": exclusion_reason,
                 "_evaluation_report": rep})
     return row
 
@@ -330,7 +419,10 @@ def run_safety_batch(assets: Sequence[str], *, timeframe: str = "1d",
         if rep is None:
             row.update({"strategy_dsr": row.get("dsr"), "family_dsr": None,
                         "promotion_eligible": False,
+                        "promotion_eligibility": "ineligible",
                         "eligibility_reason": "technical failure",
+                        "exclusion_reason": "technical failure: no valid evaluation",
+                        "sharpe_metadata": None, "control_settings_match": None,
                         "gate_statuses": {}, "not_available_reasons": []})
             continue
         family_values = [ledger.family_dsr(x["returns"], family_sr_trials)["dsr"]
