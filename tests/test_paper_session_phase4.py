@@ -423,10 +423,11 @@ def test_pilot_btc_deterministic_replay_with_trades(tmp_path):
                     params={"length": 200}, frame=frame, journal_dir=str(tmp_path / "a"))
     r2 = run_replay(manifest=man, profile=prof, risk_limits=risk, strategy=strat,
                     params={"length": 200}, frame=frame, journal_dir=str(tmp_path / "b"))
-    # a real bear-market window may legitimately RISK_STOP; both outcomes are deterministic
-    assert r1["lifecycle_status"] in (COMPLETED, RISK_STOPPED)
-    if r1["lifecycle_status"] == RISK_STOPPED:
-        assert r1["absolute_risk"]["breached"] is True
+    # this fixed real-data slice is deterministic: it RISK_STOPs on max_daily_loss. The slice is
+    # a positional iloc[300:900], so it stays byte-stable even if the CSV is later extended.
+    assert r1["lifecycle_status"] == RISK_STOPPED
+    assert r1["absolute_risk"]["breached"] is True
+    assert "max_daily_loss" in {b["rule"] for b in r1["absolute_risk"]["breaches"]}
     assert r1["counts"]["fills"] + r1["counts"]["partials"] > 0  # the pilot actually trades
     assert r1["journal_summary"]["final_event_hash"] == r2["journal_summary"]["final_event_hash"]
     assert verify_journal_file(r1["journal_path"], man["manifest_hash"])[0] is True
@@ -596,7 +597,8 @@ def test_engine_enforces_drawdown_and_session_loss(tmp_path):
     res, man = _run(_frame(closes), tmp_path, length=5, risk=freeze_risk_limits(max_drawdown=0.10))
     assert res["lifecycle_status"] == RISK_STOPPED
     rules = {b["rule"] for b in res["absolute_risk"]["breaches"]}
-    assert "max_drawdown" in rules or "max_session_loss" in rules
+    # deterministic: this crash breaches BOTH the drawdown and the session-loss limit
+    assert "max_drawdown" in rules and "max_session_loss" in rules
 
 
 def test_engine_enforces_per_trade_loss(tmp_path):
@@ -605,8 +607,10 @@ def test_engine_enforces_per_trade_loss(tmp_path):
     res, man = _run(_frame(closes), tmp_path, length=3,
                     risk=freeze_risk_limits(max_drawdown=0.95, max_session_loss=0.95,
                                             max_daily_loss=0.95, max_loss_per_trade=0.02))
-    # the loss-per-trade rule must be among the enforced limits (breach observed at runtime)
-    assert res["lifecycle_status"] in (RISK_STOPPED, COMPLETED)
+    # this scenario is deterministic: a closed trade whose loss exceeds the frozen per-trade
+    # limit always fails closed to RISK_STOPPED on exactly the max_loss_per_trade rule
+    assert res["lifecycle_status"] == RISK_STOPPED
+    assert {b["rule"] for b in res["absolute_risk"]["breaches"]} == {"max_loss_per_trade"}
 
 
 def test_engine_enforces_consecutive_execution_errors(tmp_path, monkeypatch):
@@ -648,7 +652,8 @@ def test_oversized_long_clamped_to_leverage():
     b = PaperBroker(freeze_execution_profile("BTC/USD"), initial_capital=100_000.0, max_leverage=1.0)
     b.mark(500.0)
     o = b.execute(5.0, exec_open_time=1, exec_price=500.0)  # ask for 5x
-    assert b.gross_exposure_frac <= 1.0 + 1e-9 and o["status"] in ("partial", "filled")
+    # the 5x request is clamped to the 1.0x leverage cap, so the fill is deterministically partial
+    assert b.gross_exposure_frac <= 1.0 + 1e-9 and o["status"] == "partial"
 
 
 def test_leverage_at_and_above_limit():
@@ -692,11 +697,14 @@ def test_risk_stop_one_safe_exit_no_noise(tmp_path):
 
 
 def test_risk_stop_when_already_flat_records_no_exit_order(tmp_path):
-    # breach while flat (before any long) -> records a safe_exit note, no order, stays RISK_STOPPED
+    # (historical name) with a flat book the crash cannot move equity, so no rule breaches and
+    # the session COMPLETES without emitting any exit order -- verified deterministically below
     closes = [100.0, 100.0, 100.0, 100.0, 100.0, 30.0, 31.0, 32.0]
     res, man = _run(_frame(closes), tmp_path, length=3, risk=freeze_risk_limits(max_drawdown=0.10))
-    # with no position, a crash cannot move equity, so this simply completes; assert deterministic
-    assert res["lifecycle_status"] in (COMPLETED, RISK_STOPPED)
+    # with no open position, the crash cannot move equity, so no absolute-risk rule can breach:
+    # the session deterministically COMPLETES (it never RISK_STOPs here) with no breaches
+    assert res["lifecycle_status"] == COMPLETED
+    assert not (res.get("absolute_risk") or {}).get("breaches")
 
 
 # =========================================================================== #
@@ -1094,9 +1102,14 @@ def test_empty_frame_is_not_completed(tmp_path):
     prof = freeze_execution_profile("BTC/USD"); risk = freeze_risk_limits(max_drawdown=0.90)
     res = run_replay(manifest=man, profile=prof, risk_limits=risk, strategy=get_strategy("H-025"),
                      params={"length": 5}, frame=empty, journal_dir=str(tmp_path))
-    assert res["lifecycle_status"] in (INVALIDATED, DATA_STOPPED, "NOT_AVAILABLE")
-    assert res["lifecycle_status"] != COMPLETED
-    assert res.get("reason", "").find("empty_dataset") >= 0 or res.get("mismatched_field") == "empty_dataset"
+    # an empty dataset is rejected at preflight, BEFORE any journal is opened: the session is
+    # INVALIDATED deterministically (never DATA_STOPPED / NOT_AVAILABLE / COMPLETED) with the
+    # empty_dataset reason, and no journal.jsonl is created.
+    assert res["lifecycle_status"] == INVALIDATED
+    assert res.get("mismatched_field") == "empty_dataset"
+    assert "empty_dataset" in res.get("reason", "")
+    assert res.get("journal_path") is None
+    assert os.listdir(str(tmp_path)) == []
 
 
 # ---- FINDING 6: engine-level safe-exit: filled / partial / rejected ------------------ #
