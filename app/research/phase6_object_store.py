@@ -105,6 +105,7 @@ class ObjectWriter:
 
     def __init__(self, root, *, owner, run_id, max_bytes):
         self._fd = None
+        self._claim = None
         self._pid = os.getpid()
         self._thread = threading.get_ident()
         self._stopped = True
@@ -128,9 +129,21 @@ class ObjectWriter:
                 raise ValueError('STORAGE_REFUSED') from None
             raise
 
-    def put(self, raw):
+    @property
+    def header(self):
+        return json.loads(self._header)
+
+    def claim(self):
         _need(not self._stopped and self._pid == os.getpid()
               and self._thread == threading.get_ident(), 'WRITER_STOPPED')
+        _need(self._claim is None and not self._objects, 'WRITER_OWNERSHIP')
+        self._claim = object()
+        return self._claim
+
+    def put(self, raw, *, claim=None):
+        _need(not self._stopped and self._pid == os.getpid()
+              and self._thread == threading.get_ident(), 'WRITER_STOPPED')
+        _need(claim is self._claim, 'WRITER_OWNERSHIP')
         _need(type(raw) is bytes, 'INPUT_INVALID')
         digest = hashlib.sha256(raw).hexdigest()
         name = digest + '.blob'
@@ -153,8 +166,9 @@ class ObjectWriter:
                 raise ValueError('STORAGE_REFUSED') from None
             raise
 
-    def close(self):
+    def close(self, *, claim=None):
         _need(self._pid != os.getpid() or self._thread == threading.get_ident(), 'WRITER_STOPPED')
+        _need(claim is self._claim, 'WRITER_OWNERSHIP')
         # Never LOCK_UN: a fork shares the open file description with its parent.
         # Closing the child's copy alone cannot release the parent's descriptor.
         self._stopped = True

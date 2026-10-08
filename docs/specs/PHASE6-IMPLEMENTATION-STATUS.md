@@ -9,6 +9,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-1 | Pure plan/bar/receipt/segment validators; 42 tests | Adapter finality and authentic feed/clock provenance remain upstream |
 | WP6-2A | Pure continuous simulation reducer; 24 tests | Durable causal call site, callback serialization, manifest/event/checkpoint binding |
 | WP6-2B | Immutable descriptor-bound local blob writer and read-only inventory inspection; 38 tests | Run authorization, reservation registry and governed coordinator integration |
+| WP6-2C | Durable input/manifest/reducer/state/commit integration; 28 tests, independently reviewed | Full governed session manifest, strategy callback, authentic clocks and anchor barrier |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -28,13 +29,27 @@ hardware power-loss durability.
 
 ## Next implementation contract
 
-Before durable coordinator code, specify exact event payloads, diagnostic strategy
+WP6-2C now binds internal transition records to the existing reducer and immutable
+object publication. The manifest is persisted before the reducer call; committed
+state advances only after the commit record is published. Failures forbid retries.
+These internal records are not WP0 session manifests/checkpoints or anchor receipts.
+An exclusive one-time writer claim prevents overlapping sessions and direct writes
+through retained cooperative API references.
+
+Before the full governed coordinator, specify exact WP0 event payloads, diagnostic strategy
 state serialization, initial checkpoint, input-prefix commitment, manifest-before-
 callback ordering, and durable intent publication time distinct from callback time.
 The reducer's supplied intent timestamp is not evidence of actual publication.
 Define callback failure as terminal, not replayable, and freeze the cryptographic
 anchor signature and authoritative-head protocol. Only then bind validators,
 reducer and object publication into an integrated call site.
+
+The new integration does not call a strategy callback or acquire clock/feed data.
+Its caller-supplied timestamps do not establish actual intent publication time;
+prospective quote eligibility and independently anchored continuation are unresolved.
+The candidate cryptography Python package is not installed in the current environment; no dependency
+or service was silently added. Select and pin the reviewed signature implementation
+in the anchor package.
 
 The local object store is not a registry and must not allocate/pretend to allocate
 run reservations. A persistent diagnostic registry needs its own reviewed append

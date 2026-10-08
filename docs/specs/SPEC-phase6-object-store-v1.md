@@ -57,3 +57,10 @@ concurrent writers and active inspection; post-close/restart/fork refusal; short
 writes/fsync failures with terminal writer; partial files retained; content/size/
 missing/extra/symlink/hardlink corruption; read-only verification; process crash
 leaves permanent claim. This is a storage building block, not completion of WP6-2/3.
+
+WP6-2C additive ownership API: `header` returns a detached canonical-header dict.
+`claim()` on a fresh open same-process/thread writer with no blobs returns a unique
+token once. Subsequent `put`/`close` require keyword `claim=token`; wrong tokens or
+second claims refuse WRITER_OWNERSHIP before I/O without poisoning the owner.
+Unclaimed writers keep their original API. This is cooperative in-process ownership,
+not a sandbox against private Python attribute access. See durable-transitions-v1.
