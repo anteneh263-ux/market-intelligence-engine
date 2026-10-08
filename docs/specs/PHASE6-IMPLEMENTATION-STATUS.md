@@ -10,6 +10,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2A | Pure continuous simulation reducer; 24 tests | Durable causal call site, callback serialization, manifest/event/checkpoint binding |
 | WP6-2B | Immutable descriptor-bound local blob writer and read-only inventory inspection; 38 tests | Run authorization, reservation registry and governed coordinator integration |
 | WP6-2C | Durable input/manifest/reducer/state/commit integration; 28 tests, independently reviewed | Full governed session manifest, strategy callback, authentic clocks and anchor barrier |
+| WP6-2D | Pure Ed25519 receipt-chain and challenged-head validation; 47 tests, independently reviewed | Real receipt service, authenticated read-only fetch, nonce lifecycle and retention enforcement |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -40,16 +41,22 @@ Before the full governed coordinator, specify exact WP0 event payloads, diagnost
 state serialization, initial checkpoint, input-prefix commitment, manifest-before-
 callback ordering, and durable intent publication time distinct from callback time.
 The reducer's supplied intent timestamp is not evidence of actual publication.
-Define callback failure as terminal, not replayable, and freeze the cryptographic
-anchor signature and authoritative-head protocol. Only then bind validators,
+Define strategy callback failure as terminal, not replayable. WP6-2D now freezes
+Ed25519 trust/receipt/head fields and pure signature checking; the durable service
+append/head publication protocol and authenticated transport remain unimplemented.
+Only then bind validators,
 reducer and object publication into an integrated call site.
 
 The new integration does not call a strategy callback or acquire clock/feed data.
 Its caller-supplied timestamps do not establish actual intent publication time;
 prospective quote eligibility and independently anchored continuation are unresolved.
-The candidate cryptography Python package is not installed in the current environment; no dependency
-or service was silently added. Select and pin the reviewed signature implementation
-in the anchor package.
+WP6-2D adds an optional phase6-anchor extra pinned to cryptography50.0.2.
+Tests used /private/tmp/mie-phase6-anchor-runtime; the base environment is unchanged.
+A real missing-backend check returned DEPENDENCY_UNAVAILABLE. No service was created.
+All checks and result fields derive from the same bounded detached primitive snapshot,
+closing the mutation-after-signature race found during independent review.
+A MATCHED signed head does not prove a live fetch or enforced retention; all outputs
+keep runtime_accepted=false and external_service_verification=UPSTREAM_REQUIRED.
 
 The local object store is not a registry and must not allocate/pretend to allocate
 run reservations. A persistent diagnostic registry needs its own reviewed append
