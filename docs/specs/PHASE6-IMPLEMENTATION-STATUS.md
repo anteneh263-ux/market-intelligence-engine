@@ -1,4 +1,4 @@
-# Phase 6 implementation status — 2026-10-08
+# Phase 6 implementation status — 2026-10-12
 
 This status supersedes the initial planning table's implementation snapshot, not
 its acceptance criteria. Phase 6 is not complete or production-verified.
@@ -11,6 +11,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2B | Immutable descriptor-bound local blob writer and read-only inventory inspection; 38 tests | Run authorization, reservation registry and governed coordinator integration |
 | WP6-2C | Durable input/manifest/reducer/state/commit integration; 28 tests, independently reviewed | Full governed session manifest, strategy callback, authentic clocks and anchor barrier |
 | WP6-2D | Pure Ed25519 receipt-chain and challenged-head validation; 47 tests, independently reviewed | Real receipt service, authenticated read-only fetch, nonce lifecycle and retention enforcement |
+| WP6-2E | Durable diagnostic P/A/R reservation ledger; 38 tests, independently reviewed | Authentic authorization/time, reservation anchoring and full coordinator admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -58,10 +59,25 @@ closing the mutation-after-signature race found during independent review.
 A MATCHED signed head does not prove a live fetch or enforced retention; all outputs
 keep runtime_accepted=false and external_service_verification=UPSTREAM_REQUIRED.
 
-The local object store is not a registry and must not allocate/pretend to allocate
-run reservations. A persistent diagnostic registry needs its own reviewed append
-protocol; separate runs cannot reuse a single-use object root. Do not retrofit old
-Phase 5 v2 identities with unknown future hashes.
+The local object store remains separate from the new WP6-2E diagnostic registry.
+WP6-2E publishes plan, authorization record and exact WP0 reservation under an
+exclusive descriptor-bound lock. Run identity is the reservation hash; distinct
+plans consume distinct sequences. Read-only inspection checks explicit expected
+publication bytes, not external authority or scientific completeness.
+
+The registry is single-process-lifetime: no reopen after close, failure or restart.
+Unknown commits remain preserved and cannot be retried. A future registry continuation
+requires its own approved protocol; no automatic new identity or counter reset.
+No actual registry was created outside temporary synthetic tests. Supplied approval
+references and times are not authenticated by this module. Results remain
+RESERVED_UNANCHORED, runtime_accepted=false and complete_family_N=null.
+Independent review found a final-root/reentrancy race; negative-first tests then
+root and lifecycle rechecks immediately before acknowledgement resolved it.
+
+Next: exact WP0 governed event payloads and diagnostic strategy serialization,
+authentic reservation/genesis anchoring before intake, and a coordinator binding
+those controls to the tested execution path. Do not retrofit old Phase5 v2 identities
+with unknown future hashes. No operational start/CLI or market pilot exists yet.
 
 The operator has no approved provider/receipt service. See
 PHASE6-EXTERNAL-SETUP-PROPOSAL.md for a candidate, not activation authority.
