@@ -133,6 +133,11 @@ class ObjectWriter:
     def header(self):
         return json.loads(self._header)
 
+    @property
+    def root(self):
+        """Normalized supplied path; publication still checks physical identity."""
+        return self._root
+
     def claim(self):
         _need(not self._stopped and self._pid == os.getpid()
               and self._thread == threading.get_ident(), 'WRITER_STOPPED')

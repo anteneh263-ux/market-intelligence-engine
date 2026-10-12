@@ -12,7 +12,8 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2C | Durable input/manifest/reducer/state/commit integration; 28 tests, independently reviewed | Full governed session manifest, strategy callback, authentic clocks and anchor barrier |
 | WP6-2D | Pure Ed25519 receipt-chain and challenged-head validation; 47 tests, independently reviewed | Real receipt service, authenticated read-only fetch, nonce lifecycle and retention enforcement |
 | WP6-2E | Durable diagnostic P/A/R reservation ledger; 38 tests, independently reviewed | Authentic authorization/time, reservation anchoring and full coordinator admission |
-| WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Durable governed startup and authentic external admission controls |
+| WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Authentic external admission controls |
+| WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Strategy serialization, governed events and actual runtime admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -103,3 +104,25 @@ governed startup coordinator: freeze diagnostic strategy serialization and exact
 event payloads; persist G and actual receipt/anchor observations in causal order;
 require authenticated clocks/service results before intake. A pure VALID binding
 result cannot be treated as an admission token.
+
+## Durable local binding attempt implemented
+
+WP6-2G exclusively claims a fresh object writer whose owner, run and root match
+the checked candidate context. It publishes P/A/R/G before generating a fresh
+nonce, then persists the challenge. The response and internally assembled request
+are persisted before WP6-2F checking; the result binds the exact request/challenge.
+Final close and complete read-only inventory inspection precede acknowledgement.
+Foreign callers are refused; callback reentry, publication uncertainty and final
+verification failures are terminal INCOMPLETE, with partial bytes preserved.
+
+BOUND_LOCAL means only that supplied evidence passed local checks. It never grants
+READY, starts intake, transfers the writer or authorizes execution. Strategy-state
+serialization remains caller context, exact anchor trust validation occurs at
+finish, and the required clock callable is not proof of authentic time. No actual
+service fetch, signature deployment key, retention enforcement or pilot exists.
+A persisted VALID result alone does not prove successful final close/inspection.
+This is a bounded durable binding transaction, not the completed coordinator.
+
+Next: freeze diagnostic strategy-state serialization and WP0 event payloads, then
+integrate actual clock/service and causal execution controls in the governed
+coordinator. CLI and separately approved prospective pilot still follow.
