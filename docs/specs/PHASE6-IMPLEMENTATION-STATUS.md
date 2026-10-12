@@ -12,6 +12,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2C | Durable input/manifest/reducer/state/commit integration; 28 tests, independently reviewed | Full governed session manifest, strategy callback, authentic clocks and anchor barrier |
 | WP6-2D | Pure Ed25519 receipt-chain and challenged-head validation; 47 tests, independently reviewed | Real receipt service, authenticated read-only fetch, nonce lifecycle and retention enforcement |
 | WP6-2E | Durable diagnostic P/A/R reservation ledger; 38 tests, independently reviewed | Authentic authorization/time, reservation anchoring and full coordinator admission |
+| WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Durable governed startup and authentic external admission controls |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -84,3 +85,21 @@ PHASE6-EXTERNAL-SETUP-PROPOSAL.md for a candidate, not activation authority.
 No real feed, paid resources, trading account or external anchor has been activated.
 H-025 and existing scientific evidence remain excluded. Scientific acceptance is
 UNRESOLVED; passing software tests never imply strategy validity or live readiness.
+
+## Pre-start composition implemented
+
+WP6-2F derives expected run, trust and reservation/genesis subjects from checked
+P/A/R/G records; callers cannot override those bindings in the anchor request.
+Synthetic integration tests allocate R through the real temporary diagnostic ledger
+and verify test-key signed reservation/genesis/head records. Genesis balances and
+strategy-state commitment are bound, preliminary and signed times remain pre-start,
+and declared retention must cover end plus lateness/decision/quote delays.
+All checks use a detached primitive snapshot. Lexical paths reject NUL and H025
+components; no physical filesystem/approval authority is inferred.
+
+This package does not acquire a nonce/clock, persist an operational genesis, call
+an external service or grant READY. runtime_accepted remains false. Next is the
+governed startup coordinator: freeze diagnostic strategy serialization and exact
+event payloads; persist G and actual receipt/anchor observations in causal order;
+require authenticated clocks/service results before intake. A pure VALID binding
+result cannot be treated as an admission token.
