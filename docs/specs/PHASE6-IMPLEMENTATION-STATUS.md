@@ -13,7 +13,8 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2D | Pure Ed25519 receipt-chain and challenged-head validation; 47 tests, independently reviewed | Real receipt service, authenticated read-only fetch, nonce lifecycle and retention enforcement |
 | WP6-2E | Durable diagnostic P/A/R reservation ledger; 38 tests, independently reviewed | Authentic authorization/time, reservation anchoring and full coordinator admission |
 | WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Authentic external admission controls |
-| WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Strategy serialization, governed events and actual runtime admission |
+| WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Actual runtime admission and service/clock provenance |
+| WP6-2H | Canonical diagnostic strategy state and all ten WP0 event payload types/local links; 99 tests, independently reviewed | Durable journal, causal call site and full lifecycle validation |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -123,6 +124,38 @@ service fetch, signature deployment key, retention enforcement or pilot exists.
 A persisted VALID result alone does not prove successful final close/inspection.
 This is a bounded durable binding transaction, not the completed coordinator.
 
-Next: freeze diagnostic strategy-state serialization and WP0 event payloads, then
-integrate actual clock/service and causal execution controls in the governed
-coordinator. CLI and separately approved prospective pilot still follow.
+WP6-2H now freezes the diagnostic strategy-state serialization and WP0 event
+payloads below. Next is durable journal and causal call-site integration, with
+actual clock/service controls in the governed coordinator. CLI and a separately
+approved prospective pilot still follow.
+
+
+## Diagnostic state and typed event links implemented
+
+WP6-2H adds a pure fixed 25/75 diagnostic strategy under app.paper.session.
+Canonical params and state have exact versioned schemas, pinned params hash,
+strict-next bar count and preceding segment commitment. Warmup produces no target;
+the first post-warmup decision is25%, then75%, regardless of warmup parity. Strict
+byte decoding refuses unknown fields, duplicate keys and noncanonical encodings.
+No hidden mutable state or callback to a provider exists in this helper.
+
+The pure event validator checks exact payloads for all ten WP0 journal kinds,
+manifest/run/session bindings, callback time bounds, local sequence, hashes and
+predecessor genesis invariants. A matching event hash proves neither complete
+journal ancestry nor referenced execution. runtime_accepted remains false.
+Tests compose actual strategy output with the reducer and event hashing; they
+are synthetic pure integration tests, not an active durable runtime call site.
+
+Independent review corrected the modeled fill-price limit to3e12 to cover valid
+slippage and upward tick rounding. A test derives a1.5e12 fill from actual reducer
+cash/units and validates its event payload. Three negative-first regressions
+closed predecessor genesis kind/hash/sequence contradictions.99new tests and24
+existing reducer tests passed independently; no remaining scoped review blockers.
+
+Next implementation: persist typed events and strategy input/output states in a
+single governed causal call site, with manifest-before-callback ordering and
+checkpoint binding. Preserve a separate actual intent-publication barrier before
+selecting a quote; neither an event envelope timestamp nor a pure valid result
+proves that barrier. Full lifecycle, pinned method/params/plan checks, authentic
+clock/service integration, operator CLI and approved prospective pilot remain.
+Phase6 is incomplete; no scientific acceptance or live readiness is asserted.
