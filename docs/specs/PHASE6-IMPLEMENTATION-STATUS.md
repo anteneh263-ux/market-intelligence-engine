@@ -1,4 +1,4 @@
-# Phase 6 implementation status — 2026-10-12
+# Phase 6 implementation status — 2026-10-13
 
 This status supersedes the initial planning table's implementation snapshot, not
 its acceptance criteria. Phase 6 is not complete or production-verified.
@@ -14,7 +14,8 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2E | Durable diagnostic P/A/R reservation ledger; 38 tests, independently reviewed | Authentic authorization/time, reservation anchoring and full coordinator admission |
 | WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Authentic external admission controls |
 | WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Actual runtime admission and service/clock provenance |
-| WP6-2H | Canonical diagnostic strategy state and all ten WP0 event payload types/local links; 99 tests, independently reviewed | Durable journal, causal call site and full lifecycle validation |
+| WP6-2H | Canonical diagnostic strategy state and all ten WP0 event payload types/local links; 99 tests, independently reviewed | Causal call site and full lifecycle validation |
+| WP6-2I | Immutable typed event journal, manifest/payload/event ordering and terminal failure behavior; 26 tests, independently reviewed | Governed execution call site, reference resolution and checkpoint binding |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -159,3 +160,29 @@ selecting a quote; neither an event envelope timestamp nor a pure valid result
 proves that barrier. Full lifecycle, pinned method/params/plan checks, authentic
 clock/service integration, operator CLI and approved prospective pilot remain.
 Phase6 is incomplete; no scientific acceptance or live readiness is asserted.
+
+
+## Durable typed event journal implemented
+
+WP6-2I publishes the exact manifest before MANIFEST_VERIFIED, and each exact typed
+payload before its WP0 event. Run/session/sequence/previous hash derive from pinned
+context and the last acknowledged head. Constructor/append acknowledgement follows
+readback and a final physical descriptor/root plus lifecycle check. Uncertain
+publications, reentry and invalid appends are terminal INCOMPLETE; no retry/reopen.
+Final close inspects the complete expected inventory before reporting CLOSED.
+
+26 synthetic tests cover all ten payload types, real process exit, write-then-raise,
+root substitution after publication, foreign callers, callback reentry, immutable
+inspection and actual pure strategy/reducer-derived event payload storage. This
+last test integrates payload production and storage; it is not the full causal
+execution path. Referenced strategy states/receipts remain unresolved by the journal.
+Caller timestamps are not authenticated time or actual publication barriers.
+
+STOP is a typed record in this primitive: later locally valid events remain allowed.
+CLOSED denotes the local writer/inspection outcome, never COMPLETED or VERIFIED
+prospective execution. Full event lifecycle belongs to the future coordinator.
+Next: persist and resolve strategy input/output and execution artifacts in the
+same governed call site, invoke the strategy only after a durable manifest, bind
+checkpoints, and preserve actual intent-publication time before quote eligibility.
+Authentic clock/service integration, CLI and separately approved pilot still remain.
+No provider/service/real evidence root was activated. Phase6 remains incomplete.
