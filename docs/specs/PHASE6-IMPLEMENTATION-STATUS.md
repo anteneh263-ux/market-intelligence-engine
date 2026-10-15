@@ -16,7 +16,8 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Actual runtime admission and service/clock provenance |
 | WP6-2H | Canonical diagnostic strategy state and all ten WP0 event payload types/local links; 99 tests, independently reviewed | Causal call site and full lifecycle validation |
 | WP6-2I | Immutable typed event journal, manifest/payload/event ordering and terminal failure behavior; 26 tests, independently reviewed | Full event lifecycle, reference resolution and checkpoint binding |
-| WP6-2J | Durable fixed-strategy invocation after manifest/BAR_ACCEPTED, pinned inputs and output/event commit; 40 tests, independently reviewed | Reducer/fill/checkpoint call site, authentic code/data/time and admission |
+| WP6-2J | Durable fixed-strategy invocation after manifest/BAR_ACCEPTED, pinned inputs and output/event commit; 40 tests, independently reviewed | Full execution/checkpoint call site, authentic code/data/time and admission |
+| WP6-2K | Durable reducer bar call and post-intent publication time sample; 30 tests, independently reviewed | Barrier-aware first quote/fill, checkpoint and full prospective timing |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -217,3 +218,31 @@ prior-state artifacts, preserve actual intent-publication barrier before eligibl
 quote selection, and enforce full lifecycle/admission controls. Authentic external
 clock/anchor service, CLI and an approved prospective pilot remain outstanding.
 No actual evidence root, provider/service, trading account or pilot was activated.
+
+
+## Durable diagnostic bar-to-intent integration implemented
+
+WP6-2K run_bar consumes only this journal's actual acknowledged diagnostic call;
+a generic appended decision cannot substitute. Supplied reducer state/config,
+bar count/close interval and observation times bind to the retained plan/decision.
+Input state/observation/descriptor precede one reducer.bar call. Exact output
+postconditions prevent changed cash/holdings, mutated arguments or false pending
+instructions. Output, typed outcome and linking commit precede acknowledgement.
+
+For ORDER_INTENT, a same-session clock sample is acquired only after the intent
+event is durably published and read back, then saved as a separate intent barrier.
+Warmup has no fabricated NO_TRADE event; evaluated zero size and risk stop remain
+distinct.30new tests cover eight publication failures, no early reducer invocation,
+barrier causality, all outcomes, spoofed context and state/clock/root faults.
+
+This implements local simulated sizing, not a fill or complete prospective timing.
+The raw reducer output still has nominal callback-time pending timestamps; the
+separate post-publication sample must not be confused with them. Result explicitly
+sets prospective_quote_ready=false and runtime_accepted=false. No quote API is
+added; a later reviewed adapter must use the barrier for eligibility/timeout and
+prove the first observed eligible quote before actual prospective use. Supplied
+clock/data/prior-state/code authority remains upstream. No checkpoint exists yet.
+
+Next: reviewed barrier-aware quote/fill path, durable state/checkpoint binding and
+full lifecycle/admission; actual clock/anchor service, CLI and approved pilot remain.
+H025 and existing scientific evidence are preserved. No live services or roots created.

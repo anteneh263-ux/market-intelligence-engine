@@ -6,7 +6,8 @@ import os
 import threading
 import re
 from fractions import Fraction
-from app.paper.session import diagnostic_strategy_v1 as strategy
+from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
+from app.research import phase6_bar_binding as bar_binding
 from app.research.phase6_validation import validate
 from app.research.phase6_object_store import ObjectWriter, inspect_objects, _bound
 from app.research.phase6_start_validation import _snapshot, _Refused
@@ -80,6 +81,7 @@ class EventJournal:
         self._claim = writer.claim()
         self._lifecycle, self._busy = 'PREPARING', True
         self._objects, self._count, self._last, self._head = {}, 0, None, None
+        self._diagnostic_context, self._bar_done = None, False
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -225,10 +227,95 @@ class EventJournal:
             self._check_bound('OPEN')
             self._last, self._head = json.loads(event_raw), head
             self._count += 1
+            self._diagnostic_context = copy.deepcopy(dict(plan=p, output=output, payload=payload, event_hash=head, commit_hash=commit_hash))
             return copy.deepcopy(dict(schema_version='p6.diagnostic_call_result.v1',
                 state=output['state'], target=output['target'], event_hash=head,
                 invocation_hash=invocation_hash, commit_hash=commit_hash,
                 technical_verification='LOCAL_ONLY', runtime_accepted=False,
+                external_reference_verification='UPSTREAM_REQUIRED'))
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def run_bar(self, state, observation, *, clock):
+        """Persist one local bar transition and optional post-intent time barrier."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            d = self._diagnostic_context
+            _need(not self._bar_done and d is not None and self._count == 3
+                  and self._head == d['event_hash'], 'SEQUENCE_INVALID')
+            _need(callable(clock), 'INPUT_INVALID')
+            q = _detach(dict(state=state, observation=observation))
+            s, o = q['state'], q['observation']
+            target = bar_binding.prepare(d['plan'], d, s, o)
+            input_hash = self._publish(_bytes(s))
+            observation_hash = self._publish(_bytes(o))
+            invocation_hash = self._publish(_bytes(dict(schema_version='p6.bar_invocation.v1',
+                run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
+                diagnostic_commit_hash=d['commit_hash'], decision_event_hash=d['event_hash'],
+                input_state_hash=input_hash, observation_hash=observation_hash, target=target)))
+            self._check_bound('OPEN')
+            argument_state, argument_observation = copy.deepcopy(s), copy.deepcopy(o)
+            output = reducer.bar(argument_state, argument_observation, target)
+            output = _detach(output)
+            returned_state = _bytes(_detach(argument_state))
+            returned_observation = _bytes(_detach(argument_observation))
+            self._check_bound('OPEN')
+            _need(returned_state == _bytes(s) and returned_observation == _bytes(o), 'EXECUTION_INVALID')
+            bar_binding.check_output(s, o, target, output)
+            output_hash = self._publish(_bytes(output))
+            kind = None
+            if output['pending'] is not None:
+                kind = 'ORDER_INTENT'
+                payload = dict(schema_version='p6.payload.order_intent.v1',
+                    decision_event_hash=d['event_hash'], side=output['pending']['side'],
+                    quantity=output['pending']['quantity'], clock_session_id=o['clock_session_id'])
+            elif output['stopped']:
+                kind = 'STOP'
+                payload = dict(schema_version='p6.payload.stop.v1', reason_code='RISK_STOP', pending_intent_hash=None)
+            elif target is not None:
+                kind = 'NO_TRADE'
+                payload = dict(schema_version='p6.payload.no_trade.v1', decision_event_hash=d['event_hash'], reason_code='ZERO_QUANTITY')
+            event_hash = barrier_hash = None
+            if kind is not None:
+                observed = _sample_clock(clock)
+                self._check_bound('OPEN')
+                _need(observed['clock_session_id'] == o['clock_session_id']
+                      and observed['utc_ms'] >= self._last['utc_ms']
+                      and observed['monotonic_ns'] > self._last['monotonic_ns'], 'CLOCK_INVALID')
+                payload_raw, event_raw = _prepare(self._manifest, self._last, kind, payload,
+                                                   observed['utc_ms'], observed['monotonic_ns'])
+                self._active('OPEN')
+                self._publish(payload_raw)
+                event_hash = self._publish(event_raw)
+                self._check_bound('OPEN')
+                if kind == 'ORDER_INTENT':
+                    barrier = _sample_clock(clock)
+                    self._check_bound('OPEN')
+                    _ordered_clock(observed, barrier)
+                    _need(barrier['monotonic_ns'] > observed['monotonic_ns'], 'CLOCK_INVALID')
+                    barrier_hash = self._publish(_bytes(dict(schema_version='p6.intent_barrier.v1',
+                        run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
+                        intent_event_hash=event_hash, **barrier)))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.bar_call_commit.v1',
+                invocation_hash=invocation_hash, output_state_hash=output_hash,
+                event_hash=event_hash, barrier_hash=barrier_hash)))
+            self._check_bound('OPEN')
+            if event_hash is not None:
+                self._last, self._head = json.loads(event_raw), event_hash
+                self._count += 1
+            self._bar_done = True
+            return copy.deepcopy(dict(schema_version='p6.bar_call_result.v1', state=output,
+                event_hash=event_hash, barrier_hash=barrier_hash, commit_hash=commit_hash,
+                invocation_hash=invocation_hash, technical_verification='LOCAL_ONLY',
+                runtime_accepted=False, prospective_quote_ready=False,
                 external_reference_verification='UPSTREAM_REQUIRED'))
         except BaseException:
             self._fail()
