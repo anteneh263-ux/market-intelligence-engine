@@ -18,6 +18,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2I | Immutable typed event journal, manifest/payload/event ordering and terminal failure behavior; 26 tests, independently reviewed | Full event lifecycle, reference resolution and checkpoint binding |
 | WP6-2J | Durable fixed-strategy invocation after manifest/BAR_ACCEPTED, pinned inputs and output/event commit; 40 tests, independently reviewed | Full execution/checkpoint call site, authentic code/data/time and admission |
 | WP6-2K | Durable reducer bar call and post-intent publication time sample; 30 tests, independently reviewed | Barrier-aware first quote/fill, checkpoint and full prospective timing |
+| WP6-2L | Durable quote-after-barrier adapter and checked simulated fills; 47 tests | Receipt resolution, first observed quote proof, checkpoints and full admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -246,3 +247,35 @@ clock/data/prior-state/code authority remains upstream. No checkpoint exists yet
 Next: reviewed barrier-aware quote/fill path, durable state/checkpoint binding and
 full lifecycle/admission; actual clock/anchor service, CLI and approved pilot remain.
 H025 and existing scientific evidence are preserved. No live services or roots created.
+
+
+## Durable quote-after-barrier integration implemented
+
+WP6-2L run_quote consumes only the actual acknowledged pending bar outcome from
+this journal. Versioned p6.quote_after_barrier.v1 preserves the raw reducer state
+and persists a separate adaptation whose intent and action clocks use the complete
+stored post-intent barrier. Eligibility and both-clock timeout checks use that
+barrier. Adapted state, quote and invocation descriptor precede one reducer.quote
+call; frozen output is checked before further clock callbacks.
+
+Exact postconditions check price, fees, maximal affordable BUY quantity, full SELL
+quantity, cost basis and all balances. Durable output and typed SIMULATED_FILL,
+REJECTED or timeout STOP precede a linking commit. A risk stop after fill or rejection
+adds a second chained STOP event. All seven ordinary and nine risk publication
+failure windows preserve the last acknowledged head and refuse retry.
+
+47 new synthetic tests plus 96 prior integration tests pass. They cover boundary
+and dual-clock timeouts, preserved raw timestamps, capped buy/maximality, final sell
+basis remainder, rejection with risk stop, callback mutation/reentry, thread ownership,
+root substitution and output freezing. The complete barrier record identity is
+retained, rather than the clock sample alone, so the fill links to its stored origin.
+
+This is a local simulated fill path. Quote receipt hashes remain unresolved external
+references and the first offered quote is not proof of the first observed market
+quote. Supplied time/source/code authority remains upstream. runtime_accepted and
+prospective_quote_ready remain false; no live provider, service or pilot was started.
+
+Next: durable checkpoint/state and referenced-artifact binding, then full lifecycle
+and admission controls. Ordered authenticated quote intake, independent clock/anchor
+service, operator CLI and an explicitly approved prospective pilot remain outstanding.
+Phase 6 remains incomplete; H025 and historical scientific evidence are unchanged.

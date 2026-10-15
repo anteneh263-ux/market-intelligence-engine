@@ -7,7 +7,7 @@ import threading
 import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
-from app.research import phase6_bar_binding as bar_binding
+from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
 from app.research.phase6_validation import validate
 from app.research.phase6_object_store import ObjectWriter, inspect_objects, _bound
 from app.research.phase6_start_validation import _snapshot, _Refused
@@ -82,6 +82,7 @@ class EventJournal:
         self._lifecycle, self._busy = 'PREPARING', True
         self._objects, self._count, self._last, self._head = {}, 0, None, None
         self._diagnostic_context, self._bar_done = None, False
+        self._bar_context, self._quote_done = None, False
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -301,9 +302,10 @@ class EventJournal:
                     self._check_bound('OPEN')
                     _ordered_clock(observed, barrier)
                     _need(barrier['monotonic_ns'] > observed['monotonic_ns'], 'CLOCK_INVALID')
-                    barrier_hash = self._publish(_bytes(dict(schema_version='p6.intent_barrier.v1',
+                    barrier_record = dict(schema_version='p6.intent_barrier.v1',
                         run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
-                        intent_event_hash=event_hash, **barrier)))
+                        intent_event_hash=event_hash, **barrier)
+                    barrier_hash = self._publish(_bytes(barrier_record))
             commit_hash = self._publish(_bytes(dict(schema_version='p6.bar_call_commit.v1',
                 invocation_hash=invocation_hash, output_state_hash=output_hash,
                 event_hash=event_hash, barrier_hash=barrier_hash)))
@@ -312,11 +314,87 @@ class EventJournal:
                 self._last, self._head = json.loads(event_raw), event_hash
                 self._count += 1
             self._bar_done = True
+            if output['pending'] is not None:
+                self._bar_context = copy.deepcopy(dict(state=output, barrier=barrier_record, barrier_hash=barrier_hash, event_hash=event_hash, commit_hash=commit_hash))
             return copy.deepcopy(dict(schema_version='p6.bar_call_result.v1', state=output,
                 event_hash=event_hash, barrier_hash=barrier_hash, commit_hash=commit_hash,
                 invocation_hash=invocation_hash, technical_verification='LOCAL_ONLY',
                 runtime_accepted=False, prospective_quote_ready=False,
                 external_reference_verification='UPSTREAM_REQUIRED'))
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def run_quote(self, observation, *, quote_receipt_hash, clock):
+        """One local simulated quote using a separately persisted barrier adapter."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            c = self._bar_context
+            _need(not self._quote_done and c is not None and self._count == 4
+                  and self._head == c['event_hash'], 'SEQUENCE_INVALID')
+            _need(callable(clock), 'INPUT_INVALID')
+            q = _detach(dict(observation=observation, receipt_hash=quote_receipt_hash))
+            o, receipt_hash = q['observation'], q['receipt_hash']
+            session_id = _hash(_bytes(self._manifest))
+            adapted = quote_binding.prepare(c, o, receipt_hash, self._manifest['run_id'], session_id)
+            adapted_hash = self._publish(_bytes(adapted))
+            observation_hash = self._publish(_bytes(o))
+            invocation_hash = self._publish(_bytes(dict(schema_version='p6.quote_invocation.v1',
+                policy=quote_binding.POLICY, run_id=self._manifest['run_id'], session_id=session_id,
+                bar_commit_hash=c['commit_hash'], raw_state_hash=_hash(_bytes(c['state'])),
+                adapted_state_hash=adapted_hash, barrier_hash=c['barrier_hash'],
+                intent_event_hash=c['event_hash'], observation_hash=observation_hash, quote_receipt_hash=receipt_hash)))
+            self._check_bound('OPEN')
+            argument_state, argument_observation = copy.deepcopy(adapted), copy.deepcopy(o)
+            output = reducer.quote(argument_state, argument_observation)
+            output = _detach(output)
+            returned_state = _bytes(_detach(argument_state))
+            returned_observation = _bytes(_detach(argument_observation))
+            self._check_bound('OPEN')
+            _need(returned_state == _bytes(adapted) and returned_observation == _bytes(o), 'EXECUTION_INVALID')
+            outcome = quote_binding.check_output(adapted, o, output)
+            output_hash = self._publish(_bytes(output))
+            kind = outcome['kind']
+            first = dict(schema_version='p6.payload.'+kind.lower()+'.v1', **outcome['fields'])
+            if kind == 'STOP':
+                first['pending_intent_hash'] = c['event_hash']
+            else:
+                first.update(intent_event_hash=c['event_hash'], quote_receipt_hash=receipt_hash)
+            events = [(kind, first)]
+            if output['reason_code'] == 'RISK_STOP':
+                events.append(('STOP', dict(schema_version='p6.payload.stop.v1',
+                                           reason_code='RISK_STOP', pending_intent_hash=None)))
+            previous = self._last
+            event_hashes = []
+            for event_kind, payload in events:
+                observed = _sample_clock(clock)
+                self._check_bound('OPEN')
+                _need(observed['clock_session_id'] == o['clock_session_id']
+                      and observed['utc_ms'] >= o['received_utc_ms']
+                      and observed['monotonic_ns'] >= o['received_monotonic_ns'], 'CLOCK_INVALID')
+                payload_raw, event_raw = _prepare(self._manifest, previous, event_kind, payload,
+                                                   observed['utc_ms'], observed['monotonic_ns'])
+                self._active('OPEN')
+                self._publish(payload_raw)
+                event_hashes.append(self._publish(event_raw))
+                previous = json.loads(event_raw)
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.quote_call_commit.v1',
+                invocation_hash=invocation_hash, output_state_hash=output_hash, event_hashes=event_hashes)))
+            self._check_bound('OPEN')
+            self._last, self._head = previous, event_hashes[-1]
+            self._count += len(event_hashes)
+            self._quote_done = True
+            return copy.deepcopy(dict(schema_version='p6.quote_call_result.v1', state=output,
+                adapted_state_hash=adapted_hash, event_hashes=event_hashes, commit_hash=commit_hash,
+                invocation_hash=invocation_hash, technical_verification='LOCAL_ONLY', runtime_accepted=False,
+                prospective_quote_ready=False, external_reference_verification='UPSTREAM_REQUIRED'))
         except BaseException:
             self._fail()
             raise
