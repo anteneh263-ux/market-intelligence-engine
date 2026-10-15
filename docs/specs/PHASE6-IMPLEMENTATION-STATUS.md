@@ -1,4 +1,4 @@
-# Phase 6 implementation status — 2026-10-13
+# Phase 6 implementation status — 2026-10-15
 
 This status supersedes the initial planning table's implementation snapshot, not
 its acceptance criteria. Phase 6 is not complete or production-verified.
@@ -15,7 +15,8 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2F | Pure P/A/R/genesis/signed-anchor pre-start binding integration; 33 tests, independently reviewed | Authentic external admission controls |
 | WP6-2G | Durable candidate P/A/R/G, fresh local nonce and binding request/result; 40 tests, independently reviewed | Actual runtime admission and service/clock provenance |
 | WP6-2H | Canonical diagnostic strategy state and all ten WP0 event payload types/local links; 99 tests, independently reviewed | Causal call site and full lifecycle validation |
-| WP6-2I | Immutable typed event journal, manifest/payload/event ordering and terminal failure behavior; 26 tests, independently reviewed | Governed execution call site, reference resolution and checkpoint binding |
+| WP6-2I | Immutable typed event journal, manifest/payload/event ordering and terminal failure behavior; 26 tests, independently reviewed | Full event lifecycle, reference resolution and checkpoint binding |
+| WP6-2J | Durable fixed-strategy invocation after manifest/BAR_ACCEPTED, pinned inputs and output/event commit; 40 tests, independently reviewed | Reducer/fill/checkpoint call site, authentic code/data/time and admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -186,3 +187,33 @@ same governed call site, invoke the strategy only after a durable manifest, bind
 checkpoints, and preserve actual intent-publication time before quote eligibility.
 Authentic clock/service integration, CLI and separately approved pilot still remain.
 No provider/service/real evidence root was activated. Phase6 remains incomplete.
+
+
+## Durable fixed-strategy invocation implemented
+
+WP6-2J adds EventJournal.run_diagnostic: after durable manifest and locally checked
+BAR_ACCEPTED, bind supplied plan/params/state, persist P/params/input state and
+invocation descriptor, then invoke the fixed diagnostic strategy once. Output state,
+typed decision/warmup event and a linking commit precede acknowledgement. Every
+publication failure or callback uncertainty stops the journal without retry; the
+last acknowledged head remains unchanged. The commit is not a WP0 checkpoint.
+
+40new tests cover all eight publication windows, zero callback after pre-invocation
+failure, exact postconditions, warmup/parity, ownership, reentry and clock failures.
+Independent review and66targeted tests (40new+26journal) passed. Negative-first
+regressions fixed bool/int mutation equality and a clock-callback race that could
+repair returned output or arguments before checking. Output and canonical argument
+snapshots are now frozen immediately on return, before further callbacks. The
+finished-clock sample follows that bounded copy and is an observed upper bound.
+
+This is an actual local strategy call site with durable inputs/output, not complete
+prospective execution. P/M code-pin equality does not authenticate loaded source;
+bar/receipt/prefix references, prior state, clock trust and receipt-time decision
+bounds remain upstream. runtime_accepted=false and external references remain
+UPSTREAM_REQUIRED. No reducer/fill or checkpoint is invoked in this new method.
+
+Next: bind simulated execution and checkpoints to this call site, resolve data and
+prior-state artifacts, preserve actual intent-publication barrier before eligible
+quote selection, and enforce full lifecycle/admission controls. Authentic external
+clock/anchor service, CLI and an approved prospective pilot remain outstanding.
+No actual evidence root, provider/service, trading account or pilot was activated.
