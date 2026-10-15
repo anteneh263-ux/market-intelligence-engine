@@ -83,6 +83,7 @@ class EventJournal:
         self._objects, self._count, self._last, self._head = {}, 0, None, None
         self._diagnostic_context, self._bar_done = None, False
         self._bar_context, self._quote_done = None, False
+        self._accepted_context, self._execution_context = None, None
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -137,6 +138,8 @@ class EventJournal:
             self._check_bound('OPEN')
             self._last, self._head = json.loads(event_raw), head
             self._count += 1
+            if self._count == 2 and self._last['kind'] == 'BAR_ACCEPTED':
+                self._accepted_context = json.loads(payload_raw)
             return head
         except BaseException:
             self._fail()
@@ -316,6 +319,7 @@ class EventJournal:
             self._bar_done = True
             if output['pending'] is not None:
                 self._bar_context = copy.deepcopy(dict(state=output, barrier=barrier_record, barrier_hash=barrier_hash, event_hash=event_hash, commit_hash=commit_hash))
+            self._execution_context = copy.deepcopy(dict(state=output, commit_hash=commit_hash, head=self._head, count=self._count))
             return copy.deepcopy(dict(schema_version='p6.bar_call_result.v1', state=output,
                 event_hash=event_hash, barrier_hash=barrier_hash, commit_hash=commit_hash,
                 invocation_hash=invocation_hash, technical_verification='LOCAL_ONLY',
@@ -391,10 +395,76 @@ class EventJournal:
             self._last, self._head = previous, event_hashes[-1]
             self._count += len(event_hashes)
             self._quote_done = True
+            self._execution_context = copy.deepcopy(dict(state=output, commit_hash=commit_hash, head=self._head, count=self._count))
             return copy.deepcopy(dict(schema_version='p6.quote_call_result.v1', state=output,
                 adapted_state_hash=adapted_hash, event_hashes=event_hashes, commit_hash=commit_hash,
                 invocation_hash=invocation_hash, technical_verification='LOCAL_ONLY', runtime_accepted=False,
                 prospective_quote_ready=False, external_reference_verification='UPSTREAM_REQUIRED'))
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def prepare_checkpoint(self, *, last_receipt_seq, clock):
+        """Seal local execution/strategy/event linkage; references remain upstream."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            c, d, accepted = self._execution_context, self._diagnostic_context, self._accepted_context
+            _need(self._bar_done and c is not None and d is not None and accepted is not None
+                  and self._head == c['head'] and self._count == c['count'], 'SEQUENCE_INVALID')
+            _need(type(last_receipt_seq) is int and d['output']['state']['bar_count'] <= last_receipt_seq < 2**63,
+                  'INPUT_INVALID')
+            _need(callable(clock), 'INPUT_INVALID')
+            s = c['state']
+            reducer.state_check(s)
+            ss = strategy.decode(strategy.encode(d['output']['state']))
+            _need(s['bar_count'] == ss['bar_count'], 'STATE_INVALID')
+            pending_hash = None
+            if s['pending'] is not None:
+                _need(self._quote_done and s['stopped'] and s['reason_code'] == 'QUOTE_TIMEOUT'
+                      and self._bar_context is not None, 'PENDING_UNRESOLVED')
+                pending_hash = self._bar_context['event_hash']
+            state_hash = self._publish(_bytes(s))
+            strategy_hash = self._publish(strategy.encode(ss))
+            observed = _sample_clock(clock)
+            self._check_bound('OPEN')
+            _need(observed['clock_session_id'] == s['clock_session_id']
+                  and observed['utc_ms'] >= s['last_action_utc_ms']
+                  and observed['monotonic_ns'] >= s['last_action_monotonic_ns'], 'CLOCK_INVALID')
+            payload = dict(schema_version='p6.payload.checkpoint_prepared.v1',
+                state_hash=state_hash, strategy_state_hash=strategy_hash,
+                accepted_prefix_hash=accepted['accepted_prefix_hash'], last_receipt_seq=last_receipt_seq,
+                pending_intent_hash=pending_hash)
+            payload_raw, event_raw = _prepare(self._manifest, self._last, 'CHECKPOINT_PREPARED', payload,
+                                                observed['utc_ms'], observed['monotonic_ns'])
+            self._publish(payload_raw)
+            event_hash = self._publish(event_raw)
+            checkpoint = dict(schema_version='p6.checkpoint.v1', run_id=self._manifest['run_id'],
+                session_id=_hash(_bytes(self._manifest)), segment_seq=ss['bar_count'],
+                **{k: s[k] for k in ('cash', 'units', 'cumulative_fees', 'cumulative_realized_pnl',
+                    'cost_basis', 'mark_price', 'equity', 'peak_equity', 'stopped')},
+                strategy_state_hash=strategy_hash, accepted_prefix_hash=accepted['accepted_prefix_hash'],
+                last_receipt_seq=last_receipt_seq, pending_intent_hash=pending_hash,
+                journal_head_hash=event_hash, journal_count=self._count + 1,
+                previous_checkpoint_hash=self._manifest['prior_checkpoint_hash'])
+            checkpoint_hash = self._publish(_bytes(checkpoint))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.checkpoint_commit.v1',
+                checkpoint_hash=checkpoint_hash, event_hash=event_hash, state_hash=state_hash,
+                strategy_state_hash=strategy_hash, execution_commit_hash=c['commit_hash'],
+                diagnostic_commit_hash=d['commit_hash'])))
+            self._check_bound('OPEN')
+            self._last, self._head = json.loads(event_raw), event_hash
+            self._count += 1
+            self._lifecycle = 'CHECKPOINTED_LOCAL'
+            return dict(schema_version='p6.checkpoint_result.v1', checkpoint_hash=checkpoint_hash,
+                event_hash=event_hash, commit_hash=commit_hash, technical_verification='LOCAL_ONLY',
+                runtime_accepted=False, external_reference_verification='UPSTREAM_REQUIRED')
         except BaseException:
             self._fail()
             raise
@@ -414,14 +484,15 @@ class EventJournal:
         if self._busy:
             self._fail()
             raise ValueError('JOURNAL_STOPPED')
-        if self._lifecycle != 'OPEN':
+        if self._lifecycle not in ('OPEN', 'CHECKPOINTED_LOCAL'):
             return
+        expected = self._lifecycle
         self._busy = True
         try:
             self._writer.close(claim=self._claim)
-            self._active('OPEN')
+            self._active(expected)
             inspect_objects(self._writer.root, header=self._writer.header, objects=dict(self._objects))
-            self._active('OPEN')
+            self._active(expected)
             self._lifecycle = 'CLOSED'
         except BaseException:
             self._fail()

@@ -19,6 +19,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2J | Durable fixed-strategy invocation after manifest/BAR_ACCEPTED, pinned inputs and output/event commit; 40 tests, independently reviewed | Full execution/checkpoint call site, authentic code/data/time and admission |
 | WP6-2K | Durable reducer bar call and post-intent publication time sample; 30 tests, independently reviewed | Barrier-aware first quote/fill, checkpoint and full prospective timing |
 | WP6-2L | Durable quote-after-barrier adapter and checked simulated fills; 47 tests | Receipt resolution, first observed quote proof, checkpoints and full admission |
+| WP6-2M | Durable exact WP0 checkpoint from captured strategy/execution outputs and journal head; 30 tests | Referenced-artifact verification, independent anchor and full admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -279,3 +280,32 @@ Next: durable checkpoint/state and referenced-artifact binding, then full lifecy
 and admission controls. Ordered authenticated quote intake, independent clock/anchor
 service, operator CLI and an explicitly approved prospective pilot remain outstanding.
 Phase 6 remains incomplete; H025 and historical scientific evidence are unchanged.
+
+
+## Durable local checkpoint binding implemented
+
+WP6-2M prepare_checkpoint binds actual acknowledged diagnostic and execution
+outputs to the exact WP0 checkpoint schema. Its strategy state, segment count,
+amounts, pending intent and journal head derive from retained call results.
+The event references reducer state before K is constructed, avoiding an identity
+cycle. K then binds the event, and a final commit links K to both execution and
+strategy commits. Unresolved orders refuse checkpointing; actual quote timeout
+preserves its pending intent. No terminal position is liquidated.
+
+Six publications precede acknowledgement. CHECKPOINTED_LOCAL seals the journal;
+subsequent writes refuse. close still checks the complete expected object inventory
+before CLOSED. 30 synthetic tests cover all supported outcomes, each uncertain write
+window, invalid receipt sequence, callback clocks/reentry, detached output, foreign
+threads, root substitution, intervening events and close inspection failures.
+173 targeted tests pass including the preceding local call packages.
+
+The receipt sequence remains caller-asserted and the prefix hash is retained from
+BAR_ACCEPTED without validating its referenced artifacts. Previous checkpoint and
+anchor references are not authenticated here. Neither CHECKPOINTED_LOCAL nor CLOSED
+means ANCHORED, COMPLETED or prospective readiness. runtime_accepted stays false.
+
+Next: resolve and verify referenced intake/prior-state artifacts, bind independently
+retained checkpoint anchors and enforce full session admission/continuation lifecycle.
+Authenticated ordered market intake and clocks, operator CLI and an approved future
+pilot remain outstanding. Phase 6 is incomplete; no live service or real evidence
+root was created. Existing historical evidence and H025 remain unchanged.
