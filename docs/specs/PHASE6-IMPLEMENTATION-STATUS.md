@@ -21,6 +21,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2L | Durable quote-after-barrier adapter and checked simulated fills; 47 tests | Receipt resolution, first observed quote proof, checkpoints and full admission |
 | WP6-2M | Durable exact WP0 checkpoint from captured strategy/execution outputs and journal head; 30 tests | Referenced-artifact verification, independent anchor and full admission |
 | WP6-2N | Pure exact checkpoint artifact binding checks; 55 tests against temporary persisted outputs | Full referenced intake/previous-state/anchor verification and runtime integration |
+| WP6-2O | Pure receipt-chain, segment and versioned accepted-prefix binding; 43 tests | Actual callback/checkpoint linkage, raw adapter provenance and runtime intake |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -339,3 +340,27 @@ whole chain. No actual evidence root, provider, service or pilot was activated.
 Independent review reproduced a rehashed risk-stop bundle retaining a pending order.
 A negative regression preceded the fix: pending now globally requires a one-event
 quote timeout, not merely a matching nonnull checkpoint/payload reference.
+
+
+## Supplied receipt/accepted-prefix verification implemented
+
+WP6-2O verify_intake_prefix validates a bounded complete supplied receipt prefix
+from sequence1, its normalized payload and clock-probe inventories, and contiguous
+segments matching first BAR_FINAL occurrences. Identical duplicates are retained
+without another segment; revised content for an existing bar key refuses even when
+unreferenced by a segment. Quotes remain checked observations, excluded from bar
+features. Extra unreferenced map entries and missing/reordered segments refuse.
+
+The additive p6.accepted_prefix.v1 commitment binds run_id to ordered segment hashes.
+43 new tests plus42existing validators pass, including interleaved observations,
+trailing clock failures and64receipt boundary. This is a pure helper; no live intake,
+actual strategy callback consumption, normalized-vs-raw adapter truth, deployment
+clock trust or disk durability is established. Result explicitly keeps runtime,
+callback-input and durability verification false. Earlier opaque commitments are
+not rewritten or retrospectively validated by the new schema.
+
+Next: bind resolved prefixes and receipts to the actual durable strategy/execution/
+checkpoint path, verify prior state continuity and independently retained anchors,
+then complete lifecycle, intake/clock/service/CLI and approved future pilot. Only
+then validate the full Phase1-6 chain in a separate documented integration exercise.
+No provider/service/evidence root was activated; Phase6 remains incomplete.
