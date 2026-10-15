@@ -20,6 +20,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2K | Durable reducer bar call and post-intent publication time sample; 30 tests, independently reviewed | Barrier-aware first quote/fill, checkpoint and full prospective timing |
 | WP6-2L | Durable quote-after-barrier adapter and checked simulated fills; 47 tests | Receipt resolution, first observed quote proof, checkpoints and full admission |
 | WP6-2M | Durable exact WP0 checkpoint from captured strategy/execution outputs and journal head; 30 tests | Referenced-artifact verification, independent anchor and full admission |
+| WP6-2N | Pure exact checkpoint artifact binding checks; 55 tests against temporary persisted outputs | Full referenced intake/previous-state/anchor verification and runtime integration |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -309,3 +310,32 @@ retained checkpoint anchors and enforce full session admission/continuation life
 Authenticated ordered market intake and clocks, operator CLI and an approved future
 pilot remain outstanding. Phase 6 is incomplete; no live service or real evidence
 root was created. Existing historical evidence and H025 remain unchanged.
+
+
+## Pure checkpoint artifact verification implemented
+
+WP6-2N verify_checkpoint checks supplied checkpoint, manifest, state, strategy,
+CHECKPOINT_PREPARED event/payload/immediate predecessor and three linking commits.
+Exact schemas, canonical hashes, native types, state amounts and sequence/time
+constraints bind these artifacts. Actual temporary journal outputs for warmup,
+zero quantity, bar risk, fill, rejection, quote risk and timeout are accepted;
+malformed and substituted fields are rejected. 55 new tests and 30 checkpoint
+publication tests pass. No source file or store is read by the verifier itself.
+
+This is an integration-tested pure helper, not an installed runtime admission gate.
+Previous event payload/ancestry, intent artifact, invocation records, previous
+checkpoint contents, receipts/prefix artifacts and independent anchors are still
+unresolved. Supplied artifacts alone cannot prove authentic execution or durability.
+Result explicitly sets runtime_accepted=false, durability_verified=false and
+full_journal_verified=false. Scientific and prospective acceptance remain unchanged.
+
+Next: receipt/prefix and previous-state artifact verification, durable verifier
+integration, independent checkpoint anchor binding and full session lifecycle.
+Provider/clock/service setup, CLI and an approved prospective diagnostic pilot still
+remain. After Phase 6 completion, validate the entire Phase 1-6 workflow through a
+separate documented integration run; current regression tests do not establish that
+whole chain. No actual evidence root, provider, service or pilot was activated.
+
+Independent review reproduced a rehashed risk-stop bundle retaining a pending order.
+A negative regression preceded the fix: pending now globally requires a one-event
+quote timeout, not merely a matching nonnull checkpoint/payload reference.
