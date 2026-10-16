@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
+from app.research.phase6_genesis_admission import verify_genesis_admission
 from app.research.phase6_checkpoint_continuation import verify_checkpoint_continuation
 from app.research.phase6_prior_receipt_validation import verify_prior_receipts
 from app.research.phase6_prior_state_validation import verify_prior_state
@@ -72,7 +73,7 @@ def _ordered_clock(before, after):
 class EventJournal:
     """Own one writer and derive each event from the last acknowledged head."""
 
-    def __init__(self, writer, manifest, *, utc_ms, monotonic_ns, checkpoint_admission=None):
+    def __init__(self, writer, manifest, *, utc_ms, monotonic_ns, checkpoint_admission=None, genesis_admission=None):
         _need(type(writer) is ObjectWriter, 'INPUT_INVALID')
         manifest = _detach(manifest)
         _need(type(manifest) is dict, 'INPUT_INVALID')
@@ -80,6 +81,13 @@ class EventJournal:
         first = dict(schema_version='p6.payload.manifest_verified.v1', manifest_hash=_hash(manifest_raw))
         payload_raw, event_raw = _prepare(manifest, None, 'MANIFEST_VERIFIED', first, utc_ms, monotonic_ns)
         _need(writer.header['run_id'] == manifest['run_id'], 'WRITER_MISMATCH')
+        _need(checkpoint_admission is None or genesis_admission is None, 'ADMISSION_CONFLICT')
+        genesis = None
+        if genesis_admission is not None:
+            package = _detach(dict(manifest=manifest,proof=genesis_admission,utc_ms=utc_ms))
+            verified = verify_genesis_admission(package)
+            _need(verified['binding_status'] == 'VALID', verified['reason_code'] or 'ADMISSION_REQUIRED')
+            genesis = dict(package=package,validation=verified)
         admission = None
         if checkpoint_admission is not None:
             package = _detach(dict(manifest=manifest, proof=checkpoint_admission, utc_ms=utc_ms))
@@ -101,7 +109,17 @@ class EventJournal:
         self._prior_state_context = None
         self._prior_receipt_context = None
         self._checkpoint_admission = None
+        self._genesis_admission = None
         try:
+            if genesis is not None:
+                package_hash = self._publish(_bytes(genesis['package']))
+                validation_hash = self._publish(_bytes(genesis['validation']))
+                commit_hash = self._publish(_bytes(dict(schema_version='p6.genesis_admission.v1',
+                    run_id=manifest['run_id'],session_id=_hash(manifest_raw),package_hash=package_hash,
+                    validation_hash=validation_hash,genesis_hash=manifest['prior_checkpoint_hash'],
+                    prior_anchor_hash=manifest['prior_anchor_hash'])))
+                self._check_bound('PREPARING')
+                self._genesis_admission = dict(**genesis,commit_hash=commit_hash)
             if admission is not None:
                 package_hash = self._publish(_bytes(admission['package']))
                 validation_hash = self._publish(_bytes(admission['validation']))
@@ -234,6 +252,9 @@ class EventJournal:
             if self._checkpoint_admission is not None:
                 expected = self._checkpoint_admission['package']['proof']['checkpoints'][-1]
                 _need(_bytes(q['prior']) == _bytes(expected), 'IDENTITY_MISMATCH')
+            if self._genesis_admission is not None:
+                expected = self._genesis_admission['package']['proof']['start']['genesis']
+                _need(_bytes(q['prior']) == _bytes(expected), 'IDENTITY_MISMATCH')
             result = verify_prior_state(q)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
             package_hash = self._publish(_bytes(q))
@@ -301,6 +322,9 @@ class EventJournal:
             q = _detach(dict(plan=plan, params=params, state=state, segment_seq=segment_seq))
             p, pa, s, seq = (q[k] for k in ('plan', 'params', 'state', 'segment_seq'))
             prior = self._prior_state_context
+            if self._genesis_admission is not None:
+                _need(self._intake_context is not None and prior is not None, 'ADMISSION_REQUIRED')
+                _need(type(seq) is int and seq == 1, 'SEQUENCE_INVALID')
             if self._checkpoint_admission is not None:
                 _need(self._intake_context is not None and prior is not None
                       and self._prior_receipt_context is not None, 'ADMISSION_REQUIRED')
@@ -346,6 +370,8 @@ class EventJournal:
                 invocation.update(schema_version='p6.diagnostic_invocation.v4', prior_receipt_binding_hash=self._prior_receipt_context['commit_hash'])
             if self._checkpoint_admission is not None:
                 invocation.update(schema_version='p6.diagnostic_invocation.v5', checkpoint_admission_hash=self._checkpoint_admission['commit_hash'])
+            if self._genesis_admission is not None:
+                invocation.update(schema_version='p6.diagnostic_invocation.v6', genesis_admission_hash=self._genesis_admission['commit_hash'])
             invocation_hash = self._publish(_bytes(invocation))
             self._check_bound('OPEN')
             started = _sample_clock(clock)
@@ -357,6 +383,10 @@ class EventJournal:
                 current = dict(admission, utc_ms=started['utc_ms'])
                 _need(verify_checkpoint_continuation(current)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
                 _need(started['clock_session_id'] == prior['state']['clock_session_id'], 'CLOCK_INVALID')
+            if self._genesis_admission is not None:
+                current = dict(self._genesis_admission['package'],utc_ms=started['utc_ms'])
+                _need(verify_genesis_admission(current)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
+                _need(started['clock_session_id'] == self._intake_context['receipt']['clock_session_id'], 'CLOCK_INVALID')
             argument_state, argument_params = copy.deepcopy(s), copy.deepcopy(pa)
             output = strategy.advance(argument_state, argument_params,
                                       segment_seq=seq, segment_hash=self._manifest['segment_id'])

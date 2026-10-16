@@ -518,3 +518,27 @@ or restart authorization. Mandatory genesis/start, live trusted clocks/service/n
 acquisition, post-checkpoint anchor transport/lifecycle, operator CLI and approved
 prospective pilot remain. Phase6 incomplete; separate full Phase1–6 integration
 still follows. No actual pilot/provider/evidence-root or historical artifact changed.
+
+## Gated first-segment admission implemented — 2026-10-16
+
+WP6-2V open_genesis_session adds the explicit first-segment gate alongside the
+checkpoint continuation gate. It revalidates pre-start authorization/reservation/
+genesis evidence plus a current supplied signed head over the identical initial
+receipts. Package/result/commit are persisted before manifest. Intake and exact
+initial-state binding are mandatory before diagnosticv6; freshness and receipt
+clock-session are rechecked at actual sampled callback start. Legacy paths remain
+available and ungated; no overall runtime/independent-retention authority is granted.
+
+34 new tests cover an actual temporary first segment through checkpoint and v6
+receipt-ancestry compatibility, invalid/missing/expired proof, altered/resigned
+start receipt prefix, all6 uncertain publications, root substitution, ownership,
+caller mutation and callback blocking. This is component integration tested.
+
+Remaining: post-checkpoint anchoring lifecycle, authentic service/nonce/clock/intake
+and process/session ownership, operatorCLI and an approved prospective pilot.
+Phase6 remains incomplete. Full Phase1–6 integration is a later separate validation;
+no actual service/provider/pilot/evidence-root or historical artifact was changed.
+
+WP6-2V review found and corrected a quote invocation schema override. An actual
+genesis decision/fill/checkpoint/next-ancestry test reproduces the old error and
+passes after preserving quote invocation v2. 215 targeted tests pass after this fix.

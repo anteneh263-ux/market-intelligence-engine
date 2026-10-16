@@ -12,11 +12,11 @@ from app.research.phase6_object_store import ObjectWriter
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 
 
-def fixture(tmp_path,n=2,bound=False):
+def fixture(tmp_path,n=2,bound=False,warmup=2):
     ledger,root,evidence=setup(tmp_path);p,a=inputs(root,evidence)
     trust=anchors()['trust'];trust['not_after_utc_ms']=1000000
-    pa=dict(schema_version='p6.diagnostic_params.v1',warmup_bars=2,targets=['0.25','0.75'])
-    p.update(anchor_trust_hash=H(trust),params_hash=H(pa),warmup_bars=2,end_ms=300000,max_target='0.75');a['plan_hash']=H(p)
+    pa=dict(schema_version='p6.diagnostic_params.v1',warmup_bars=warmup,targets=['0.25','0.75'])
+    p.update(anchor_trust_hash=H(trust),params_hash=H(pa),warmup_bars=warmup,end_ms=300000,max_target='0.75');a['plan_hash']=H(p)
     reserved=ledger.reserve(p,a,reserved_utc_ms=2);ledger.close();r=reserved['reservation'];run=H(r)
     s=reducer.initial({k:p[k] for k in reducer.CONFIG_DEC+reducer.CONFIG_INT});ss=strategy.initial(pa)
     g=dict(schema_version='p6.genesis.v1',run_id=run,plan_hash=H(p),strategy_state_hash=H(ss),**{k:s[k] for k in 'cash units cost_basis cumulative_fees cumulative_realized_pnl equity peak_equity'.split()})
@@ -37,11 +37,16 @@ def fixture(tmp_path,n=2,bound=False):
         if bound:j.bind_intake(intake)
         j.run_diagnostic(p,pa,ss,segment_seq=i,clock=clock(t+2))
         o=dict(close_ms=t-10,close='100',received_utc_ms=t,received_monotonic_ns=t*1000000,clock_session_id='test',decision_utc_ms=t+3,decision_monotonic_ns=(t+3)*1000000)
-        j.run_bar(s,o,clock=clock(t+4));previous=j.snapshot()['last_event'];out=j.prepare_checkpoint(last_receipt_seq=i,clock=clock(t+6))
+        j.run_bar(s,o,clock=clock(t+6))
+        if i>warmup:
+            from test_phase6_quote_receipt_binding import extend,run as quote_run
+            assert bound
+            intake=extend(intake,t+10);j.bind_quote_receipts(intake);quote_run(j,intake)
+        previous=j.snapshot()['last_event'];out=j.prepare_checkpoint(last_receipt_seq=len(intake['receipts']) if bound else i,clock=clock(t+14))
         c=read(w,out['commit_hash']);e=read(w,out['event_hash']);k=read(w,out['checkpoint_hash'])
         b=dict(manifest=m,checkpoint=k,checkpoint_commit=c,event=e,payload=read(w,e['payload_hash']),previous_event=previous,state=read(w,c['state_hash']),strategy_state=read(w,c['strategy_state_hash']),execution_commit=read(w,c['execution_commit_hash']),diagnostic_commit=read(w,c['diagnostic_commit_hash']));bundles.append(b);j.close()
-        s=b['state'];ss=b['strategy_state'];prior=H(k);receipt('CHECKPOINT',k,t+8)
-    return dict(start=start,checkpoints=bundles,anchor=envelope(t+10))
+        s=b['state'];ss=b['strategy_state'];prior=H(k);receipt('CHECKPOINT',k,t+16)
+    return dict(start=start,checkpoints=bundles,anchor=envelope(t+18))
 
 
 def verify(q):
