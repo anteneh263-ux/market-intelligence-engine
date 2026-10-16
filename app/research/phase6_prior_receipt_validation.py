@@ -32,7 +32,7 @@ def _check(q):
     old=state['prior'];m=old['manifest'];k=old['checkpoint'];sid=H(m)
     d=p['diagnostic_invocation'];i=p['intake_binding'];b=p['intake_bundle'];x=p['execution_invocation']
     _need(type(d) is dict)
-    version=d.get('schema_version');extra={'p6.diagnostic_invocation.v2':'','p6.diagnostic_invocation.v3':' prior_state_binding_hash','p6.diagnostic_invocation.v4':' prior_state_binding_hash prior_receipt_binding_hash'}.get(version)
+    version=d.get('schema_version');extra={'p6.diagnostic_invocation.v2':'','p6.diagnostic_invocation.v3':' prior_state_binding_hash','p6.diagnostic_invocation.v4':' prior_state_binding_hash prior_receipt_binding_hash','p6.diagnostic_invocation.v5':' prior_state_binding_hash prior_receipt_binding_hash checkpoint_admission_hash'}.get(version)
     _need(extra is not None,'POLICY_UNSUPPORTED')
     record(d,version,'run_id session_id plan_hash params_hash input_state_hash segment_seq segment_hash prior_event_hash intake_binding_hash'+extra)
     _need(_int(d['segment_seq']) and d['segment_seq']==k['segment_seq'],'SEQUENCE_INVALID')

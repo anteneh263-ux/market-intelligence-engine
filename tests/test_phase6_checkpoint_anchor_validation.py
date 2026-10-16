@@ -12,7 +12,7 @@ from app.research.phase6_object_store import ObjectWriter
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 
 
-def fixture(tmp_path,n=2):
+def fixture(tmp_path,n=2,bound=False):
     ledger,root,evidence=setup(tmp_path);p,a=inputs(root,evidence)
     trust=anchors()['trust'];trust['not_after_utc_ms']=1000000
     pa=dict(schema_version='p6.diagnostic_params.v1',warmup_bars=2,targets=['0.25','0.75'])
@@ -30,8 +30,11 @@ def fixture(tmp_path,n=2):
     bundles=[];prior=H(g)
     for i in range(1,n+1):
         t=60000+i*60000+10;m=event_case()['manifest'];m.update(run_id=run,plan_hash=H(p),params_hash=H(pa),strategy_code_hash=p['strategy_code_hash'],segment_id=str(i)*64,prior_checkpoint_hash=prior,prior_anchor_hash=H(receipts[-1]),persisted_utc_ms=t)
+        if bound:
+            intake=intake_for(start,i);m['segment_id']=H(intake['segments'][-1])
         dest=tmp_path/('session'+str(i));dest.mkdir();w=ObjectWriter(str(dest),owner='test',run_id=run,max_bytes=1000000);j=EventJournal(w,m,utc_ms=t,monotonic_ns=t*1000000)
-        j.append('BAR_ACCEPTED',dict(schema_version='p6.payload.bar_accepted.v1',segment_hash=m['segment_id'],receipt_hash='c'*64,bar_hash='d'*64,accepted_prefix_hash='e'*64),utc_ms=t+1,monotonic_ns=(t+1)*1000000)
+        j.append('BAR_ACCEPTED',dict(schema_version='p6.payload.bar_accepted.v1',segment_hash=m['segment_id'],receipt_hash=H(intake['receipts'][-1]) if bound else 'c'*64,bar_hash=intake['segments'][-1]['bar_hash'] if bound else 'd'*64,accepted_prefix_hash=H(intake['prefix']) if bound else 'e'*64),utc_ms=t+1,monotonic_ns=(t+1)*1000000)
+        if bound:j.bind_intake(intake)
         j.run_diagnostic(p,pa,ss,segment_seq=i,clock=clock(t+2))
         o=dict(close_ms=t-10,close='100',received_utc_ms=t,received_monotonic_ns=t*1000000,clock_session_id='test',decision_utc_ms=t+3,decision_monotonic_ns=(t+3)*1000000)
         j.run_bar(s,o,clock=clock(t+4));previous=j.snapshot()['last_event'];out=j.prepare_checkpoint(last_receipt_seq=i,clock=clock(t+6))
@@ -138,3 +141,18 @@ def test_snapshot_not_caller_mutation(tmp_path,monkeypatch):
         result=original(request);q['checkpoints'].clear();q['anchor'].clear();return result
     monkeypatch.setattr(module,'verify_anchors',mutate)
     result=verify(q);assert result['binding_status']=='VALID' and result['checkpoint_hash']==expected
+
+
+def intake_for(start,n):
+    from test_phase6_intake_validation import fixture as source
+    q=source();bar=next(iter(q['payloads'].values()));probe=next(iter(q['clock_probes'].values()));receipt=q['receipts'][0];segment=q['segments'][0]
+    q.update(plan=copy.deepcopy(start['plan']),reservation=copy.deepcopy(start['reservation']),receipts=[],segments=[],payloads={},clock_probes={})
+    run=H(q['reservation']);q['prefix'].update(run_id=run,segment_hashes=[])
+    for i in range(1,n+1):
+        close=60000+i*60000;t=close+10
+        b=dict(bar,provider=q['plan']['provider'],instrument=q['plan']['instrument'],open_ms=close-60000,close_ms=close,close='100')
+        c=dict(probe,clock_session_id='test',measured_utc_ms=close-1000,measured_monotonic_ns=(close-1000)*1000000,valid_until_monotonic_ns=(close+1000)*1000000)
+        e=dict(receipt,run_id=run,receipt_seq=i,provider_event_ms=close,received_utc_ms=t,received_monotonic_ns=t*1000000,clock_session_id='test',clock_probe_hash=H(c),normalized_payload_hash=H(b),previous_receipt_hash=H(q['receipts'][-1]) if i>1 else '0'*64)
+        seg=dict(segment,run_id=run,segment_seq=i,start_ms=close-60000,end_ms=close,bar_hash=H(b),accepted_receipt_hash=H(e),previous_segment_hash=H(q['segments'][-1]) if i>1 else '0'*64)
+        q['payloads'][H(b)]=b;q['clock_probes'][H(c)]=c;q['receipts'].append(e);q['segments'].append(seg);q['prefix']['segment_hashes'].append(H(seg))
+    return q

@@ -497,3 +497,24 @@ provider/service/pilot or real scientific evidence root was activated.
 Next: bind this verification into durable session lifecycle/admission, then actual
 intake/clock/service/CLI and approved prospective pilot. Phase6 remains incomplete;
 full Phase1–6 integration remains a subsequent separately reported validation.
+
+## Gated checkpoint continuation implemented — 2026-10-16
+
+WP6-2U open_checkpoint_continuation validates supplied signed checkpoint-chain
+proof before manifest publication and persists package/result/commit before opening.
+The new explicit path requires intake, exact prior-state bundle and prior-receipt
+bindings before diagnostic execution. Descriptor v5 links admission; actual sampled
+callback time rechecks signature/head freshness and clock-session continuity.
+Older constructor paths remain unchanged and are not silently made authoritative.
+
+27 new tests plus121 adjacent tests pass, including an actual temporary bound
+continuation through a second checkpoint. Uncertain writes, root substitution,
+wrong predecessor/identity, altered prior bundle, missing bindings, stale heads at
+opening/callback and ownership errors are covered. No real external service or
+independent retention has been verified; runtime_accepted remains false.
+
+This is the checkpoint continuation component, not complete production admission
+or restart authorization. Mandatory genesis/start, live trusted clocks/service/nonce
+acquisition, post-checkpoint anchor transport/lifecycle, operator CLI and approved
+prospective pilot remain. Phase6 incomplete; separate full Phase1–6 integration
+still follows. No actual pilot/provider/evidence-root or historical artifact changed.
