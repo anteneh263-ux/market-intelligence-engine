@@ -18,7 +18,10 @@ Receipt append preflight validates request identity and commitments. A separate
 S3 retention adapter is implemented and tested with simulated clients: signed
 receipt verification, one conditional PUT attempt, exact-version readback and
 compliance-retention inspection. This is not AWS integration testing or a durable
-sequence/head coordinator; see ADR-MIE-005.
+assembled service; see ADR-MIE-005. A DynamoDB conditional pending/head adapter
+now implements single-attempt claim/commit with simulated-client fault tests
+(ADR-MIE-006). It is not yet wired to signing, S3 or an authenticated endpoint.
+DynamoDB is an additional proposed cost/permission item within the same AWS account.
 
 ## Remaining acceptance-critical work
 
