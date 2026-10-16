@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
+from app.research.phase6_checkpoint_anchor_validation import verify_checkpoint_anchors
 from app.research.phase6_genesis_admission import verify_genesis_admission
 from app.research.phase6_checkpoint_continuation import verify_checkpoint_continuation
 from app.research.phase6_prior_receipt_validation import verify_prior_receipts
@@ -110,6 +111,7 @@ class EventJournal:
         self._prior_receipt_context = None
         self._checkpoint_admission = None
         self._genesis_admission = None
+        self._checkpoint_context = None
         try:
             if genesis is not None:
                 package_hash = self._publish(_bytes(genesis['package']))
@@ -156,7 +158,7 @@ class EventJournal:
     def _publish(self, raw):
         digest = self._writer.put(raw, claim=self._claim)
         _need(digest == _hash(raw), 'INTEGRITY_FAILURE')
-        _need(self._lifecycle in ('OPEN', 'PREPARING'), 'JOURNAL_STOPPED')
+        _need(self._lifecycle in ('OPEN', 'PREPARING', 'CHECKPOINTED_LOCAL'), 'JOURNAL_STOPPED')
         self._objects[digest] = len(raw)
         return digest
 
@@ -732,10 +734,68 @@ class EventJournal:
             self._check_bound('OPEN')
             self._last, self._head = json.loads(event_raw), event_hash
             self._count += 1
+            self._checkpoint_context = dict(checkpoint_hash=checkpoint_hash,commit_hash=commit_hash)
             self._lifecycle = 'CHECKPOINTED_LOCAL'
             return dict(schema_version='p6.checkpoint_result.v1', checkpoint_hash=checkpoint_hash,
                 event_hash=event_hash, commit_hash=commit_hash, technical_verification='LOCAL_ONLY',
                 runtime_accepted=False, external_reference_verification='UPSTREAM_REQUIRED')
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def bind_checkpoint_anchor(self, proof, *, clock):
+        """Persist supplied signed acknowledgement for this writer's own checkpoint."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('CHECKPOINTED_LOCAL')
+        self._busy = True
+        try:
+            admission = self._genesis_admission or self._checkpoint_admission
+            _need(admission is not None and self._checkpoint_context is not None, 'ADMISSION_REQUIRED')
+            p = _detach(proof)
+            _need(callable(clock), 'INPUT_INVALID')
+            observed = _sample_clock(clock)
+            self._check_bound('CHECKPOINTED_LOCAL')
+            _need(observed['clock_session_id'] == self._execution_context['state']['clock_session_id']
+                  and observed['utc_ms'] >= self._last['utc_ms']
+                  and observed['monotonic_ns'] >= self._last['monotonic_ns'], 'CLOCK_INVALID')
+            initial = verify_checkpoint_anchors(p)
+            _need(initial['binding_status'] == 'VALID', initial['reason_code'] or 'ANCHOR_INVALID')
+            previous = admission['package']['proof']
+            expected_checkpoints = previous.get('checkpoints', [])
+            _need(_bytes(p['start']) == _bytes(previous['start'])
+                  and _bytes(p['checkpoints'][:-1]) == _bytes(expected_checkpoints)
+                  and _bytes(p['anchor']['receipts'][:-1]) == _bytes(previous['anchor']['receipts']), 'ANCESTRY_MISMATCH')
+            own = p['checkpoints'][-1]
+            _need(_bytes(own['manifest']) == _bytes(self._manifest)
+                  and _hash(_bytes(own['checkpoint'])) == self._checkpoint_context['checkpoint_hash']
+                  and _hash(_bytes(own['checkpoint_commit'])) == self._checkpoint_context['commit_hash']
+                  and _hash(_bytes(own['event'])) == self._head, 'CHECKPOINT_MISMATCH')
+            _need(p['anchor']['now_utc_ms'] <= observed['utc_ms'], 'CLOCK_INVALID')
+            fresh = copy.deepcopy(p)
+            fresh['anchor']['now_utc_ms'] = observed['utc_ms']
+            result = verify_checkpoint_anchors(fresh)
+            _need(result['binding_status'] == 'VALID', result['reason_code'] or 'ANCHOR_INVALID')
+            self._check_bound('CHECKPOINTED_LOCAL')
+            package_hash = self._publish(_bytes(dict(proof=p,observed=observed)))
+            validation_hash = self._publish(_bytes(result))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.checkpoint_anchor_binding.v1',
+                run_id=self._manifest['run_id'],session_id=_hash(_bytes(self._manifest)),
+                checkpoint_hash=self._checkpoint_context['checkpoint_hash'],
+                checkpoint_commit_hash=self._checkpoint_context['commit_hash'],
+                admission_hash=admission['commit_hash'],anchor_hash=result['last_anchor_hash'],
+                package_hash=package_hash,validation_hash=validation_hash)))
+            self._check_bound('CHECKPOINTED_LOCAL')
+            self._lifecycle = 'CHECKPOINT_ANCHOR_BOUND_LOCAL'
+            return dict(schema_version='p6.checkpoint_anchor_binding_result.v1',
+                package_hash=package_hash,validation_hash=validation_hash,commit_hash=commit_hash,
+                checkpoint_hash=self._checkpoint_context['checkpoint_hash'],anchor_hash=result['last_anchor_hash'],
+                technical_verification='LOCAL_ONLY',runtime_accepted=False,
+                independent_retention_verified=False,external_authority_verification='UPSTREAM_REQUIRED')
         except BaseException:
             self._fail()
             raise
@@ -755,7 +815,7 @@ class EventJournal:
         if self._busy:
             self._fail()
             raise ValueError('JOURNAL_STOPPED')
-        if self._lifecycle not in ('OPEN', 'CHECKPOINTED_LOCAL'):
+        if self._lifecycle not in ('OPEN', 'CHECKPOINTED_LOCAL', 'CHECKPOINT_ANCHOR_BOUND_LOCAL'):
             return
         expected = self._lifecycle
         self._busy = True

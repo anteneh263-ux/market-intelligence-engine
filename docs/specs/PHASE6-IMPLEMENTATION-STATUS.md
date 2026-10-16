@@ -542,3 +542,23 @@ no actual service/provider/pilot/evidence-root or historical artifact was change
 WP6-2V review found and corrected a quote invocation schema override. An actual
 genesis decision/fill/checkpoint/next-ancestry test reproduces the old error and
 passes after preserving quote invocation v2. 215 targeted tests pass after this fix.
+
+## Durable supplied checkpoint acknowledgement implemented — 2026-10-16
+
+WP6-2W bind_checkpoint_anchor operates after the same admitted journal's local
+checkpoint. It pins exact admitted history and owned K/commit/event/manifest,
+revalidates the signed chain at recorded and sampled time, and publishes package,
+validation and commit before CHECKPOINT_ANCHOR_BOUND_LOCAL acknowledgement.
+Journal head/count and checkpoint bytes remain unchanged; the writer stays sealed
+and close verifies its full inventory. Failures retain partial evidence and stop.
+
+29 new tests cover genesis/continuation, actual simulated fill and terminal timeout,
+alternate rehashed valid history, wrong/stale signatures, legacy refusal, all3
+publication failures, root substitution, reentry/ownership/mutation and sealing.
+This is local component integration with synthetic signatures. No independent
+retention, live service contact, runtime acceptance or restart authority is claimed.
+
+Next: trusted anchor transport/head acquisition and unified process/nonce/clock/
+session lifecycle, provider intake/operatorCLI and approved prospective pilot.
+Phase6 remains incomplete; separate full Phase1–6 integration follows later.
+No actual pilot/service/provider/evidence-root or historical artifact was changed.
