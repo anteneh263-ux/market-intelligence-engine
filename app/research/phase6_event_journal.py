@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
+from app.research.phase6_prior_receipt_validation import verify_prior_receipts
 from app.research.phase6_prior_state_validation import verify_prior_state
 from app.research.phase6_intake_validation import verify_intake_prefix
 from app.research.phase6_validation import validate
@@ -89,6 +90,7 @@ class EventJournal:
         self._intake_context = None
         self._quote_input_context = None
         self._prior_state_context = None
+        self._prior_receipt_context = None
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -220,8 +222,41 @@ class EventJournal:
                 validation_hash=validation_hash, prior_hash=result['prior_hash'], bar_event_hash=self._head)))
             self._check_bound('OPEN')
             self._prior_state_context = copy.deepcopy(dict(params=q['params'], state=q['state'],
-                strategy_state=q['strategy_state'], commit_hash=commit_hash))
+                strategy_state=q['strategy_state'], commit_hash=commit_hash, package=q))
             return dict(schema_version='p6.prior_state_binding_result.v1',package_hash=package_hash,
+                validation_hash=validation_hash,commit_hash=commit_hash,technical_verification='LOCAL_ONLY',
+                runtime_accepted=False,external_reference_verification='UPSTREAM_REQUIRED')
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def bind_prior_receipts(self, proof):
+        """Persist supplied receipt ancestry before the next local diagnostic."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            prior = self._prior_state_context
+            _need(prior is not None and self._prior_receipt_context is None
+                  and self._diagnostic_context is None and self._count == 2
+                  and self._last['kind'] == 'BAR_ACCEPTED', 'SEQUENCE_INVALID')
+            q = _detach(dict(prior_state=prior['package'], proof=proof))
+            result = verify_prior_receipts(q)
+            _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
+            package_hash = self._publish(_bytes(q))
+            validation_hash = self._publish(_bytes(result))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.prior_receipt_binding.v1',
+                run_id=self._manifest['run_id'],session_id=_hash(_bytes(self._manifest)),
+                prior_state_binding_hash=prior['commit_hash'],package_hash=package_hash,
+                validation_hash=validation_hash,bar_event_hash=self._head)))
+            self._check_bound('OPEN')
+            self._prior_receipt_context = dict(commit_hash=commit_hash)
+            return dict(schema_version='p6.prior_receipt_binding_result.v1',package_hash=package_hash,
                 validation_hash=validation_hash,commit_hash=commit_hash,technical_verification='LOCAL_ONLY',
                 runtime_accepted=False,external_reference_verification='UPSTREAM_REQUIRED')
         except BaseException:
@@ -281,6 +316,8 @@ class EventJournal:
                 invocation.update(schema_version='p6.diagnostic_invocation.v2', intake_binding_hash=bound['commit_hash'])
             if prior is not None:
                 invocation.update(schema_version='p6.diagnostic_invocation.v3', prior_state_binding_hash=prior['commit_hash'])
+            if self._prior_receipt_context is not None:
+                invocation.update(schema_version='p6.diagnostic_invocation.v4', prior_receipt_binding_hash=self._prior_receipt_context['commit_hash'])
             invocation_hash = self._publish(_bytes(invocation))
             self._check_bound('OPEN')
             started = _sample_clock(clock)

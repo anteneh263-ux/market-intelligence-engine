@@ -15,8 +15,8 @@ def journal(tmp,q,m):
     j.bind_intake(q);return j,w
 
 
-def genesis(tmp):
-    seed=tmp/'seed';seed.mkdir();j,w,q,pa=setup(seed);m=copy.deepcopy(j._manifest);j.close()
+def genesis(tmp,warmup=1):
+    seed=tmp/'seed';seed.mkdir();j,w,q,pa=setup(seed,warmup=warmup);m=copy.deepcopy(j._manifest);j.close()
     state=reducer.initial({k:q['plan'][k] for k in reducer.CONFIG_DEC+reducer.CONFIG_INT});ss=strategy.initial(pa)
     g=dict(schema_version='p6.genesis.v1',run_id=m['run_id'],plan_hash=H(q['plan']),strategy_state_hash=H(ss),**{k:state[k] for k in 'cash units cost_basis cumulative_fees cumulative_realized_pnl equity peak_equity'.split()})
     m['prior_checkpoint_hash']=H(g);j,w=journal(tmp/'first',q,m)
@@ -30,14 +30,18 @@ def execute(j,w,q,pa,state,ss,t):
     return d,j.run_bar(state,o,clock=clock(t+6))
 
 
-def second(tmp):
-    j,w,q,pa,state,ss,g=genesis(tmp)
+def second(tmp,quote=False):
+    j,w,q,pa,state,ss,g=genesis(tmp,warmup=0 if quote else 1)
     # Existing local call path supplies an actual previous checkpoint for verification.
-    execute(j,w,q,pa,state,ss,120010);previous=j.snapshot()['last_event'];r=j.prepare_checkpoint(last_receipt_seq=1,clock=clock(120030))
+    execute(j,w,q,pa,state,ss,120010)
+    if quote:
+        from test_phase6_quote_receipt_binding import extend,run
+        q=extend(q);j.bind_quote_receipts(q);run(j,q)
+    previous=j.snapshot()['last_event'];r=j.prepare_checkpoint(last_receipt_seq=len(q['receipts']),clock=clock(120030))
     c=read(w,r['commit_hash']);e=read(w,r['event_hash']);prior=dict(manifest=j._manifest,checkpoint=read(w,r['checkpoint_hash']),checkpoint_commit=c,event=e,payload=read(w,e['payload_hash']),previous_event=previous,state=read(w,c['state_hash']),strategy_state=read(w,c['strategy_state_hash']),execution_commit=read(w,c['execution_commit_hash']),diagnostic_commit=read(w,c['diagnostic_commit_hash']));j.close()
     q=copy.deepcopy(q);b=copy.deepcopy(next(iter(q['payloads'].values())));b.update(open_ms=120000,close_ms=180000);q['payloads'][H(b)]=b
     probe=copy.deepcopy(next(iter(q['clock_probes'].values())));probe.update(measured_utc_ms=179000,measured_monotonic_ns=179000000000,valid_until_monotonic_ns=181000000000);q['clock_probes'][H(probe)]=probe
-    rec=copy.deepcopy(q['receipts'][-1]);rec.update(receipt_seq=2,previous_receipt_hash=H(q['receipts'][-1]),provider_event_ms=180000,received_utc_ms=180010,received_monotonic_ns=180010000000,normalized_payload_hash=H(b),clock_probe_hash=H(probe));q['receipts'].append(rec)
+    rec=copy.deepcopy(q['receipts'][-1]);rec.update(kind='BAR_FINAL',receipt_seq=len(q['receipts'])+1,previous_receipt_hash=H(q['receipts'][-1]),provider_event_ms=180000,received_utc_ms=180010,received_monotonic_ns=180010000000,normalized_payload_hash=H(b),clock_probe_hash=H(probe));q['receipts'].append(rec)
     seg=copy.deepcopy(q['segments'][-1]);seg.update(segment_seq=2,start_ms=120000,end_ms=180000,bar_hash=H(b),accepted_receipt_hash=H(rec),previous_segment_hash=H(q['segments'][-1]));q['segments'].append(seg);q['prefix']['segment_hashes'].append(H(seg))
     m=copy.deepcopy(prior['manifest']);m.update(segment_id=H(seg),prior_checkpoint_hash=H(prior['checkpoint']),persisted_utc_ms=180011)
     j,w=journal(tmp/'second',q,m)

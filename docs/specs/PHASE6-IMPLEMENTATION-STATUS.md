@@ -25,6 +25,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2P | Durable optional intake binding before diagnostic; exact bar input and checkpoint receipt-bound checks; 25 tests | Full quote receipt and prior-state continuity, anchor/admission integration |
 | WP6-2Q | Durable quote receipt extension bound to fill and exact checkpoint receipt sequence; 33 tests | Actual live completeness/source trust, prior-state continuity, anchors/admission |
 | WP6-2R | Durable optional genesis/prior-checkpoint state continuity with exact strategy/reducer input pins; 39 tests | Prior receipt ancestry, anchors, mandatory admission/restart policy |
+| WP6-2S | Durable optional supplied prior receipt ancestry via invocation/binding artifacts; 24 tests | Independent anchors, mandatory admission and recursively authenticated history |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -447,3 +448,28 @@ pilot/provider/service/evidence root was activated; Phase6 remains incomplete.
 Next: prior receipt ancestry and independent checkpoint anchors, integration of
 verification into mandatory admission/lifecycle, actual intake/clock/service/CLI and
 approved future pilot. Separate full Phase1-6 integration follows Phase6 completion.
+
+
+## Supplied prior receipt ancestry implemented — 2026-10-16
+
+WP6-2S bind_prior_receipts resolves prior diagnostic/execution descriptors and bound
+intake/quote packages against supplied checkpoint commits. It reruns intake validation
+and requires exact retained prior receipt/segment/map prefixes in current intake.
+The selected prior package length matches the prior checkpoint receipt count. A
+consistently rehashed current history cannot substitute earlier quote bytes unnoticed.
+
+Three publications precede acknowledgement; the next diagnostic v4 links the receipt
+binding. 24new tests plus72adjacent pass for bar/quote prior checkpoints, artifact
+substitution, changed/rehashed history, publication faults, root/reentry/ownership
+and late/double binding. Test fixtures read actual temporary local journal objects.
+
+supplied_receipt_ancestry_verified denotes local supplied content linkage only. It
+is not authentic historical execution, full journal ancestry, source/clock truth,
+first-eligible quote timing replay, recursive verification of older state/receipt
+bindings or independent anchoring. Those limits remain upstream; runtime_accepted=false.
+Optional paths remain optional; no mandatory full admission or restart is enabled.
+
+Next: independently retained checkpoint anchors and mandatory admission/lifecycle
+integration, actual intake/clock/service/CLI and an approved prospective pilot.
+Full Phase1-6 integration remains after Phase6 completion. No actual evidence root,
+service/provider/pilot was activated and historical artifacts remain unchanged.
