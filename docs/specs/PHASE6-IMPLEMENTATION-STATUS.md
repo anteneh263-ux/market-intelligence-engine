@@ -1,4 +1,4 @@
-# Phase 6 implementation status — 2026-10-15
+# Phase 6 implementation status — 2026-10-16
 
 This status supersedes the initial planning table's implementation snapshot, not
 its acceptance criteria. Phase 6 is not complete or production-verified.
@@ -22,6 +22,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2M | Durable exact WP0 checkpoint from captured strategy/execution outputs and journal head; 30 tests | Referenced-artifact verification, independent anchor and full admission |
 | WP6-2N | Pure exact checkpoint artifact binding checks; 55 tests against temporary persisted outputs | Full referenced intake/previous-state/anchor verification and runtime integration |
 | WP6-2O | Pure receipt-chain, segment and versioned accepted-prefix binding; 43 tests | Actual callback/checkpoint linkage, raw adapter provenance and runtime intake |
+| WP6-2P | Durable optional intake binding before diagnostic; exact bar input and checkpoint receipt-bound checks; 25 tests | Full quote receipt and prior-state continuity, anchor/admission integration |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -364,3 +365,31 @@ checkpoint path, verify prior state continuity and independently retained anchor
 then complete lifecycle, intake/clock/service/CLI and approved future pilot. Only
 then validate the full Phase1-6 chain in a separate documented integration exercise.
 No provider/service/evidence root was activated; Phase6 remains incomplete.
+
+
+## Durable intake-to-execution binding implemented — 2026-10-16
+
+WP6-2P bind_intake validates and durably stores the exact supplied prefix bundle,
+validation result and linking commit after BAR_ACCEPTED and before strategy. Private
+context acknowledges only after final root/lifecycle checks. The bound diagnostic
+invocation uses v2 with intake_binding_hash; unbound v1 behavior is preserved.
+The actual reducer bar call requires exact normalized price/close and receipt clock
+fields from the retained verified bundle. Bound checkpoint keeps that prefix and
+requires equal receipt count without a quote, strictly later count after a quote.
+
+25new tests plus173prior call-path tests pass. Tests cover actual warmup and quote
+checkpoint paths, callback seeing durable binding, three publication failures,
+root substitution, reentry, foreign ownership, late/double binding and altered inputs.
+The diagnostic strategy consumes segment identity/count, not numeric bar features;
+this establishes actual call lineage, not an unsupported feature-consumption claim.
+
+Only the supplied bar-prefix references are resolved locally. Quote receipt content,
+exact sequence and first eligible observation, prior reducer/checkpoint continuity,
+raw adapter truth, authentic time and independent anchors remain upstream. The
+optional bound path is not mandatory full runtime admission. runtime_accepted=false.
+No provider/service/pilot or real evidence root was created. Phase6 remains incomplete.
+
+Next: bind actual quote receipts and prior state continuity, integrate checkpoint
+verification/independent anchors and enforce full session admission, then complete
+intake/clock/service/CLI and an approved prospective pilot. Whole Phase1-6 integration
+remains a separate later validation exercise, not implied by regression success.

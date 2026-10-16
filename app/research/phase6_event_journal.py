@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
+from app.research.phase6_intake_validation import verify_intake_prefix
 from app.research.phase6_validation import validate
 from app.research.phase6_object_store import ObjectWriter, inspect_objects, _bound
 from app.research.phase6_start_validation import _snapshot, _Refused
@@ -84,6 +85,7 @@ class EventJournal:
         self._diagnostic_context, self._bar_done = None, False
         self._bar_context, self._quote_done = None, False
         self._accepted_context, self._execution_context = None, None
+        self._intake_context = None
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -147,6 +149,50 @@ class EventJournal:
         finally:
             self._busy = False
 
+    def bind_intake(self, bundle):
+        """Persist a verified supplied bar prefix before a diagnostic call."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            _need(self._intake_context is None and self._count == 2
+                  and self._last['kind'] == 'BAR_ACCEPTED' and self._accepted_context is not None
+                  and self._diagnostic_context is None, 'SEQUENCE_INVALID')
+            q = _detach(bundle)
+            result = verify_intake_prefix(q)
+            _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
+            segment, receipt = q['segments'][-1], q['receipts'][-1]
+            bar = q['payloads'][segment['bar_hash']]
+            _need(_hash(_bytes(q['plan'])) == self._manifest['plan_hash']
+                  and _hash(_bytes(q['reservation'])) == self._manifest['run_id']
+                  and _hash(_bytes(segment)) == self._manifest['segment_id']
+                  and _hash(_bytes(receipt)) == segment['accepted_receipt_hash'], 'IDENTITY_MISMATCH')
+            expected = dict(schema_version='p6.payload.bar_accepted.v1',
+                segment_hash=_hash(_bytes(segment)), receipt_hash=_hash(_bytes(receipt)),
+                bar_hash=segment['bar_hash'], accepted_prefix_hash=result['accepted_prefix_hash'])
+            _need(_bytes(expected) == _bytes(self._accepted_context), 'IDENTITY_MISMATCH')
+            _need(receipt['received_utc_ms'] <= self._manifest['persisted_utc_ms'] <= self._last['utc_ms']
+                  and receipt['received_monotonic_ns'] <= self._last['monotonic_ns'], 'CLOCK_INVALID')
+            bundle_hash = self._publish(_bytes(q))
+            result_hash = self._publish(_bytes(result))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.intake_binding.v1',
+                run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
+                bundle_hash=bundle_hash, validation_hash=result_hash, bar_event_hash=self._head)))
+            self._check_bound('OPEN')
+            self._intake_context = copy.deepcopy(dict(plan=q['plan'], segment=segment, receipt=receipt,
+                bar=bar, prefix_hash=result['accepted_prefix_hash'], commit_hash=commit_hash))
+            return dict(schema_version='p6.intake_binding_result.v1', bundle_hash=bundle_hash,
+                commit_hash=commit_hash, technical_verification='LOCAL_ONLY', runtime_accepted=False,
+                external_reference_verification='UPSTREAM_REQUIRED')
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
     def run_diagnostic(self, plan, params, state, *, segment_seq, clock):
         """One fixed strategy call with durable inputs; never runtime admission."""
         self._owner()
@@ -160,6 +206,10 @@ class EventJournal:
             _need(callable(clock), 'INPUT_INVALID')
             q = _detach(dict(plan=plan, params=params, state=state, segment_seq=segment_seq))
             p, pa, s, seq = (q[k] for k in ('plan', 'params', 'state', 'segment_seq'))
+            bound = self._intake_context
+            if bound is not None:
+                _need(_bytes(p) == _bytes(bound['plan']) and type(seq) is int
+                      and seq == bound['segment']['segment_seq'], 'IDENTITY_MISMATCH')
             v = validate(dict(document=p, plan=None, reservation=None, prior_receipts=[],
                               prior_segment=None, payloads={}, clock_probes={}))
             _need(v['structural_status'] == 'VALID' and v['document_kind'] == 'PLAN', 'PLAN_INVALID')
@@ -183,10 +233,13 @@ class EventJournal:
             plan_hash = self._publish(_bytes(p))
             params_hash = self._publish(strategy.encode(pa))
             input_hash = self._publish(strategy.encode(s))
-            invocation_hash = self._publish(_bytes(dict(schema_version='p6.diagnostic_invocation.v1',
+            invocation = dict(schema_version='p6.diagnostic_invocation.v1',
                 run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
                 plan_hash=plan_hash, params_hash=params_hash, input_state_hash=input_hash,
-                segment_seq=seq, segment_hash=self._manifest['segment_id'], prior_event_hash=self._head)))
+                segment_seq=seq, segment_hash=self._manifest['segment_id'], prior_event_hash=self._head)
+            if bound is not None:
+                invocation.update(schema_version='p6.diagnostic_invocation.v2', intake_binding_hash=bound['commit_hash'])
+            invocation_hash = self._publish(_bytes(invocation))
             self._check_bound('OPEN')
             started = _sample_clock(clock)
             self._check_bound('OPEN')
@@ -258,6 +311,12 @@ class EventJournal:
             _need(callable(clock), 'INPUT_INVALID')
             q = _detach(dict(state=state, observation=observation))
             s, o = q['state'], q['observation']
+            bound = self._intake_context
+            if bound is not None:
+                expected = dict(close_ms=bound['bar']['close_ms'], close=bound['bar']['close'],
+                    **{k: bound['receipt'][k] for k in ('received_utc_ms', 'received_monotonic_ns', 'clock_session_id')})
+                _need(type(o) is dict and all(k in o for k in expected)
+                      and _bytes({k: o[k] for k in expected}) == _bytes(expected), 'IDENTITY_MISMATCH')
             target = bar_binding.prepare(d['plan'], d, s, o)
             input_hash = self._publish(_bytes(s))
             observation_hash = self._publish(_bytes(o))
@@ -420,6 +479,11 @@ class EventJournal:
                   and self._head == c['head'] and self._count == c['count'], 'SEQUENCE_INVALID')
             _need(type(last_receipt_seq) is int and d['output']['state']['bar_count'] <= last_receipt_seq < 2**63,
                   'INPUT_INVALID')
+            bound = self._intake_context
+            if bound is not None:
+                n = bound['receipt']['receipt_seq']
+                _need(accepted['accepted_prefix_hash'] == bound['prefix_hash']
+                      and (last_receipt_seq > n if self._quote_done else last_receipt_seq == n), 'SEQUENCE_INVALID')
             _need(callable(clock), 'INPUT_INVALID')
             s = c['state']
             reducer.state_check(s)
