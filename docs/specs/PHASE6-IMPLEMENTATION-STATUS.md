@@ -473,3 +473,27 @@ Next: independently retained checkpoint anchors and mandatory admission/lifecycl
 integration, actual intake/clock/service/CLI and an approved prospective pilot.
 Full Phase1-6 integration remains after Phase6 completion. No actual evidence root,
 service/provider/pilot was activated and historical artifacts remain unchanged.
+
+## Supplied checkpoint anchor chain validation implemented — 2026-10-16
+
+WP6-2T adds pure verify_checkpoint_anchors, connecting revalidated start and local
+checkpoint bundles to derived signed R/G/K subjects. It checks exact initial
+receipt prefix, predecessor K/X references, plan/run/config and engine continuity,
+contiguous segment sequence, increasing receipt counts, no successor after stop or
+pending state, clock ordering and full retention horizon. A fresh matching signed
+head is mandatory in the supplied evidence. Existing runtime paths are unchanged.
+
+32 new tests plus135 adjacent tests pass, using actual temporary reservation and
+journal/checkpoint calls and deterministic test-only signatures. Rehashed and
+resigned incompatible predecessor/identity/count cases are refused. This is
+component integration tested, not production-verified independent retention.
+
+runtime_accepted, independent_retention_verified and full_execution_verified remain
+false. Actual trusted service/clock/challenge acquisition, durable verification
+publication and mandatory runtime admission/lifecycle are still outstanding. This
+helper does not resolve the full intake/execution ancestry or enable restart. No
+provider/service/pilot or real scientific evidence root was activated.
+
+Next: bind this verification into durable session lifecycle/admission, then actual
+intake/clock/service/CLI and approved prospective pilot. Phase6 remains incomplete;
+full Phase1–6 integration remains a subsequent separately reported validation.
