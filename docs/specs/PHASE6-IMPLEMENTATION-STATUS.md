@@ -562,3 +562,22 @@ Next: trusted anchor transport/head acquisition and unified process/nonce/clock/
 session lifecycle, provider intake/operatorCLI and approved prospective pilot.
 Phase6 remains incomplete; separate full Phase1–6 integration follows later.
 No actual pilot/service/provider/evidence-root or historical artifact was changed.
+
+## Local close-before-open successor handoff implemented — 2026-10-16
+
+WP6-2X open_successor requires the same process/thread's acknowledged checkpoint,
+exact retained evidence history and a fresh valid continuation proof. It records
+a two-object successor intent, closes/verifies the old full inventory, then opens
+the new journal through mandatory checkpoint admission. Next callback bindings
+remain mandatory. Event head/count stay unchanged; intent is not a success receipt.
+Uncertain attempts are terminal, preserve partial objects and cannot retry.
+
+25 new tests cover an actual genesis-to-next-checkpoint path, all old/new publication
+windows, inventory/root failures, ownership/reentry/mutation, ordering and stopped
+checkpoint refusal. This provides bounded local component integration, not atomic
+cross-store completion, independent service retention, restart or runtime authority.
+
+Next: trusted anchor transport/head acquisition and process/nonce/clock/intake
+ownership, unified operator orchestration/CLI and approved prospective pilot.
+Phase6 remains incomplete; full Phase1–6 validation follows separately. No actual
+provider/service/pilot/evidence-root or historical artifact was changed.

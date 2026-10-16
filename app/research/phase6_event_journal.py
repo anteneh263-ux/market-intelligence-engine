@@ -10,7 +10,7 @@ from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
 from app.research.phase6_checkpoint_anchor_validation import verify_checkpoint_anchors
 from app.research.phase6_genesis_admission import verify_genesis_admission
-from app.research.phase6_checkpoint_continuation import verify_checkpoint_continuation
+from app.research.phase6_checkpoint_continuation import verify_checkpoint_continuation, open_checkpoint_continuation
 from app.research.phase6_prior_receipt_validation import verify_prior_receipts
 from app.research.phase6_prior_state_validation import verify_prior_state
 from app.research.phase6_intake_validation import verify_intake_prefix
@@ -112,6 +112,7 @@ class EventJournal:
         self._checkpoint_admission = None
         self._genesis_admission = None
         self._checkpoint_context = None
+        self._checkpoint_anchor_context = None
         try:
             if genesis is not None:
                 package_hash = self._publish(_bytes(genesis['package']))
@@ -158,7 +159,7 @@ class EventJournal:
     def _publish(self, raw):
         digest = self._writer.put(raw, claim=self._claim)
         _need(digest == _hash(raw), 'INTEGRITY_FAILURE')
-        _need(self._lifecycle in ('OPEN', 'PREPARING', 'CHECKPOINTED_LOCAL'), 'JOURNAL_STOPPED')
+        _need(self._lifecycle in ('OPEN', 'PREPARING', 'CHECKPOINTED_LOCAL', 'CHECKPOINT_ANCHOR_BOUND_LOCAL'), 'JOURNAL_STOPPED')
         self._objects[digest] = len(raw)
         return digest
 
@@ -790,6 +791,7 @@ class EventJournal:
                 admission_hash=admission['commit_hash'],anchor_hash=result['last_anchor_hash'],
                 package_hash=package_hash,validation_hash=validation_hash)))
             self._check_bound('CHECKPOINTED_LOCAL')
+            self._checkpoint_anchor_context = dict(proof=p,observed=observed,commit_hash=commit_hash)
             self._lifecycle = 'CHECKPOINT_ANCHOR_BOUND_LOCAL'
             return dict(schema_version='p6.checkpoint_anchor_binding_result.v1',
                 package_hash=package_hash,validation_hash=validation_hash,commit_hash=commit_hash,
@@ -797,6 +799,63 @@ class EventJournal:
                 technical_verification='LOCAL_ONLY',runtime_accepted=False,
                 independent_retention_verified=False,external_authority_verification='UPSTREAM_REQUIRED')
         except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def open_successor(self, writer, manifest, proof, *, clock):
+        """One local close-before-open handoff; no restart or remote authority."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('CHECKPOINT_ANCHOR_BOUND_LOCAL')
+        self._busy = True
+        successor = None
+        try:
+            _need(type(writer) is ObjectWriter and writer is not self._writer
+                  and writer.root != self._writer.root, 'WRITER_MISMATCH')
+            _need(writer.header['run_id'] == self._manifest['run_id']
+                  and writer.header['owner'] == self._writer.header['owner'], 'WRITER_MISMATCH')
+            _need(not writer._stopped and writer._claim is None and not writer._objects
+                  and writer._pid == self._pid and writer._thread == self._thread, 'WRITER_MISMATCH')
+            _bound(writer.root, writer._fd)
+            q = _detach(dict(manifest=manifest,proof=proof))
+            _need(callable(clock), 'INPUT_INVALID')
+            observed = _sample_clock(clock)
+            self._check_bound('CHECKPOINT_ANCHOR_BOUND_LOCAL')
+            bound = self._checkpoint_anchor_context
+            _need(bound is not None, 'ADMISSION_REQUIRED')
+            _ordered_clock(bound['observed'], observed)
+            _need(observed['monotonic_ns'] > bound['observed']['monotonic_ns'], 'CLOCK_INVALID')
+            verified = verify_checkpoint_continuation(dict(q,utc_ms=observed['utc_ms']))
+            _need(verified['binding_status'] == 'VALID', verified['reason_code'] or 'ADMISSION_REQUIRED')
+            previous, current = bound['proof'], q['proof']
+            _need(_bytes(previous['start']) == _bytes(current['start'])
+                  and _bytes(previous['checkpoints']) == _bytes(current['checkpoints'])
+                  and _bytes(previous['anchor']['receipts']) == _bytes(current['anchor']['receipts']), 'ANCESTRY_MISMATCH')
+            _need(q['manifest']['persisted_utc_ms'] >= bound['observed']['utc_ms'], 'CLOCK_INVALID')
+            package = dict(q,observed=observed,writer_root=writer.root,writer_header=writer.header)
+            package_hash = self._publish(_bytes(package))
+            self._publish(_bytes(dict(schema_version='p6.successor_intent.v1',
+                run_id=self._manifest['run_id'],session_id=_hash(_bytes(self._manifest)),
+                next_session_id=_hash(_bytes(q['manifest'])),package_hash=package_hash,
+                checkpoint_anchor_binding_hash=bound['commit_hash'])))
+            self._check_bound('CHECKPOINT_ANCHOR_BOUND_LOCAL')
+            self._writer.close(claim=self._claim)
+            self._active('CHECKPOINT_ANCHOR_BOUND_LOCAL')
+            inspect_objects(self._writer.root,header=self._writer.header,objects=dict(self._objects))
+            self._active('CHECKPOINT_ANCHOR_BOUND_LOCAL')
+            self._lifecycle = 'CLOSED_SUCCESSOR_PENDING'
+            successor = open_checkpoint_continuation(writer,q['manifest'],q['proof'],
+                utc_ms=observed['utc_ms'],monotonic_ns=observed['monotonic_ns'])
+            self._active('CLOSED_SUCCESSOR_PENDING')
+            self._lifecycle = 'CLOSED_SUCCESSOR_OPENED_LOCAL'
+            return successor
+        except BaseException:
+            if successor is not None:
+                successor._fail()
             self._fail()
             raise
         finally:
