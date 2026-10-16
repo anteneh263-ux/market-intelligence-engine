@@ -3,6 +3,8 @@
 This status supersedes the initial planning table's implementation snapshot, not
 its acceptance criteria. Phase 6 is not complete or production-verified.
 
+Current acceptance-critical work is consolidated in [PHASE6-COMPLETION-CHECKLIST.md](PHASE6-COMPLETION-CHECKLIST.md). The package table and entries below are chronological implementation snapshots; earlier remaining-work items may have been superseded by later packages.
+
 | Package | Implemented and tested | Remaining |
 |---|---|---|
 | WP6-0 | Versioned architecture and structural contracts, independently reviewed | Runtime deployment bindings and detailed coordinator events |
@@ -581,3 +583,10 @@ Next: trusted anchor transport/head acquisition and process/nonce/clock/intake
 ownership, unified operator orchestration/CLI and approved prospective pilot.
 Phase6 remains incomplete; full Phase1–6 validation follows separately. No actual
 provider/service/pilot/evidence-root or historical artifact was changed.
+
+## Source normalization implemented — 2026-10-16
+
+WP6-3A adds strict raw Binance BTCUSDT normalization and raw/normalized receipt
+link checks.48new+43intake tests pass. No live transport, trusted receipt clock
+or mandatory durable sourcebinding was activated. Phase6 remains incomplete;
+see the completion checklist for external setup, runtime, capacity and pilot gates.
