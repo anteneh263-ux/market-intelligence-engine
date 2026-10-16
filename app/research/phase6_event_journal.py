@@ -8,6 +8,7 @@ import re
 from fractions import Fraction
 from app.paper.session import diagnostic_strategy_v1 as strategy, shadow_reducer_v1 as reducer
 from app.research import phase6_bar_binding as bar_binding, phase6_quote_binding as quote_binding
+from app.research.phase6_prior_state_validation import verify_prior_state
 from app.research.phase6_intake_validation import verify_intake_prefix
 from app.research.phase6_validation import validate
 from app.research.phase6_object_store import ObjectWriter, inspect_objects, _bound
@@ -87,6 +88,7 @@ class EventJournal:
         self._accepted_context, self._execution_context = None, None
         self._intake_context = None
         self._quote_input_context = None
+        self._prior_state_context = None
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -194,6 +196,40 @@ class EventJournal:
         finally:
             self._busy = False
 
+    def bind_prior_state(self, prior_artifacts, *, params, state, strategy_state):
+        """Persist local prior-state continuity; never grants session admission."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            _need(self._intake_context is not None and self._prior_state_context is None
+                  and self._diagnostic_context is None and self._count == 2
+                  and self._last['kind'] == 'BAR_ACCEPTED', 'SEQUENCE_INVALID')
+            q = _detach(dict(manifest=self._manifest, intake=self._intake_context['bundle'],
+                prior=prior_artifacts, params=params, state=state, strategy_state=strategy_state))
+            result = verify_prior_state(q)
+            _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
+            package_hash = self._publish(_bytes(q))
+            validation_hash = self._publish(_bytes(result))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.prior_state_binding.v1',
+                run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
+                intake_binding_hash=self._intake_context['commit_hash'], package_hash=package_hash,
+                validation_hash=validation_hash, prior_hash=result['prior_hash'], bar_event_hash=self._head)))
+            self._check_bound('OPEN')
+            self._prior_state_context = copy.deepcopy(dict(params=q['params'], state=q['state'],
+                strategy_state=q['strategy_state'], commit_hash=commit_hash))
+            return dict(schema_version='p6.prior_state_binding_result.v1',package_hash=package_hash,
+                validation_hash=validation_hash,commit_hash=commit_hash,technical_verification='LOCAL_ONLY',
+                runtime_accepted=False,external_reference_verification='UPSTREAM_REQUIRED')
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
     def run_diagnostic(self, plan, params, state, *, segment_seq, clock):
         """One fixed strategy call with durable inputs; never runtime admission."""
         self._owner()
@@ -207,6 +243,9 @@ class EventJournal:
             _need(callable(clock), 'INPUT_INVALID')
             q = _detach(dict(plan=plan, params=params, state=state, segment_seq=segment_seq))
             p, pa, s, seq = (q[k] for k in ('plan', 'params', 'state', 'segment_seq'))
+            prior = self._prior_state_context
+            if prior is not None:
+                _need(_bytes(pa) == _bytes(prior['params']) and _bytes(s) == _bytes(prior['strategy_state']), 'STATE_INVALID')
             bound = self._intake_context
             if bound is not None:
                 _need(_bytes(p) == _bytes(bound['plan']) and type(seq) is int
@@ -240,6 +279,8 @@ class EventJournal:
                 segment_seq=seq, segment_hash=self._manifest['segment_id'], prior_event_hash=self._head)
             if bound is not None:
                 invocation.update(schema_version='p6.diagnostic_invocation.v2', intake_binding_hash=bound['commit_hash'])
+            if prior is not None:
+                invocation.update(schema_version='p6.diagnostic_invocation.v3', prior_state_binding_hash=prior['commit_hash'])
             invocation_hash = self._publish(_bytes(invocation))
             self._check_bound('OPEN')
             started = _sample_clock(clock)
@@ -312,6 +353,8 @@ class EventJournal:
             _need(callable(clock), 'INPUT_INVALID')
             q = _detach(dict(state=state, observation=observation))
             s, o = q['state'], q['observation']
+            if self._prior_state_context is not None:
+                _need(_bytes(s) == _bytes(self._prior_state_context['state']), 'STATE_INVALID')
             bound = self._intake_context
             if bound is not None:
                 expected = dict(close_ms=bound['bar']['close_ms'], close=bound['bar']['close'],

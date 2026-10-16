@@ -24,6 +24,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2O | Pure receipt-chain, segment and versioned accepted-prefix binding; 43 tests | Actual callback/checkpoint linkage, raw adapter provenance and runtime intake |
 | WP6-2P | Durable optional intake binding before diagnostic; exact bar input and checkpoint receipt-bound checks; 25 tests | Full quote receipt and prior-state continuity, anchor/admission integration |
 | WP6-2Q | Durable quote receipt extension bound to fill and exact checkpoint receipt sequence; 33 tests | Actual live completeness/source trust, prior-state continuity, anchors/admission |
+| WP6-2R | Durable optional genesis/prior-checkpoint state continuity with exact strategy/reducer input pins; 39 tests | Prior receipt ancestry, anchors, mandatory admission/restart policy |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -420,3 +421,29 @@ admission remains false; no live feed/service/pilot/evidence root was activated.
 Next: prior-state continuity and checkpoint verification/anchor integration, full
 admission and session lifecycle, actual intake/clock/service/CLI and approved future
 pilot. Full Phase1-6 integration remains subsequent separate validation work.
+
+
+## Durable prior-state continuity implemented — 2026-10-16
+
+WP6-2R bind_prior_state verifies a supplied genesis or full prior-checkpoint bundle
+against the current bound intake and manifest. Genesis must equal exact initialized
+reducer/strategy state. Continuation requires identical full prior states, shared
+plan/config/engine/strategy identity, previous-segment and accepted-prefix continuity,
+receipt sequence bounds and compatible checkpoint/receipt clocks. Stopped or pending
+states refuse continuation. Three publications precede private acknowledgement.
+
+Bound diagnostic descriptor v3 links the prior-state binding and pins exact params/
+strategy input; the actual reducer bar call pins the full prior reducer state.
+39new tests plus113adjacent tests pass. Actual temporary first/second segment paths,
+publication failures, input substitutions and consistently rehashed invalid prior
+prefix/sequence/time bundles are covered. Earlier optional local paths are preserved.
+
+This proves supplied local continuity only. Prior receipt ancestry is not established
+by scalar receipt bounds, nor are authentic execution, external anchors or restart
+permission established. These fields remain explicitly false/upstream. Current
+receipt-before-manifest chronology is enforced by preceding bind_intake. No real
+pilot/provider/service/evidence root was activated; Phase6 remains incomplete.
+
+Next: prior receipt ancestry and independent checkpoint anchors, integration of
+verification into mandatory admission/lifecycle, actual intake/clock/service/CLI and
+approved future pilot. Separate full Phase1-6 integration follows Phase6 completion.
