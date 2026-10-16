@@ -104,7 +104,9 @@ def test_double_binding_refused(tmp_path):
 def test_quote_requires_later_checkpoint_receipt(tmp_path,seq):
     j,w,q,pa=setup(tmp_path,warmup=0);j.bind_intake(q);diagnostic(j,q,pa)
     state=reducer.initial({k:q['plan'][k] for k in reducer.CONFIG_DEC+reducer.CONFIG_INT});j.run_bar(state,bar(q),clock=clock(120016))
-    j.run_quote(dict(bid='101',ask='101',received_utc_ms=120018,received_monotonic_ns=120018000000,clock_session_id='test'),quote_receipt_hash='a'*64,clock=clock(120019))
+    from test_phase6_quote_receipt_binding import extend
+    q=extend(q);j.bind_quote_receipts(q)
+    j.run_quote(dict(bid='101',ask='101',received_utc_ms=120018,received_monotonic_ns=120018000000,clock_session_id='test'),quote_receipt_hash=H(q['receipts'][-1]),clock=clock(120019))
     if seq==1:
         with pytest.raises(ValueError):j.prepare_checkpoint(last_receipt_seq=seq,clock=clock(120022))
     else:

@@ -23,6 +23,7 @@ its acceptance criteria. Phase 6 is not complete or production-verified.
 | WP6-2N | Pure exact checkpoint artifact binding checks; 55 tests against temporary persisted outputs | Full referenced intake/previous-state/anchor verification and runtime integration |
 | WP6-2O | Pure receipt-chain, segment and versioned accepted-prefix binding; 43 tests | Actual callback/checkpoint linkage, raw adapter provenance and runtime intake |
 | WP6-2P | Durable optional intake binding before diagnostic; exact bar input and checkpoint receipt-bound checks; 25 tests | Full quote receipt and prior-state continuity, anchor/admission integration |
+| WP6-2Q | Durable quote receipt extension bound to fill and exact checkpoint receipt sequence; 33 tests | Actual live completeness/source trust, prior-state continuity, anchors/admission |
 | WP6-3 | Storage fault and real process-exit cases tested under WP6-2B | All coordinator failure windows, independently anchored chain verification |
 | WP6-4 | No operational CLI implemented | Controlled operator interface and traced reports |
 | WP6-5 | Candidate public feed and separate receipt-service proposal saved | Exact approved service, clock, owner/roots, future interval, actual prospective run |
@@ -393,3 +394,29 @@ Next: bind actual quote receipts and prior state continuity, integrate checkpoin
 verification/independent anchors and enforce full session admission, then complete
 intake/clock/service/CLI and an approved prospective pilot. Whole Phase1-6 integration
 remains a separate later validation exercise, not implied by regression success.
+
+
+## Durable quote receipt binding implemented — 2026-10-16
+
+WP6-2Q bind_quote_receipts retains original intake bytes and checks a contiguous
+QUOTE-only extension. Exactly the final quote must be first eligible relative to
+the stored intent barrier among supplied receipts. Conflicting UTC/monotonic sides
+of the barrier refuse, rather than being silently skipped. Bundle/result/binding
+commit persist before acknowledgement, leaving intent head/count unchanged.
+
+The intake-bound run_quote path now requires exact bound price/time/session and
+receipt hash, with v2 invocation linking the quote binding. Unbound v1 remains
+unchanged. Actual bound fill/rejection/timeout leads to checkpoint receipt sequence
+equal to the chosen receipt, replacing the weaker prior strictly-greater test.
+33 new tests and102 adjacent tests pass, covering pre-barrier quotes, timeout,
+rejection, skipped eligible observations, substitution, all publication failures,
+root/ownership/reentry and durability-before-callback ordering.
+
+This verifies first eligible within the supplied extension, not completeness of
+live observations. Raw payload normalization, provider finality, authentic clocks,
+prior reducer/checkpoint continuity and external anchors remain upstream. Runtime
+admission remains false; no live feed/service/pilot/evidence root was activated.
+
+Next: prior-state continuity and checkpoint verification/anchor integration, full
+admission and session lifecycle, actual intake/clock/service/CLI and approved future
+pilot. Full Phase1-6 integration remains subsequent separate validation work.

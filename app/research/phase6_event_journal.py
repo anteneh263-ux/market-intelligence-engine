@@ -86,6 +86,7 @@ class EventJournal:
         self._bar_context, self._quote_done = None, False
         self._accepted_context, self._execution_context = None, None
         self._intake_context = None
+        self._quote_input_context = None
         try:
             self._publish(manifest_raw)
             self._publish(payload_raw)
@@ -183,7 +184,7 @@ class EventJournal:
                 bundle_hash=bundle_hash, validation_hash=result_hash, bar_event_hash=self._head)))
             self._check_bound('OPEN')
             self._intake_context = copy.deepcopy(dict(plan=q['plan'], segment=segment, receipt=receipt,
-                bar=bar, prefix_hash=result['accepted_prefix_hash'], commit_hash=commit_hash))
+                bar=bar, prefix_hash=result['accepted_prefix_hash'], commit_hash=commit_hash, bundle=q))
             return dict(schema_version='p6.intake_binding_result.v1', bundle_hash=bundle_hash,
                 commit_hash=commit_hash, technical_verification='LOCAL_ONLY', runtime_accepted=False,
                 external_reference_verification='UPSTREAM_REQUIRED')
@@ -390,6 +391,60 @@ class EventJournal:
         finally:
             self._busy = False
 
+    def bind_quote_receipts(self, bundle):
+        """Bind the first eligible quote in a supplied extension, not a live stream."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        self._active('OPEN')
+        self._busy = True
+        try:
+            bound, c = self._intake_context, self._bar_context
+            _need(bound is not None and c is not None and not self._quote_done
+                  and self._quote_input_context is None and self._count == 4
+                  and self._head == c['event_hash'], 'SEQUENCE_INVALID')
+            q = _detach(bundle)
+            result = verify_intake_prefix(q)
+            _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
+            old = bound['bundle']; n = len(old['receipts'])
+            _need(all(_bytes(q[k]) == _bytes(old[k]) for k in ('plan','reservation','segments','prefix'))
+                  and len(q['receipts']) > n and _bytes(q['receipts'][:n]) == _bytes(old['receipts']), 'IDENTITY_MISMATCH')
+            for name in ('payloads', 'clock_probes'):
+                _need(all(k in q[name] and _bytes(q[name][k]) == _bytes(v) for k,v in old[name].items()), 'IDENTITY_MISMATCH')
+            barrier = c['barrier']; eligible = []
+            for index, receipt in enumerate(q['receipts'][n:], n):
+                _need(receipt['kind'] == 'QUOTE', 'POLICY_UNSUPPORTED')
+                _need(receipt['clock_session_id'] == barrier['clock_session_id'], 'CLOCK_INVALID')
+                later = receipt['received_monotonic_ns'] > barrier['monotonic_ns']
+                _need(receipt['received_utc_ms'] >= barrier['utc_ms'] if later
+                      else receipt['received_utc_ms'] <= barrier['utc_ms'], 'CLOCK_INVALID')
+                if later:eligible.append(index)
+            _need(eligible == [len(q['receipts'])-1], 'SEQUENCE_INVALID')
+            receipt = q['receipts'][-1]; price = q['payloads'][receipt['normalized_payload_hash']]
+            observation = dict(bid=price['bid'], ask=price['ask'], **{k: receipt[k] for k in
+                ('received_utc_ms','received_monotonic_ns','clock_session_id')})
+            receipt_hash = _hash(_bytes(receipt))
+            bundle_hash = self._publish(_bytes(q))
+            validation_hash = self._publish(_bytes(result))
+            commit_hash = self._publish(_bytes(dict(schema_version='p6.quote_receipt_binding.v1',
+                run_id=self._manifest['run_id'], session_id=_hash(_bytes(self._manifest)),
+                intake_binding_hash=bound['commit_hash'], barrier_hash=c['barrier_hash'],
+                intent_event_hash=c['event_hash'], bundle_hash=bundle_hash,
+                validation_hash=validation_hash, quote_receipt_hash=receipt_hash)))
+            self._check_bound('OPEN')
+            self._quote_input_context = copy.deepcopy(dict(observation=observation,
+                receipt_hash=receipt_hash, receipt_seq=receipt['receipt_seq'], commit_hash=commit_hash))
+            return dict(schema_version='p6.quote_receipt_binding_result.v1', bundle_hash=bundle_hash,
+                commit_hash=commit_hash, quote_receipt_hash=receipt_hash,
+                technical_verification='LOCAL_ONLY', runtime_accepted=False,
+                external_reference_verification='UPSTREAM_REQUIRED')
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
     def run_quote(self, observation, *, quote_receipt_hash, clock):
         """One local simulated quote using a separately persisted barrier adapter."""
         self._owner()
@@ -405,15 +460,22 @@ class EventJournal:
             _need(callable(clock), 'INPUT_INVALID')
             q = _detach(dict(observation=observation, receipt_hash=quote_receipt_hash))
             o, receipt_hash = q['observation'], q['receipt_hash']
+            quote_input = self._quote_input_context
+            if self._intake_context is not None:
+                _need(quote_input is not None and _bytes(o) == _bytes(quote_input['observation'])
+                      and receipt_hash == quote_input['receipt_hash'], 'IDENTITY_MISMATCH')
             session_id = _hash(_bytes(self._manifest))
             adapted = quote_binding.prepare(c, o, receipt_hash, self._manifest['run_id'], session_id)
             adapted_hash = self._publish(_bytes(adapted))
             observation_hash = self._publish(_bytes(o))
-            invocation_hash = self._publish(_bytes(dict(schema_version='p6.quote_invocation.v1',
+            invocation = dict(schema_version='p6.quote_invocation.v1',
                 policy=quote_binding.POLICY, run_id=self._manifest['run_id'], session_id=session_id,
                 bar_commit_hash=c['commit_hash'], raw_state_hash=_hash(_bytes(c['state'])),
                 adapted_state_hash=adapted_hash, barrier_hash=c['barrier_hash'],
-                intent_event_hash=c['event_hash'], observation_hash=observation_hash, quote_receipt_hash=receipt_hash)))
+                intent_event_hash=c['event_hash'], observation_hash=observation_hash, quote_receipt_hash=receipt_hash)
+            if quote_input is not None:
+                invocation.update(schema_version='p6.quote_invocation.v2', quote_binding_hash=quote_input['commit_hash'])
+            invocation_hash = self._publish(_bytes(invocation))
             self._check_bound('OPEN')
             argument_state, argument_observation = copy.deepcopy(adapted), copy.deepcopy(o)
             output = reducer.quote(argument_state, argument_observation)
@@ -482,8 +544,10 @@ class EventJournal:
             bound = self._intake_context
             if bound is not None:
                 n = bound['receipt']['receipt_seq']
+                expected_seq = self._quote_input_context['receipt_seq'] if self._quote_done and self._quote_input_context is not None else n
                 _need(accepted['accepted_prefix_hash'] == bound['prefix_hash']
-                      and (last_receipt_seq > n if self._quote_done else last_receipt_seq == n), 'SEQUENCE_INVALID')
+                      and (not self._quote_done or self._quote_input_context is not None)
+                      and last_receipt_seq == expected_seq, 'SEQUENCE_INVALID')
             _need(callable(clock), 'INPUT_INVALID')
             s = c['state']
             reducer.state_check(s)
