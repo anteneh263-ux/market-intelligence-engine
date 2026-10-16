@@ -14,11 +14,19 @@ close-before-open handoff. Legacy constructors are deliberately not globally gat
 Source normalization now handles a selected Binance BTCUSDT subset; it is not a
 live connector and does not authenticate provider data.
 
+Receipt append preflight validates request identity and commitments. A separate
+S3 retention adapter is implemented and tested with simulated clients: signed
+receipt verification, one conditional PUT attempt, exact-version readback and
+compliance-retention inspection. This is not AWS integration testing or a durable
+sequence/head coordinator; see ADR-MIE-005.
+
 ## Remaining acceptance-critical work
 
-1. Select the actual independent service account/region and review a concrete
-   priced deployment. No account/endpoint/key or spending authority exists yet.
-   User was asked whether an AWS account exists; no answer recorded in this file.
+1. AWS account MIE now exists; console inspection confirmed one root passkey,
+   Free plan and $100 credits on 2026-10-16. Stockholm is proposed, not a frozen
+   deployment configuration. Complete the region-specific priced deployment,
+   exact bucket/endpoint/trust and permission review before resource creation.
+   No resource/spending activation or paid-plan upgrade is authorized.
 2. Implement/review service persistence transaction, signing and authenticated
    client append/lookup/challenged head. Pin public trust and exact retention.
    Unknown append cannot silently retry or reuse sequence; recover only under
@@ -58,7 +66,9 @@ The existing separate-host AWS proposal remains a candidate. A cost-conscious
 service may use an authenticated Lambda Function URL, private versioned S3 with
 30-day ObjectLock compliance, and a service-only signing secret. The transaction
 protocol/region/identity policy is not yet implemented or priced for deployment.
-No free-tier eligibility or hard spending cap is assumed.
+Free-plan eligibility and $100 credits were observed in the console; exact feature
+availability and retention horizon still require verification. No application-level
+hard spending cap is established.
 
 Reference pricing checked2026-10-16: Lambda lists$0.20/million requests, compute
 and storage requests billed separately; SecretsManager lists$0.40/secret-month.
