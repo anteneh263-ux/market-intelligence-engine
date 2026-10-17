@@ -174,3 +174,20 @@ probe/receipt bindings, same-session continuity, constructor cleanup, reentry an
 terminal errors. See SPEC-phase6-clockbound-intake-v1. Tests substitute native FFI
 and time; no new native/network integration or AWS activation occurred. Transport,
 service-time binding and the complete admitted operator remain unfinished.
+
+## 2026-10-17 bounded transport candidate and service-clock gap
+
+BinanceClockBoundTransport now connects the pinned synchronous WebSocket client
+through the actual fixed-clock intake and a synchronous downstream callback.
+54 focused tests passed independently, including a real localhost WebSocket path
+with synthetic messages/native timing. Original application-message bytes are
+persisted; no reconnect follows setup, timeout, intake or callback failure. The
+reviewed callback-mutation issue was fixed by capturing the durable commit hash
+before invoking downstream code. See SPEC-phase6-binance-transport-v1.
+
+No Binance connection, external receipt acknowledgement, cloud resource or pilot
+was activated. The callback is not yet a remote authenticated receipt client.
+Existing Function URL/Lambda service code has no qualified ClockBound host;
+PHASE6-RECEIPT-CLOCK-DEPLOYMENT-GAP records the specific deployment decision and
+required authentication/clock review. Transport buffering/freshness, service
+clock/deployment and assembled acceptance remain open. Phase6 is INCOMPLETE.

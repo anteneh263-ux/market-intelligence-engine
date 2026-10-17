@@ -25,6 +25,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
 phase6-anchor = ["cryptography==50.0.2"]
+phase6-source = ["websockets==16.1.1"]
 
 [project.scripts]
 mie = "app.cli:main"
