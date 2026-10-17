@@ -162,3 +162,15 @@ preserved. See PHASE6-NATIVE-CLOCK-QUALIFICATION for raw evidence and limitation
 The bounded isolated-stop gap is closed; sustained production reliability,
 actual source/service integration, deployment freeze and prospective acceptance
 remain open. Phase6 is INCOMPLETE.
+
+## 2026-10-17 fixed clock-to-intake binding
+
+ClockBoundSourceIntake now constructs one native clock adapter and one durable
+SourceIntake, taking explicit library pins and the plan's offset limit. Its frame
+API cannot accept a replacement supplied clock. It persists the native probe
+through actual intake calls and permanently stops both owners on admitted failure.
+39 focused tests passed and were independently reproduced, including persisted
+probe/receipt bindings, same-session continuity, constructor cleanup, reentry and
+terminal errors. See SPEC-phase6-clockbound-intake-v1. Tests substitute native FFI
+and time; no new native/network integration or AWS activation occurred. Transport,
+service-time binding and the complete admitted operator remain unfinished.
