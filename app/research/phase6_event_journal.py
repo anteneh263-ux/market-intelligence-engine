@@ -25,9 +25,9 @@ def _need(ok, reason):
         raise ValueError(reason)
 
 
-def _detach(value):
+def _detach(value, *, capacity=None):
     try:
-        return _snapshot(value)
+        return _snapshot(value, capacity=capacity)
     except (_Refused, RuntimeError, IndexError):
         raise ValueError('INPUT_INVALID') from None
 
@@ -74,9 +74,12 @@ def _ordered_clock(before, after):
 class EventJournal:
     """Own one writer and derive each event from the last acknowledged head."""
 
-    def __init__(self, writer, manifest, *, utc_ms, monotonic_ns, checkpoint_admission=None, genesis_admission=None):
+    def __init__(self, writer, manifest, *, utc_ms, monotonic_ns, checkpoint_admission=None, genesis_admission=None, capacity=None):
+        from app.research.phase6_capacity import limits
+        limits(capacity)
+        self._capacity = capacity
         _need(type(writer) is ObjectWriter, 'INPUT_INVALID')
-        manifest = _detach(manifest)
+        manifest = _detach(manifest, capacity=self._capacity)
         _need(type(manifest) is dict, 'INPUT_INVALID')
         manifest_raw = _bytes(manifest)
         first = dict(schema_version='p6.payload.manifest_verified.v1', manifest_hash=_hash(manifest_raw))
@@ -85,14 +88,14 @@ class EventJournal:
         _need(checkpoint_admission is None or genesis_admission is None, 'ADMISSION_CONFLICT')
         genesis = None
         if genesis_admission is not None:
-            package = _detach(dict(manifest=manifest,proof=genesis_admission,utc_ms=utc_ms))
-            verified = verify_genesis_admission(package)
+            package = _detach(dict(manifest=manifest,proof=genesis_admission,utc_ms=utc_ms), capacity=self._capacity)
+            verified = verify_genesis_admission(package, capacity=self._capacity)
             _need(verified['binding_status'] == 'VALID', verified['reason_code'] or 'ADMISSION_REQUIRED')
             genesis = dict(package=package,validation=verified)
         admission = None
         if checkpoint_admission is not None:
-            package = _detach(dict(manifest=manifest, proof=checkpoint_admission, utc_ms=utc_ms))
-            verified = verify_checkpoint_continuation(package)
+            package = _detach(dict(manifest=manifest, proof=checkpoint_admission, utc_ms=utc_ms), capacity=self._capacity)
+            verified = verify_checkpoint_continuation(package, capacity=self._capacity)
             _need(verified['binding_status'] == 'VALID', verified['reason_code'] or 'ADMISSION_REQUIRED')
             prior_event = package['proof']['checkpoints'][-1]['event']
             _need(monotonic_ns > prior_event['monotonic_ns'], 'CLOCK_INVALID')
@@ -114,6 +117,9 @@ class EventJournal:
         self._checkpoint_context = None
         self._checkpoint_anchor_context = None
         try:
+            if capacity is not None:
+                self._publish(_bytes(dict(schema_version='p6.capacity_selection.v1',
+                    profile=capacity,run_id=manifest['run_id'],session_id=_hash(manifest_raw))))
             if genesis is not None:
                 package_hash = self._publish(_bytes(genesis['package']))
                 validation_hash = self._publish(_bytes(genesis['validation']))
@@ -206,8 +212,8 @@ class EventJournal:
             _need(self._intake_context is None and self._count == 2
                   and self._last['kind'] == 'BAR_ACCEPTED' and self._accepted_context is not None
                   and self._diagnostic_context is None, 'SEQUENCE_INVALID')
-            q = _detach(bundle)
-            result = verify_intake_prefix(q)
+            q = _detach(bundle, capacity=self._capacity)
+            result = verify_intake_prefix(q, capacity=self._capacity)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
             segment, receipt = q['segments'][-1], q['receipts'][-1]
             bar = q['payloads'][segment['bar_hash']]
@@ -251,14 +257,14 @@ class EventJournal:
                   and self._diagnostic_context is None and self._count == 2
                   and self._last['kind'] == 'BAR_ACCEPTED', 'SEQUENCE_INVALID')
             q = _detach(dict(manifest=self._manifest, intake=self._intake_context['bundle'],
-                prior=prior_artifacts, params=params, state=state, strategy_state=strategy_state))
+                prior=prior_artifacts, params=params, state=state, strategy_state=strategy_state), capacity=self._capacity)
             if self._checkpoint_admission is not None:
                 expected = self._checkpoint_admission['package']['proof']['checkpoints'][-1]
                 _need(_bytes(q['prior']) == _bytes(expected), 'IDENTITY_MISMATCH')
             if self._genesis_admission is not None:
                 expected = self._genesis_admission['package']['proof']['start']['genesis']
                 _need(_bytes(q['prior']) == _bytes(expected), 'IDENTITY_MISMATCH')
-            result = verify_prior_state(q)
+            result = verify_prior_state(q, capacity=self._capacity)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
             package_hash = self._publish(_bytes(q))
             validation_hash = self._publish(_bytes(result))
@@ -291,8 +297,8 @@ class EventJournal:
             _need(prior is not None and self._prior_receipt_context is None
                   and self._diagnostic_context is None and self._count == 2
                   and self._last['kind'] == 'BAR_ACCEPTED', 'SEQUENCE_INVALID')
-            q = _detach(dict(prior_state=prior['package'], proof=proof))
-            result = verify_prior_receipts(q)
+            q = _detach(dict(prior_state=prior['package'], proof=proof), capacity=self._capacity)
+            result = verify_prior_receipts(q, capacity=self._capacity)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
             package_hash = self._publish(_bytes(q))
             validation_hash = self._publish(_bytes(result))
@@ -322,7 +328,7 @@ class EventJournal:
         try:
             _need(self._count == 2 and self._last['kind'] == 'BAR_ACCEPTED', 'SEQUENCE_INVALID')
             _need(callable(clock), 'INPUT_INVALID')
-            q = _detach(dict(plan=plan, params=params, state=state, segment_seq=segment_seq))
+            q = _detach(dict(plan=plan, params=params, state=state, segment_seq=segment_seq), capacity=self._capacity)
             p, pa, s, seq = (q[k] for k in ('plan', 'params', 'state', 'segment_seq'))
             prior = self._prior_state_context
             if self._genesis_admission is not None:
@@ -384,19 +390,19 @@ class EventJournal:
             if self._checkpoint_admission is not None:
                 admission = self._checkpoint_admission['package']
                 current = dict(admission, utc_ms=started['utc_ms'])
-                _need(verify_checkpoint_continuation(current)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
+                _need(verify_checkpoint_continuation(current, capacity=self._capacity)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
                 _need(started['clock_session_id'] == prior['state']['clock_session_id'], 'CLOCK_INVALID')
             if self._genesis_admission is not None:
                 current = dict(self._genesis_admission['package'],utc_ms=started['utc_ms'])
-                _need(verify_genesis_admission(current)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
+                _need(verify_genesis_admission(current, capacity=self._capacity)['binding_status'] == 'VALID', 'ADMISSION_EXPIRED')
                 _need(started['clock_session_id'] == self._intake_context['receipt']['clock_session_id'], 'CLOCK_INVALID')
             argument_state, argument_params = copy.deepcopy(s), copy.deepcopy(pa)
             output = strategy.advance(argument_state, argument_params,
                                       segment_seq=seq, segment_hash=self._manifest['segment_id'])
             # Freeze return-time evidence before any further external callback.
-            output = _detach(output)
-            returned_state = _bytes(_detach(argument_state))
-            returned_params = _bytes(_detach(argument_params))
+            output = _detach(output, capacity=self._capacity)
+            returned_state = _bytes(_detach(argument_state, capacity=self._capacity))
+            returned_params = _bytes(_detach(argument_params, capacity=self._capacity))
             self._check_bound('OPEN')
             finished = _sample_clock(clock)
             self._check_bound('OPEN')
@@ -454,7 +460,7 @@ class EventJournal:
             _need(not self._bar_done and d is not None and self._count == 3
                   and self._head == d['event_hash'], 'SEQUENCE_INVALID')
             _need(callable(clock), 'INPUT_INVALID')
-            q = _detach(dict(state=state, observation=observation))
+            q = _detach(dict(state=state, observation=observation), capacity=self._capacity)
             s, o = q['state'], q['observation']
             if self._prior_state_context is not None:
                 _need(_bytes(s) == _bytes(self._prior_state_context['state']), 'STATE_INVALID')
@@ -474,9 +480,9 @@ class EventJournal:
             self._check_bound('OPEN')
             argument_state, argument_observation = copy.deepcopy(s), copy.deepcopy(o)
             output = reducer.bar(argument_state, argument_observation, target)
-            output = _detach(output)
-            returned_state = _bytes(_detach(argument_state))
-            returned_observation = _bytes(_detach(argument_observation))
+            output = _detach(output, capacity=self._capacity)
+            returned_state = _bytes(_detach(argument_state, capacity=self._capacity))
+            returned_observation = _bytes(_detach(argument_observation, capacity=self._capacity))
             self._check_bound('OPEN')
             _need(returned_state == _bytes(s) and returned_observation == _bytes(o), 'EXECUTION_INVALID')
             bar_binding.check_output(s, o, target, output)
@@ -550,8 +556,8 @@ class EventJournal:
             _need(bound is not None and c is not None and not self._quote_done
                   and self._quote_input_context is None and self._count == 4
                   and self._head == c['event_hash'], 'SEQUENCE_INVALID')
-            q = _detach(bundle)
-            result = verify_intake_prefix(q)
+            q = _detach(bundle, capacity=self._capacity)
+            result = verify_intake_prefix(q, capacity=self._capacity)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'INPUT_INVALID')
             old = bound['bundle']; n = len(old['receipts'])
             _need(all(_bytes(q[k]) == _bytes(old[k]) for k in ('plan','reservation','segments','prefix'))
@@ -604,7 +610,7 @@ class EventJournal:
             _need(not self._quote_done and c is not None and self._count == 4
                   and self._head == c['event_hash'], 'SEQUENCE_INVALID')
             _need(callable(clock), 'INPUT_INVALID')
-            q = _detach(dict(observation=observation, receipt_hash=quote_receipt_hash))
+            q = _detach(dict(observation=observation, receipt_hash=quote_receipt_hash), capacity=self._capacity)
             o, receipt_hash = q['observation'], q['receipt_hash']
             quote_input = self._quote_input_context
             if self._intake_context is not None:
@@ -625,9 +631,9 @@ class EventJournal:
             self._check_bound('OPEN')
             argument_state, argument_observation = copy.deepcopy(adapted), copy.deepcopy(o)
             output = reducer.quote(argument_state, argument_observation)
-            output = _detach(output)
-            returned_state = _bytes(_detach(argument_state))
-            returned_observation = _bytes(_detach(argument_observation))
+            output = _detach(output, capacity=self._capacity)
+            returned_state = _bytes(_detach(argument_state, capacity=self._capacity))
+            returned_observation = _bytes(_detach(argument_observation, capacity=self._capacity))
             self._check_bound('OPEN')
             _need(returned_state == _bytes(adapted) and returned_observation == _bytes(o), 'EXECUTION_INVALID')
             outcome = quote_binding.check_output(adapted, o, output)
@@ -757,14 +763,14 @@ class EventJournal:
         try:
             admission = self._genesis_admission or self._checkpoint_admission
             _need(admission is not None and self._checkpoint_context is not None, 'ADMISSION_REQUIRED')
-            p = _detach(proof)
+            p = _detach(proof, capacity=self._capacity)
             _need(callable(clock), 'INPUT_INVALID')
             observed = _sample_clock(clock)
             self._check_bound('CHECKPOINTED_LOCAL')
             _need(observed['clock_session_id'] == self._execution_context['state']['clock_session_id']
                   and observed['utc_ms'] >= self._last['utc_ms']
                   and observed['monotonic_ns'] >= self._last['monotonic_ns'], 'CLOCK_INVALID')
-            initial = verify_checkpoint_anchors(p)
+            initial = verify_checkpoint_anchors(p, capacity=self._capacity)
             _need(initial['binding_status'] == 'VALID', initial['reason_code'] or 'ANCHOR_INVALID')
             previous = admission['package']['proof']
             expected_checkpoints = previous.get('checkpoints', [])
@@ -779,7 +785,7 @@ class EventJournal:
             _need(p['anchor']['now_utc_ms'] <= observed['utc_ms'], 'CLOCK_INVALID')
             fresh = copy.deepcopy(p)
             fresh['anchor']['now_utc_ms'] = observed['utc_ms']
-            result = verify_checkpoint_anchors(fresh)
+            result = verify_checkpoint_anchors(fresh, capacity=self._capacity)
             _need(result['binding_status'] == 'VALID', result['reason_code'] or 'ANCHOR_INVALID')
             self._check_bound('CHECKPOINTED_LOCAL')
             package_hash = self._publish(_bytes(dict(proof=p,observed=observed)))
@@ -821,7 +827,7 @@ class EventJournal:
             _need(not writer._stopped and writer._claim is None and not writer._objects
                   and writer._pid == self._pid and writer._thread == self._thread, 'WRITER_MISMATCH')
             _bound(writer.root, writer._fd)
-            q = _detach(dict(manifest=manifest,proof=proof))
+            q = _detach(dict(manifest=manifest,proof=proof), capacity=self._capacity)
             _need(callable(clock), 'INPUT_INVALID')
             observed = _sample_clock(clock)
             self._check_bound('CHECKPOINT_ANCHOR_BOUND_LOCAL')
@@ -829,7 +835,7 @@ class EventJournal:
             _need(bound is not None, 'ADMISSION_REQUIRED')
             _ordered_clock(bound['observed'], observed)
             _need(observed['monotonic_ns'] > bound['observed']['monotonic_ns'], 'CLOCK_INVALID')
-            verified = verify_checkpoint_continuation(dict(q,utc_ms=observed['utc_ms']))
+            verified = verify_checkpoint_continuation(dict(q,utc_ms=observed['utc_ms']), capacity=self._capacity)
             _need(verified['binding_status'] == 'VALID', verified['reason_code'] or 'ADMISSION_REQUIRED')
             previous, current = bound['proof'], q['proof']
             _need(_bytes(previous['start']) == _bytes(current['start'])
@@ -849,7 +855,7 @@ class EventJournal:
             self._active('CHECKPOINT_ANCHOR_BOUND_LOCAL')
             self._lifecycle = 'CLOSED_SUCCESSOR_PENDING'
             successor = open_checkpoint_continuation(writer,q['manifest'],q['proof'],
-                utc_ms=observed['utc_ms'],monotonic_ns=observed['monotonic_ns'])
+                utc_ms=observed['utc_ms'],monotonic_ns=observed['monotonic_ns'], capacity=self._capacity)
             self._active('CLOSED_SUCCESSOR_PENDING')
             self._lifecycle = 'CLOSED_SUCCESSOR_OPENED_LOCAL'
             return successor

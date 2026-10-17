@@ -6,15 +6,15 @@ from app.research.phase6_checkpoint_validation import exact
 from app.research.phase6_validation import canonical_hash as H
 
 
-def verify_genesis_admission(request):
+def verify_genesis_admission(request, *,capacity=None):
     result=dict(schema_version='p6.genesis_admission_validation.v1',binding_status='INVALID',reason_code=None,
                 genesis_hash=None,last_anchor_hash=None,runtime_accepted=False,
                 independent_retention_verified=False,external_authority_verification='UPSTREAM_REQUIRED')
     try:
-        q=_snapshot(request);_shape(q,'manifest proof utc_ms')
+        q=_snapshot(request, capacity=capacity);_shape(q,'manifest proof utc_ms')
         m,proof,now=q['manifest'],q['proof'],q['utc_ms'];_manifest(m);_need(_int(now))
         _shape(proof,'start anchor');start,a=proof['start'],proof['anchor']
-        v=verify_start_bindings(start);_need(v['binding_status']=='VALID','START_INVALID')
+        v=verify_start_bindings(start, capacity=capacity);_need(v['binding_status']=='VALID','START_INVALID')
         _shape(a,'trust receipts head challenge now_utc_ms')
         _need(_int(a['now_utc_ms']) and a['head'] is not None and a['challenge'] is not None,'ANCHOR_INVALID')
         _need(exact(a['receipts'],start['anchor']['receipts']),'START_PREFIX_MISMATCH')
@@ -36,8 +36,8 @@ def verify_genesis_admission(request):
     return result
 
 
-def open_genesis_session(writer,manifest,proof,*,utc_ms,monotonic_ns):
+def open_genesis_session(writer,manifest,proof,*,utc_ms,monotonic_ns, capacity=None):
     """Require first-segment local admission; does not assert live readiness."""
     from app.research.phase6_event_journal import EventJournal
     if proof is None:raise ValueError('ADMISSION_REQUIRED')
-    return EventJournal(writer,manifest,utc_ms=utc_ms,monotonic_ns=monotonic_ns,genesis_admission=proof)
+    return EventJournal(writer,manifest,utc_ms=utc_ms,monotonic_ns=monotonic_ns,genesis_admission=proof, capacity=capacity)

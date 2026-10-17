@@ -19,14 +19,14 @@ def extension(old,new):
         _need(all(k in new[name] and exact(v,new[name][k]) for k,v in old[name].items()),'RECEIPT_ANCESTRY_INVALID')
 
 
-def validate_bundle(bundle,result):
-    actual=verify_intake_prefix(bundle)
+def validate_bundle(bundle,result, *,capacity=None):
+    actual=verify_intake_prefix(bundle, capacity=capacity)
     _need(actual['binding_status']=='VALID' and exact(actual,result),'INTAKE_INVALID')
 
 
-def _check(q):
+def _check(q, *,capacity=None):
     _shape(q,'prior_state proof')
-    state=q['prior_state'];v=verify_prior_state(state)
+    state=q['prior_state'];v=verify_prior_state(state, capacity=capacity)
     _need(v['binding_status']=='VALID' and v['prior_kind']=='CHECKPOINT','PRIOR_STATE_INVALID')
     p=q['proof'];_shape(p,'diagnostic_invocation intake_binding intake_bundle intake_validation execution_invocation quote_binding quote_bundle quote_validation')
     old=state['prior'];m=old['manifest'];k=old['checkpoint'];sid=H(m)
@@ -40,7 +40,7 @@ def _check(q):
     _need(d['run_id']==m['run_id'] and d['session_id']==sid and d['plan_hash']==m['plan_hash']
           and d['params_hash']==m['params_hash'] and d['segment_hash']==m['segment_id'],'IDENTITY_MISMATCH')
     record(i,'p6.intake_binding.v1','run_id session_id bundle_hash validation_hash bar_event_hash')
-    validate_bundle(b,p['intake_validation'])
+    validate_bundle(b,p['intake_validation'], capacity=capacity)
     _need(i['run_id']==m['run_id'] and i['session_id']==sid and H(i)==d['intake_binding_hash']
           and H(b)==i['bundle_hash'] and H(p['intake_validation'])==i['validation_hash']
           and i['bar_event_hash']==d['prior_event_hash'],'HASH_MISMATCH')
@@ -61,7 +61,7 @@ def _check(q):
         _need(x['policy']=='p6.quote_after_barrier.v1','POLICY_UNSUPPORTED')
         qb=p['quote_binding'];source=p['quote_bundle']
         record(qb,'p6.quote_receipt_binding.v1','run_id session_id intake_binding_hash barrier_hash intent_event_hash bundle_hash validation_hash quote_receipt_hash')
-        validate_bundle(source,p['quote_validation']);extension(b,source)
+        validate_bundle(source,p['quote_validation'], capacity=capacity);extension(b,source)
         _need(exact(b['segments'],source['segments']) and exact(b['prefix'],source['prefix'])
               and len(source['receipts'])>len(b['receipts'])
               and all(e['kind']=='QUOTE' for e in source['receipts'][len(b['receipts']):]),'SEQUENCE_INVALID')
@@ -78,11 +78,11 @@ def _check(q):
     return H(source),H(source['receipts'][-1])
 
 
-def verify_prior_receipts(request):
+def verify_prior_receipts(request, *,capacity=None):
     result=dict(schema_version='p6.prior_receipt_validation.v1',binding_status='INVALID',reason_code=None,
         prior_bundle_hash=None,prior_receipt_head_hash=None,supplied_receipt_ancestry_verified=False,
         runtime_accepted=False,anchor_verified=False,external_reference_verification='UPSTREAM_REQUIRED')
-    try:bundle,head=_check(_snapshot(request))
+    try:bundle,head=_check(_snapshot(request, capacity=capacity), capacity=capacity)
     except _Refused as exc:result['reason_code']=exc.reason
     except (ValueError,TypeError,KeyError,RuntimeError,IndexError,OverflowError,RecursionError):result['reason_code']='SCHEMA_INVALID'
     else:result.update(binding_status='VALID',prior_bundle_hash=bundle,prior_receipt_head_hash=head,supplied_receipt_ancestry_verified=True)

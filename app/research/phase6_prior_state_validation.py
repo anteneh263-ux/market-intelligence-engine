@@ -11,11 +11,11 @@ from app.research.phase6_validation import canonical_hash as H
 def exact(a,b):return json.dumps(a,sort_keys=True,separators=(',',':'))==json.dumps(b,sort_keys=True,separators=(',',':'))
 
 
-def _check(q):
+def _check(q, *,capacity=None):
     _shape(q,'manifest intake prior params state strategy_state')
     m,b,prior,pa,s,ss=(q[k] for k in ('manifest','intake','prior','params','state','strategy_state'))
     _manifest(m)
-    v=verify_intake_prefix(b);_need(v['binding_status']=='VALID','INTAKE_INVALID')
+    v=verify_intake_prefix(b, capacity=capacity);_need(v['binding_status']=='VALID','INTAKE_INVALID')
     p=b['plan'];seg=b['segments'][-1];receipt=b['receipts'][-1]
     _need(m['run_id']==H(b['reservation']) and m['plan_hash']==H(p) and m['segment_id']==H(seg)
           and seg['accepted_receipt_hash']==H(receipt),'IDENTITY_MISMATCH')
@@ -36,7 +36,7 @@ def _check(q):
         _need(exact(prior,expected) and H(prior)==m['prior_checkpoint_hash'],'IDENTITY_MISMATCH')
         _need(seg['segment_seq']==1 and seg['previous_segment_hash']=='0'*64,'SEQUENCE_INVALID')
         return 'GENESIS',H(prior)
-    v=verify_checkpoint(prior);_need(v['binding_status']=='VALID','CHECKPOINT_INVALID')
+    v=verify_checkpoint(prior, capacity=capacity);_need(v['binding_status']=='VALID','CHECKPOINT_INVALID')
     k=prior['checkpoint'];pm=prior['manifest'];event=prior['event']
     _need(H(k)==m['prior_checkpoint_hash'] and all(m[key]==pm[key] for key in
           ('run_id','plan_hash','params_hash','strategy_code_hash','engine_version','engine_code_hash')),'IDENTITY_MISMATCH')
@@ -58,11 +58,11 @@ def _check(q):
     return 'CHECKPOINT',H(k)
 
 
-def verify_prior_state(request):
+def verify_prior_state(request, *,capacity=None):
     result=dict(schema_version='p6.prior_state_validation.v1',binding_status='INVALID',reason_code=None,
         prior_kind=None,prior_hash=None,runtime_accepted=False,anchor_verified=False,
         prior_receipt_ancestry_verified=False,external_reference_verification='UPSTREAM_REQUIRED')
-    try:kind,digest=_check(_snapshot(request))
+    try:kind,digest=_check(_snapshot(request, capacity=capacity), capacity=capacity)
     except _Refused as exc:result['reason_code']=exc.reason
     except (ValueError,TypeError,KeyError,RuntimeError,IndexError,OverflowError,RecursionError):result['reason_code']='SCHEMA_INVALID'
     else:result.update(binding_status='VALID',prior_kind=kind,prior_hash=digest)

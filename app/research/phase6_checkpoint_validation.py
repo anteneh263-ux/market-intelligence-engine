@@ -21,7 +21,7 @@ def commit(value,version,fields):
             _need(_hash(value[key]) or (key in ('event_hash','barrier_hash') and value[key] is None))
 
 
-def _check(q):
+def _check(q, *,capacity=None):
     _shape(q,'manifest checkpoint checkpoint_commit event payload previous_event state strategy_state execution_commit diagnostic_commit')
     m,k,c,e,p,previous,s,ss,x,d=(q[key] for key in ('manifest','checkpoint','checkpoint_commit','event','payload','previous_event','state','strategy_state','execution_commit','diagnostic_commit'))
     event_check=verify_event(dict(manifest=m,event=e,payload=p,previous_event=previous))
@@ -85,13 +85,13 @@ def _check(q):
     return H(k)
 
 
-def verify_checkpoint(request):
+def verify_checkpoint(request, *,capacity=None):
     result=dict(schema_version='p6.checkpoint_validation.v1',binding_status='INVALID',reason_code=None,
         checkpoint_hash=None,runtime_accepted=False,external_reference_verification='UPSTREAM_REQUIRED',
         durability_verified=False,full_journal_verified=False)
     try:
-        q=_snapshot(request)
-        digest=_check(q)
+        q=_snapshot(request, capacity=capacity)
+        digest=_check(q, capacity=capacity)
     except _Refused as exc:
         result['reason_code']=exc.reason
     except (ValueError,TypeError,KeyError,RuntimeError,IndexError,OverflowError,RecursionError):

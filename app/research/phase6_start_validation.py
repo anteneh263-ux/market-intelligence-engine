@@ -13,18 +13,26 @@ def _need(ok,reason='SCHEMA_INVALID',detail=None):
     if not ok:raise _Refused(reason,detail)
 
 
-def _snapshot(v,depth=0,budget=None):
-    if budget is None:budget=[10000]
-    budget[0]-=1;_need(depth<=8 and budget[0]>=0)
+def _snapshot(v,depth=0,budget=None,*,capacity=None):
+    from app.research.phase6_capacity import limits
+    maxdepth,maxlist,maxmap,maxvalues,maxchars,_ = limits(capacity)
+    if budget is None:budget=[maxvalues,maxchars]
+    budget[0]-=1;_need(depth<=maxdepth and budget[0]>=0)
     if v is None or type(v) in (bool,int):return v
     if type(v) is str:
-        _need(v.isascii() and len(v)<=4096);return v
+        _need(v.isascii() and len(v)<=4096)
+        if maxchars is not None:
+            budget[1]-=len(v);_need(budget[1]>=0)
+        return v
     if type(v) is list:
-        _need(len(v)<=1000);return [_snapshot(v[i],depth+1,budget) for i in range(len(v))]
-    _need(type(v) is dict and len(v)<=64)
+        _need(len(v)<=maxlist);return [_snapshot(v[i],depth+1,budget,capacity=capacity) for i in range(len(v))]
+    _need(type(v) is dict and len(v)<=maxmap)
     result={}
     for k,value in v.items():
-        _need(type(k) is str and k.isascii() and len(k)<=128);result[k]=_snapshot(value,depth+1,budget)
+        _need(type(k) is str and k.isascii() and len(k)<=128)
+        if maxchars is not None:
+            budget[1]-=len(k);_need(budget[1]>=0)
+        result[k]=_snapshot(value,depth+1,budget,capacity=capacity)
     return result
 
 
@@ -39,7 +47,7 @@ def _path(x):
     _need(not any(re.search(r'(?:^|[^a-z0-9])h[-_ ]?0?25(?:[^0-9]|$)',p,re.I) for p in x.split('/')))
 
 
-def _check(q):
+def _check(q, *,capacity=None):
     _shape(q,'plan authorization reservation genesis registry_identity strategy_state_hash anchor')
     _need(_hex(q['registry_identity']) and _hex(q['strategy_state_hash']))
     p,a,r,g,b=(q[k] for k in ('plan','authorization','reservation','genesis','anchor'))
@@ -69,11 +77,11 @@ def _check(q):
     return rh,gh,ar['last_anchor_hash']
 
 
-def verify_start_bindings(request):
+def verify_start_bindings(request, *,capacity=None):
     result=dict(schema_version='p6.start_validation.v1',binding_status='INVALID',reason_code=None,anchor_reason_code=None,run_id=None,genesis_hash=None,last_anchor_hash=None,runtime_accepted=False,external_authority_verification='UPSTREAM_REQUIRED')
     try:
-        q=_snapshot(request)
-        run,genesis,last=_check(q)
+        q=_snapshot(request, capacity=capacity)
+        run,genesis,last=_check(q, capacity=capacity)
     except _Refused as exc:
         result.update(reason_code=exc.reason,anchor_reason_code=exc.detail);return result
     result.update(binding_status='VALID',run_id=run,genesis_hash=genesis,last_anchor_hash=last)

@@ -6,11 +6,11 @@ from app.research.phase6_validation import canonical_hash as H
 from app.paper.session import shadow_reducer_v1 as reducer
 
 
-def _check(q):
+def _check(q, *,capacity=None):
     _shape(q, 'start checkpoints anchor')
     start, bundles, anchor = q['start'], q['checkpoints'], q['anchor']
     _need(type(bundles) is list and 1 <= len(bundles) <= 64)
-    initial = verify_start_bindings(start)
+    initial = verify_start_bindings(start, capacity=capacity)
     _need(initial['binding_status'] == 'VALID', 'START_INVALID')
     _shape(anchor, 'trust receipts head challenge now_utc_ms')
     _need(anchor['head'] is not None and anchor['challenge'] is not None, 'ANCHOR_INVALID')
@@ -19,7 +19,7 @@ def _check(q):
     subjects = [dict(subject_kind='RESERVATION', subject_hash=run),
                 dict(subject_kind='GENESIS', subject_hash=initial['genesis_hash'])]
     for bundle in bundles:
-        checked = verify_checkpoint(bundle)
+        checked = verify_checkpoint(bundle, capacity=capacity)
         _need(checked['binding_status'] == 'VALID', 'CHECKPOINT_INVALID')
         subjects.append(dict(subject_kind='CHECKPOINT', subject_hash=checked['checkpoint_hash']))
     checked = verify_anchors(dict(**anchor, expected_trust_hash=p['anchor_trust_hash'],
@@ -55,14 +55,14 @@ def _check(q):
     return previous_hash, checked['last_anchor_hash'], len(bundles)
 
 
-def verify_checkpoint_anchors(request):
+def verify_checkpoint_anchors(request, *,capacity=None):
     """Check supplied signatures and local bindings, never service contact or admission."""
     result = dict(schema_version='p6.checkpoint_anchor_validation.v1', binding_status='INVALID',
                   reason_code=None, checkpoint_hash=None, last_anchor_hash=None, checkpoint_count=0,
                   runtime_accepted=False, independent_retention_verified=False,
                   full_execution_verified=False, external_authority_verification='UPSTREAM_REQUIRED')
     try:
-        checkpoint, anchor, count = _check(_snapshot(request))
+        checkpoint, anchor, count = _check(_snapshot(request, capacity=capacity), capacity=capacity)
     except _Refused as exc:
         result['reason_code'] = exc.reason
     except (ValueError, TypeError, KeyError, RuntimeError, IndexError, OverflowError, RecursionError):
