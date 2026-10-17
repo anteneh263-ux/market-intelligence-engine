@@ -43,18 +43,19 @@ def tls(tmp_path):
     server=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);server.minimum_version=ssl.TLSVersion.TLSv1_2
     server.verify_mode=ssl.CERT_REQUIRED;server.load_verify_locations(tmp_path/'ca.pem')
     server.load_cert_chain(tmp_path/'server.pem',tmp_path/'server.key')
-    def exchange(boundary,*,who='client',path='/append',body=None,method='POST'):
+    def exchange(boundary,*,who='client',path='/append',body=None,method='POST',server_call=None,client_call=None):
         client=ssl.create_default_context(cafile=str(tmp_path/'ca.pem'))
         if who:client.load_cert_chain(tmp_path/(who+'.pem'),tmp_path/(who+'.key'))
         left,right=socket.socketpair();left.settimeout(3);right.settimeout(3);answers=[];errors=[]
         def worker():
             try:
                 with server.wrap_socket(left,server_side=True) as conn:
-                    answers.append(boundary.handle(conn,method=method,path=path,body=json.dumps(req()) if body is None else body))
+                    answers.append(server_call(conn) if server_call else boundary.handle(conn,method=method,path=path,body=json.dumps(req()) if body is None else body))
             except ssl.SSLError as exc:errors.append(str(exc))
         thread=threading.Thread(target=worker);thread.start()
         try:
-            with client.wrap_socket(right,server_hostname='localhost'):pass
+            with client.wrap_socket(right,server_hostname='localhost') as conn:
+                if client_call:client_call(conn)
         except ssl.SSLError as exc:errors.append(str(exc))
         finally:
             thread.join(timeout=5);left.close();right.close()

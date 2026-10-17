@@ -203,3 +203,14 @@ IAM events, schema migration, cloud deployment or pilot activation occurred.
 See ADR-MIE-009 and SPEC-phase6-receipt-mtls-v1. The proposed Linux/SSM/mTLS
 configuration still requires the HTTP listener/client, qualified service-clock
 binding, exact policies/keys/prices and end-to-end cloud verification.
+
+## 2026-10-17 bounded receipt HTTP exchange
+
+Single-request server/client HTTP exchange now runs over actual verified TLS
+sockets, with strict framing, size limits, absolute I/O deadlines, server pinning
+before sending and no retry. 60 focused tests pass including local TLS-to-append
+and failure cases. Review found cleanup error masking, fixed with regression tests.
+HTTP200 still carries receipt_verified=false until downstream evidence validation.
+See SPEC-phase6-receipt-wire-v1. Listener/connect/handshake lifecycle, service-owned
+native clock, remote receipt validation assembly and priced AWS deployment remain
+open. This is local integration, not a deployed receipt endpoint.
