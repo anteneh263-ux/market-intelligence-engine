@@ -47,13 +47,25 @@ class ReceiptHttpBoundary:
         except (KeyError, TypeError, ValueError):
             return _response(403, {'error': 'ACCESS_REFUSED', 'retry_allowed': False})
         try:
-            path = event['rawPath']
-            if path not in self.handlers or context['http']['method'] != 'POST' or context['http']['path'] != path:
-                raise ValueError('Unsupported route')
-            body = event['body']
-            if (event['isBase64Encoded'] is not False or type(body) is not str or not body.isascii()
-                    or not 0 < len(body) <= 16384 or event.get('rawQueryString', '') != ''):
-                raise ValueError('Invalid body')
+            path=event['rawPath'];body=event['body']
+            if (context['http']['method']!='POST' or context['http']['path']!=path
+                    or event['isBase64Encoded'] is not False or event.get('rawQueryString','')!=''):
+                raise ValueError('Invalid transport envelope')
+        except (KeyError,TypeError,ValueError):
+            return _response(400,{'error':'REQUEST_REFUSED','retry_allowed':False})
+        return ReceiptRequestDispatcher(**{k[1:]:v for k,v in self.handlers.items()}).handle(path,body)
+
+
+class ReceiptRequestDispatcher:
+    """Schema/operation boundary only. Authentication belongs to trusted ingress."""
+    def __init__(self,*,append,lookup,head):
+        self.handlers={'/append':append,'/lookup':lookup,'/head':head}
+
+    def handle(self,path,body,*,authorize=None):
+        try:
+            if (type(path) is not str or path not in self.handlers or type(body) is not str
+                    or not body.isascii() or not 0<len(body)<=16384):
+                raise ValueError('Invalid request')
             payload = _snapshot(json.loads(body, object_pairs_hook=_pairs,
                 parse_float=_reject_number, parse_constant=_reject_number))
             if path == '/append':
@@ -72,6 +84,10 @@ class ReceiptHttpBoundary:
                 raise ValueError('Invalid head request')
         except Exception:
             return _response(400, {'error': 'REQUEST_REFUSED', 'retry_allowed': False})
+        if authorize is not None:
+            try:allowed=authorize(path,payload) is True
+            except Exception:allowed=False
+            if not allowed:return _response(403,{'error':'ACCESS_REFUSED','retry_allowed':False})
         try:
             result = self.handlers[path](payload)
             return _response(200, result)

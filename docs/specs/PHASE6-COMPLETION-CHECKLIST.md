@@ -191,3 +191,15 @@ Existing Function URL/Lambda service code has no qualified ClockBound host;
 PHASE6-RECEIPT-CLOCK-DEPLOYMENT-GAP records the specific deployment decision and
 required authentication/clock review. Transport buffering/freshness, service
 clock/deployment and assembled acceptance remain open. Phase6 is INCOMPLETE.
+
+## 2026-10-17 separate mTLS receipt ingress candidate
+
+Receipt operations are now transport-neutral while the existing IAM Function URL
+wrapper remains intact. A separate mTLS socket boundary requires verified peer
+certificates and pins each leaf digest to allowed run IDs before invoking append,
+lookup or head. 38 tests passed independently, including real local TLS exchanges
+through all three existing operations with simulated AWS storage. No fabricated
+IAM events, schema migration, cloud deployment or pilot activation occurred.
+See ADR-MIE-009 and SPEC-phase6-receipt-mtls-v1. The proposed Linux/SSM/mTLS
+configuration still requires the HTTP listener/client, qualified service-clock
+binding, exact policies/keys/prices and end-to-end cloud verification.
