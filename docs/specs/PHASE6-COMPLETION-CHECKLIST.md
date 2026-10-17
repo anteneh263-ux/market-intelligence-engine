@@ -26,7 +26,11 @@ client integration tests (SPEC-phase6-receipt-append-v1). There is still no
 authenticated endpoint or actual AWS integration run.
 Exact-version read-only S3 inspection is also implemented and tested locally,
 including reading the append adapter output. It does not establish committed-head
-authority or signature validity by itself.
+authority or signature validity by itself. A local challenged-head assembly now
+reads committed state consistently twice, inspects every supplied retained version,
+validates the full signature chain and signs the nonce-bound head. The version index
+is still supplied service configuration, not an implemented durable index. Real
+transport authentication, trusted clocks and AWS behavior remain unverified.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
 
 ## Remaining acceptance-critical work
