@@ -4,6 +4,7 @@ import secrets
 import threading
 from app.research.phase6_anchor_validation import _canonical, _hash, _integer
 from app.research.phase6_receipt_request import validate_append_request
+from app.research.phase6_receipt_index import ReceiptVersionIndex
 from app.research.phase6_receipt_state import ReceiptStateAttempt
 from app.research.phase6_s3_retention import S3ReceiptRetention
 
@@ -18,13 +19,17 @@ class ReceiptAppendAttempt:
     Injected clients/key/clock are trusted service configuration, never HTTP
     request fields. One invocation per instance; recovery is read-only upstream.
     """
-    def __init__(self, *, dynamodb, s3, table_arn, bucket, owner,
+    def __init__(self, *, dynamodb, s3, table_arn, index_table_arn, bucket, owner,
                  service_identity, signing_key, clock, not_before_ms, not_after_ms):
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
         if not isinstance(signing_key, Ed25519PrivateKey):
             raise ValueError('Ed25519 service key required')
         if not (_integer(not_before_ms) and _integer(not_after_ms) and not_before_ms < not_after_ms):
             raise ValueError('Invalid signing validity interval')
+        if table_arn == index_table_arn:
+            raise ValueError('State and index tables must be distinct')
+        self._index = ReceiptVersionIndex(dynamodb, table_arn=index_table_arn,
+                                         bucket=bucket, service_identity=service_identity)
         self._state = ReceiptStateAttempt(dynamodb, table_arn=table_arn,
                                          bucket=bucket, service_identity=service_identity)
         self._retention = S3ReceiptRetention(s3, bucket=bucket, owner=owner,
@@ -59,6 +64,7 @@ class ReceiptAppendAttempt:
             if prefix and prefix <= now:
                 raise ValueError('Previous retention horizon expired')
             retained = self._retention.retain(receipt, retain_until_utc_ms=until)
+            self._index.publish(q, retained)
             before_commit = self._clock()
             if not _integer(before_commit) or not now <= before_commit <= self._end:
                 raise ValueError('Clock moved backwards or signing validity expired')

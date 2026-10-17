@@ -92,3 +92,23 @@ def test_complete_two_receipt_prefix(case):
         assert challenged_head(**args)['head']['anchor_seq']==2
     else:
         with pytest.raises(HeadRefused): challenged_head(**args)
+
+
+@pytest.mark.parametrize('fault',[None,'missing','corrupt','pending'])
+def test_indexed_head_resolves_persisted_versions(fault):
+    from app.research.phase6_receipt_head import indexed_challenged_head
+    args,_,_=fixture(); db=args['dynamodb']; original=db.get_item
+    def route(**kw):
+        return db.index_table.get_item(**kw) if 'entry_id' in kw['Key'] else original(**kw)
+    db.get_item=route
+    if fault=='missing': db.index_table.rows.clear()
+    if fault=='corrupt': next(iter(db.index_table.rows.values()))['payload_hash']={'S':'f'*64}
+    if fault=='pending': db.item['state']={'S':'PENDING'}
+    del args['references']
+    args['index_table_arn']='arn:aws:dynamodb:eu-north-1:123456789012:table/test-index'
+    if fault:
+        with pytest.raises(HeadRefused): indexed_challenged_head(**args)
+    else:
+        out=indexed_challenged_head(**args)
+        assert out['head']['anchor_seq']==1 and out['runtime_accepted'] is False
+        assert db.index_table.reads[0]['ConsistentRead'] is True

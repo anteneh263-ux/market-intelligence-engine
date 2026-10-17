@@ -77,13 +77,22 @@ class ReceiptVersionIndex:
         q = _request(request)
         if q['service_identity'] != self.service:
             raise IndexRefused('Configured identity mismatch')
+        result = self.read_entry(q['run_id'], q['anchor_seq'])
+        if result['record'] is not None and result['record']['request'] != q:
+            raise IndexRefused('Conflicting request for sequence')
+        return result
+
+    def read_entry(self, run_id, anchor_seq):
+        if not _hex(run_id) or not _integer(anchor_seq) or anchor_seq == 0:
+            raise IndexRefused('Invalid index identity')
+        entry_id = run_id + ':' + str(anchor_seq).zfill(20)
         try:
             response = self.client.get_item(TableName=self.table,
-                Key={'entry_id': {'S': _entry_id(q)}}, ConsistentRead=True)
+                Key={'entry_id': {'S': entry_id}}, ConsistentRead=True)
             if 'Item' not in response:
                 return dict(status='NOT_FOUND', record=None, runtime_accepted=False)
             item = response['Item']
-            if set(item) != {'entry_id', 'payload', 'payload_hash'} or item['entry_id'] != {'S': _entry_id(q)}:
+            if set(item) != {'entry_id', 'payload', 'payload_hash'} or item['entry_id'] != {'S': entry_id}:
                 raise ValueError('Index identity mismatch')
             raw = item['payload']['S']
             if type(raw) is not str or len(raw) > 8192 or not raw.isascii():
@@ -93,7 +102,9 @@ class ReceiptVersionIndex:
                 raise ValueError('Invalid stored record')
             record = _record(stored['request'], stored['reference'])
             if (_canonical(record).decode() != raw or item['payload_hash'] != {'S': _hash(record)}
-                    or record['request'] != q or record['reference']['bucket'] != self.bucket):
+                    or record['request']['run_id'] != run_id or record['request']['anchor_seq'] != anchor_seq
+                    or record['request']['service_identity'] != self.service
+                    or record['reference']['bucket'] != self.bucket):
                 raise ValueError('Conflicting or corrupt index entry')
         except Exception as exc:
             raise IndexRefused('Exact index lookup refused') from exc

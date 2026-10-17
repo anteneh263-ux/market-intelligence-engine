@@ -83,3 +83,32 @@ def challenged_head(*, dynamodb, s3, table_arn, bucket, owner, run_id,
         return dict(schema_version='p6.challenged_head_result.v1', head=head, runtime_accepted=False)
     except Exception as exc:
         raise HeadRefused('Current retained prefix not established; no signed head returned') from exc
+
+
+def indexed_challenged_head(*, dynamodb, s3, table_arn, index_table_arn, bucket,
+                           owner, run_id, trust, expected_trust_hash, signing_key, nonce, clock):
+    """Resolve the service's immutable index before full challenged-head inspection."""
+    from app.research.phase6_receipt_index import ReceiptVersionIndex
+    try:
+        if not _hex(run_id) or table_arn == index_table_arn:
+            raise ValueError('Invalid table/run configuration')
+        t = _snapshot(trust)
+        index = ReceiptVersionIndex(dynamodb, table_arn=index_table_arn,
+                                    bucket=bucket, service_identity=t['service_identity'])
+        state = dynamodb.get_item(TableName=table_arn, Key={'run_id': {'S': run_id}},
+                                  ConsistentRead=True)['Item']
+        raw = state['head_seq']['N']
+        if (state['state'] != {'S': 'COMMITTED'} or type(raw) is not str
+                or not re.fullmatch(r'[1-9][0-9]{0,4}', raw) or int(raw) > 10000):
+            raise ValueError('Committed bounded prefix required')
+        refs = []
+        for seq in range(1, int(raw)+1):
+            found = index.read_entry(run_id, seq)
+            if found['status'] != 'FOUND_UNCONFIRMED':
+                raise ValueError('Missing indexed prefix entry')
+            refs.append(found['record']['reference'])
+        return challenged_head(dynamodb=dynamodb, s3=s3, table_arn=table_arn, bucket=bucket,
+            owner=owner, run_id=run_id, references=refs, trust=t, expected_trust_hash=expected_trust_hash,
+            signing_key=signing_key, nonce=nonce, clock=clock)
+    except Exception as exc:
+        raise HeadRefused('Indexed current head not established') from exc

@@ -32,3 +32,9 @@ trusted live clocks, SDK deployment configuration and real cloud fault tests.
 The diagnostic test fakes establish Python call order and refusal behavior only;
 they cannot establish AWS durability or concurrency. Recreating an attempt after
 a failure is not permission to retry a pilot. No Phase6 completion claim.
+
+
+2026-10-17 integration update: SPEC-phase6-index-integration-v1 supersedes the
+above earlier missing-index-wiring snapshot. The index is now mandatory in append
+before commit, and indexed_challenged_head resolves stored versions. These changes
+remain locally tested with simulated SDK clients, not deployed AWS authority.

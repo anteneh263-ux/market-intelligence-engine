@@ -12,8 +12,13 @@ KEY=Ed25519PrivateKey.from_private_bytes(bytes(range(32)))
 
 def setup(db=None,s3=None,clock=lambda:1000):
     db=db or DB(); s3=s3 or S3()
+    if not hasattr(db, 'put_item'):
+        from test_phase6_receipt_index import Table
+        db.index_table = Table()
+        db.put_item = db.index_table.put_item
     a=ReceiptAppendAttempt(dynamodb=db,s3=s3,
         table_arn='arn:aws:dynamodb:eu-north-1:123456789012:table/test-state',
+        index_table_arn='arn:aws:dynamodb:eu-north-1:123456789012:table/test-index',
         bucket='test-bucket',owner='123456789012',service_identity='test',
         signing_key=KEY,clock=clock,not_before_ms=0,not_after_ms=10000)
     return a,db,s3
@@ -115,3 +120,23 @@ def test_signed_outputs_pass_existing_offline_chain_verifier():
         receipts=receipts,head=None,challenge=None,now_utc_ms=1001))
     assert result['cryptographic_status']=='VALID' and result['head_status']=='OFFLINE'
     assert result['runtime_accepted'] is False
+
+
+def test_index_timeout_preserves_pending_without_head_commit():
+    a,db,s3=setup(); db.index_table.timeout=True
+    with pytest.raises(AppendUncertain): a.append(req())
+    assert db.item['state']=={'S':'PENDING'} and len(db.calls)==1
+    assert len(s3.calls)==3 and db.index_table.puts==1
+    with pytest.raises(AppendUncertain): a.append(req())
+    assert db.index_table.puts==1
+
+
+def test_index_publication_precedes_commit_and_follows_storage():
+    a,db,s3=setup(); original=db.put_item
+    def observe(**kw):
+        assert db.item['state']=={'S':'PENDING'}
+        assert [x[0] for x in s3.calls]==['put','get','retention']
+        return original(**kw)
+    db.put_item=observe
+    a.append(req())
+    assert db.index_table.puts==1 and db.item['state']=={'S':'COMMITTED'}

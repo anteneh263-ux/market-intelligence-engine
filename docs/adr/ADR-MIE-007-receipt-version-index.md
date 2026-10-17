@@ -25,3 +25,9 @@ append or challenged-head callers, and does not implement pagination/full histor
 No equivalence with historical evidence. Simulated SDK tests establish conditional
 requests and refusal paths, not live AWS durability or access policy enforcement.
 Table ARN, bucket and service identity are explicit trusted configuration.
+
+
+2026-10-17 integration update: SPEC-phase6-index-integration-v1 supersedes the
+above earlier missing-index-wiring snapshot. The index is now mandatory in append
+before commit, and indexed_challenged_head resolves stored versions. These changes
+remain locally tested with simulated SDK clients, not deployed AWS authority.

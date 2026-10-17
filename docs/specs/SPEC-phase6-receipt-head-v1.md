@@ -24,3 +24,9 @@ clock authenticity, authorization and actual AWS testing remain outstanding. Tes
 use simulated SDK clients around actual local append/lookup/verification modules.
 Full-prefix reads are bounded by existing validator limits and require measured
 capacity/latency before any pilot. H-025 and historical evidence remain excluded.
+
+
+2026-10-17 integration update: SPEC-phase6-index-integration-v1 supersedes the
+above earlier missing-index-wiring snapshot. The index is now mandatory in append
+before commit, and indexed_challenged_head resolves stored versions. These changes
+remain locally tested with simulated SDK clients, not deployed AWS authority.

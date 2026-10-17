@@ -31,7 +31,8 @@ reads committed state consistently twice, inspects every supplied retained versi
 validates the full signature chain and signs the nonce-bound head. The version index
 is still supplied service configuration. A separate immutable DynamoDB index
 adapter now supports conditional publication and exact-request lookup (ADR-MIE-007),
-but it is not yet wired into append/head. Index hits remain unconfirmed until
+and is now wired into append before head commit and into indexed challenged-head
+lookup. Index hits alone remain unconfirmed until
 committed-state, signature and retention checks pass. Real
 transport authentication, trusted clocks and AWS behavior remain unverified.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
