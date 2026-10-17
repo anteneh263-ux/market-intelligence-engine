@@ -149,3 +149,16 @@ and12/12 forced-disruption refusals. See PHASE6-NATIVE-CLOCK-QUALIFICATION for
 all preserved attempts and limitations. The stopped-daemon sequence is confounded
 by unverified recovery from forced disruption; continuous admitted-owner operation
 and production source/service wiring remain unverified. Phase6 is INCOMPLETE.
+
+## 2026-10-17 persistent-owner and isolated-stop update
+
+Separate diagnostic008 passed61 one-owner observations over60.00108348seconds,
+with2–3ms bounds, after explicit Chrony stabilization and ClockBound readiness.
+It then confirmed daemon termination and same-owner refusal after5.021837131seconds,
+followed by two sticky refusals and balanced descriptors. The20 accepted readings
+between stop acknowledgement and refusal reflect the native cached-state grace
+period; this is not immediate stop detection. Attempts006/007 remain failed and
+preserved. See PHASE6-NATIVE-CLOCK-QUALIFICATION for raw evidence and limitations.
+The bounded isolated-stop gap is closed; sustained production reliability,
+actual source/service integration, deployment freeze and prospective acceptance
+remain open. Phase6 is INCOMPLETE.
