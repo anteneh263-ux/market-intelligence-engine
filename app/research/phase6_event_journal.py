@@ -867,6 +867,27 @@ class EventJournal:
         finally:
             self._busy = False
 
+    def read_object(self, digest):
+        """Detached acknowledged JSON; never select arbitrary paths or objects."""
+        self._owner()
+        if self._busy:
+            self._fail()
+            raise ValueError('JOURNAL_STOPPED')
+        _need(self._lifecycle in ('OPEN','CHECKPOINTED_LOCAL','CHECKPOINT_ANCHOR_BOUND_LOCAL'), 'JOURNAL_STOPPED')
+        _need(type(digest) is str and digest in self._objects, 'INPUT_INVALID')
+        expected = self._lifecycle
+        self._busy = True
+        try:
+            raw = self._writer.read(digest, claim=self._claim)
+            result = _detach(json.loads(raw), capacity=self._capacity)
+            self._active(expected)
+            return result
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
     def snapshot(self):
         self._owner()
         return copy.deepcopy(dict(schema_version='p6.event_journal_status.v1',

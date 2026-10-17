@@ -75,15 +75,19 @@ def _kind(index):
     return 'RESERVATION' if index == 0 else 'GENESIS' if index == 1 else 'CHECKPOINT'
 
 
-def _schema(q):
-    _shape(q, 'trust expected_trust_hash expected_run_id expected_subjects receipts head challenge now_utc_ms')
-    _need(_hex(q['expected_trust_hash']) and _hex(q['expected_run_id']) and _integer(q['now_utc_ms']))
-    t = q['trust']
+def _trust_schema(t):
     _shape(t, 'schema_version service_identity endpoint_id algorithm public_key_hex not_before_utc_ms not_after_utc_ms max_head_age_ms max_clock_skew_ms')
     _need(t['schema_version'] == 'p6.anchor_trust.v1' and t['algorithm'] == 'Ed25519'
           and _token(t['service_identity']) and _token(t['endpoint_id']) and _hex(t['public_key_hex']))
     _need(all(_integer(t[k]) for k in ('not_before_utc_ms', 'not_after_utc_ms', 'max_head_age_ms', 'max_clock_skew_ms')))
     _need(t['not_before_utc_ms'] < t['not_after_utc_ms'] and t['max_head_age_ms'] > 0)
+
+
+def _schema(q):
+    _shape(q, 'trust expected_trust_hash expected_run_id expected_subjects receipts head challenge now_utc_ms')
+    _need(_hex(q['expected_trust_hash']) and _hex(q['expected_run_id']) and _integer(q['now_utc_ms']))
+    t = q['trust']
+    _trust_schema(t)
     _need(type(q['receipts']) is list and type(q['expected_subjects']) is list
           and 1 <= len(q['receipts']) <= 10000 and len(q['receipts']) == len(q['expected_subjects']))
     for subject in q['expected_subjects']:

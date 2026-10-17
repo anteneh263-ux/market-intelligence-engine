@@ -80,3 +80,14 @@ https://docs.aws.amazon.com/en_en/systems-manager/latest/userguide/session-manag
 https://aws.amazon.com/systems-manager/pricing/
 SSM forwarding traffic is not recorded by Session Manager session logging;
 application receipt evidence and operational logs must be retained separately.
+
+## 2026-10-17 implementation follow-up
+
+The previously missing connection/handshake lifecycle, HTTP wire exchange,
+service-owned clock observations and verified remote client now exist and are
+locally integrated. See SPEC-phase6-owned-receipt-roundtrip-v1. A proposed
+qualification CloudFormation template is in deployment/phase6/qualification-v1.json.
+Its default creates the foundation only; no instance launches without explicit
+LaunchCompute=yes and a stop deadline. It is not deployed or a pilot approval.
+Exact runtime/identities, operator watchdog and prospective contract remain separate
+prerequisites. Preserve the earlier proposal and its independence limitations.

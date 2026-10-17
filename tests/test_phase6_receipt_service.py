@@ -11,12 +11,12 @@ from app.research.phase6_anchor_validation import _hash
 from app.research.phase6_receipt_service import build_receipt_service
 
 
-def service(clock=lambda:1000):
+def service(clock=lambda:1000, builder=build_receipt_service):
     db=DB(); index=Table(); s3=S3(); db.put_item=index.put_item
     db.get_item=lambda **kw: index.get_item(**kw) if 'entry_id' in kw['Key'] else {'Item':copy.deepcopy(db.item)}
     trust=dict(schema_version='p6.anchor_trust.v1',service_identity='test',endpoint_id='synthetic',algorithm='Ed25519',
         public_key_hex=KEY.public_key().public_bytes_raw().hex(),not_before_utc_ms=0,not_after_utc_ms=10000,max_head_age_ms=100,max_clock_skew_ms=0)
-    bound=build_receipt_service(dynamodb=db,s3=s3,table_arn='arn:aws:dynamodb:eu-north-1:123456789012:table/test-state',
+    bound=builder(dynamodb=db,s3=s3,table_arn='arn:aws:dynamodb:eu-north-1:123456789012:table/test-state',
         index_table_arn='arn:aws:dynamodb:eu-north-1:123456789012:table/test-index',bucket='test-bucket',owner='123456789012',
         trust=trust,expected_trust_hash=_hash(trust),signing_key=KEY,clock=clock,
         domain_name='test.lambda-url.eu-north-1.on.aws',principal_arns=[ARN])

@@ -6,7 +6,7 @@ import os
 import secrets
 import threading
 
-from app.research.phase6_object_store import ObjectWriter, inspect_objects
+from app.research.phase6_object_store import ObjectWriter, inspect_objects, read_verified_object
 from app.research.phase6_start_validation import _snapshot, _Refused, verify_start_bindings
 from app.research.phase6_validation import canonical_hash
 
@@ -139,6 +139,22 @@ class StartBindingAttempt:
             self._request_hash, self._result_hash = request_hash, result_hash
             self._lifecycle = 'BOUND_LOCAL' if validation['binding_status'] == 'VALID' else 'REJECTED'
             return copy.deepcopy(validation)
+        except BaseException:
+            self._fail()
+            raise
+        finally:
+            self._busy = False
+
+    def export_request(self):
+        """Read the acknowledged start request from its closed verified store."""
+        self._owner()
+        _need(not self._busy and self._lifecycle == 'BOUND_LOCAL', 'ATTEMPT_STOPPED')
+        self._busy = True
+        try:
+            raw = read_verified_object(self._writer.root,header=self._writer.header,
+                objects=dict(self._objects),digest=self._request_hash)
+            self._active('BOUND_LOCAL')
+            return _detach(json.loads(raw))
         except BaseException:
             self._fail()
             raise

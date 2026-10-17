@@ -171,6 +171,24 @@ class ObjectWriter:
                 raise ValueError('STORAGE_REFUSED') from None
             raise
 
+    def read(self, digest, *, claim=None):
+        """Read only an acknowledged object through the still-owned descriptor."""
+        _need(not self._stopped and self._pid == os.getpid()
+              and self._thread == threading.get_ident(), 'WRITER_STOPPED')
+        _need(claim is self._claim, 'WRITER_OWNERSHIP')
+        _need(_hex(digest) and digest in self._objects, 'INPUT_INVALID')
+        try:
+            _bound(self._root, self._fd)
+            _need(_read(self._fd, 'writer.json', len(self._header)) == self._header, 'INTEGRITY_FAILURE')
+            _need(set(os.listdir(self._fd)) == {'writer.json'} | {h + '.blob' for h in self._objects}, 'INTEGRITY_FAILURE')
+            raw = _read(self._fd, digest + '.blob', self._objects[digest])
+            _need(hashlib.sha256(raw).hexdigest() == digest, 'INTEGRITY_FAILURE')
+            _bound(self._root, self._fd)
+            return raw
+        except BaseException:
+            self._stopped = True
+            raise
+
     def close(self, *, claim=None):
         _need(self._pid != os.getpid() or self._thread == threading.get_ident(), 'WRITER_STOPPED')
         _need(claim is self._claim, 'WRITER_OWNERSHIP')
@@ -223,5 +241,32 @@ def inspect_objects(root, *, header, objects):
         if isinstance(exc, ValueError) and str(exc) == 'STORAGE_REFUSED':
             raise
         raise ValueError('INTEGRITY_FAILURE') from None
+    finally:
+        os.close(fd)
+
+
+def read_verified_object(root, *, header, objects, digest):
+    """Read a closed store after verifying its full recorded inventory under lock."""
+    encoded = _header(header)
+    _need(type(objects) is dict and _hex(digest) and digest in objects, 'INPUT_INVALID')
+    _need(all(_hex(h) and type(n) is int and 0 <= n < 2**63 for h,n in objects.items())
+          and sum(objects.values()) <= header['max_bytes'], 'INPUT_INVALID')
+    fd = _root(root)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        _bound(root, fd)
+        expected = {'writer.json'} | {h + '.blob' for h in objects}
+        _need(set(os.listdir(fd)) == expected, 'INTEGRITY_FAILURE')
+        initial = {name:_snapshot(os.stat(name,dir_fd=fd,follow_symlinks=False)) for name in expected}
+        _need(_read(fd,'writer.json',len(encoded)) == encoded, 'INTEGRITY_FAILURE')
+        selected = None
+        for h,n in objects.items():
+            raw = _read(fd,h+'.blob',n)
+            _need(hashlib.sha256(raw).hexdigest() == h, 'INTEGRITY_FAILURE')
+            if h == digest:selected = raw
+        _need(set(os.listdir(fd)) == expected, 'INTEGRITY_FAILURE')
+        _need(initial == {name:_snapshot(os.stat(name,dir_fd=fd,follow_symlinks=False)) for name in expected}, 'INTEGRITY_FAILURE')
+        _bound(root,fd)
+        return selected
     finally:
         os.close(fd)

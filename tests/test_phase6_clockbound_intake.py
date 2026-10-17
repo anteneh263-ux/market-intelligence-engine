@@ -119,3 +119,12 @@ def test_constructor_failure_leaves_writer_unclaimed(tmp_path,monkeypatch,fault)
     assert writer._claim is None and list(target.iterdir())==[target/'writer.json']
     if fault=='invalid_reservation':assert Native.instances[-1].closed
     writer.close()
+
+
+def test_event_clock_shares_receipt_session_without_new_native(tmp_path,monkeypatch):
+    owner,root=binding(tmp_path,monkeypatch)
+    receipt=owner.receive(raw(message()))['receipt'];event=owner.event()
+    assert event['clock_session_id']==receipt['clock_session_id']
+    assert event['monotonic_ns']>receipt['received_monotonic_ns'] and len(Native.instances)==1
+    owner.close()
+    with pytest.raises(ValueError):owner.event()

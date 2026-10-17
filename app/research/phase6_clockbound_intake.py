@@ -42,6 +42,15 @@ class ClockBoundSourceIntake:
             self._stop();raise
         finally:self._busy=False
 
+    def event(self):
+        """Fresh event time from the same owner/session used for receive receipts."""
+        self._owner();need(not self.stopped)
+        if self._busy:
+            self._stop();raise ValueError('BOUND_INTAKE_REENTRY')
+        try:return self._clock.event()
+        except BaseException:
+            self._stop();raise
+
     def close(self):
         self._owner();self._stop()
         if self._busy:raise ValueError('BOUND_INTAKE_REENTRY')

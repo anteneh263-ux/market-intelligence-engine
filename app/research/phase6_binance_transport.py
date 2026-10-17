@@ -40,6 +40,13 @@ class BinanceClockBoundTransport:
                 if error is None:error=exc
         if error is not None:raise error
 
+    def event(self):
+        """Same-session event capability for the sequential downstream operator."""
+        self._owner();need(not self.stopped)
+        try:return self._intake.event()
+        except BaseException:
+            self.stopped=True;raise
+
     def close(self):
         self._owner();self.stopped=True
         if self._busy:raise ValueError('TRANSPORT_REENTRY')
@@ -71,9 +78,10 @@ class BinanceClockBoundTransport:
                 result=self._intake.receive(frame)
                 need(not self.stopped and time.monotonic()<=deadline)
                 commit_hash=result['commit_hash']
-                on_commit(result)
+                stop_requested=on_commit(result) is True
                 need(not self.stopped and time.monotonic()<=deadline)
                 count+=1;last=commit_hash
+                if stop_requested:break
             result=dict(messages=count,last_commit_hash=last,runtime_accepted=False,
                         source_authenticated=False,endpoint=ENDPOINT)
         except BaseException:

@@ -61,6 +61,11 @@ def tls(tmp_path):
             thread.join(timeout=5);left.close();right.close()
         assert not thread.is_alive()
         return answers,errors
+    def client_context(who='client'):
+        client=ssl.create_default_context(cafile=str(tmp_path/'ca.pem'))
+        if who:client.load_cert_chain(tmp_path/(who+'.pem'),tmp_path/(who+'.key'))
+        return client
+    exchange.server_context=server;exchange.client_context=client_context
     return digests,exchange
 
 

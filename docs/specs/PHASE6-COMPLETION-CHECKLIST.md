@@ -214,3 +214,30 @@ HTTP200 still carries receipt_verified=false until downstream evidence validatio
 See SPEC-phase6-receipt-wire-v1. Listener/connect/handshake lifecycle, service-owned
 native clock, remote receipt validation assembly and priced AWS deployment remain
 open. This is local integration, not a deployed receipt endpoint.
+
+## 2026-10-17 owned roundtrip and assembled diagnostic controller
+
+The receipt host now owns native clock sampling and durable clock observations;
+the client verifies signed prefixes/fresh challenged heads before acknowledging.
+Connection/handshake ownership and terminal outcomes are implemented. The listener
+now separates 120-second idle acceptance from the 10-second TLS handshake, avoiding
+unintended shutdown between minute-spaced checkpoints. No cloud endpoint is active.
+
+`DiagnosticPipeline.run` assembles the actual transport callback, acknowledged source
+inventory, admitted journal lifecycle, diagnostic strategy, simulated execution,
+checkpoint exports, verified receipt client and exact successor ancestry. It closes
+and inspects source/client inventories before acknowledging a local final result.
+See SPEC-phase6-owned-receipt-roundtrip-v1 and SPEC-phase6-diagnostic-pipeline-v1.
+
+Independent review found and fixed malformed ignored-packet timing acceptance,
+post-claim constructor failure and cleanup masking of an unknown result write.
+The full regression passes 3,781 tests. A 10-segment/610-frame synthetic integration
+measured 0.160753 seconds maximum callback and 23,875,808 blob bytes. These are local
+substituted-clock/AWS results, not actual AWS latency or prospective validation.
+
+User's five items: (1) clock/auth roundtrip locally implemented; deployed service
+qualification open. (2) assembled production controller locally exercised; native
+cloud/source activation open. (3) integrated fault/load tests pass; target-host
+qualification open. (4) proposed AWS foundation/template/prices being prepared;
+exact runtime/identities/roots/interval approval is not complete. (5) live-market,
+simulated-money pilot has not run. Phase6 remains INCOMPLETE.
