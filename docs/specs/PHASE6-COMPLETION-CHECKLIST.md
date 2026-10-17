@@ -20,7 +20,10 @@ receipt verification, one conditional PUT attempt, exact-version readback and
 compliance-retention inspection. This is not AWS integration testing or a durable
 assembled service; see ADR-MIE-005. A DynamoDB conditional pending/head adapter
 now implements single-attempt claim/commit with simulated-client fault tests
-(ADR-MIE-006). It is not yet wired to signing, S3 or an authenticated endpoint.
+(ADR-MIE-006). The local ReceiptAppendAttempt now wires signing, pending claim, actual S3
+adapter return and conditional commit, with failure/clock checks and simulated
+client integration tests (SPEC-phase6-receipt-append-v1). There is still no
+authenticated endpoint or actual AWS integration run.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
 
 ## Remaining acceptance-critical work
