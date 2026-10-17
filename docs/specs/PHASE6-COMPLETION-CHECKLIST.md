@@ -139,3 +139,13 @@ SYNCHRONIZED status and sub-100-ms bounds; these are sampled AWS metadata claims
 not prospective event-time acceptance. A ClockBound 2.0.3 Linux adapter candidate
 now has synthetic fault tests. See SPEC-phase6-clockbound-v1. Native deployment,
 actual source/service wiring, live integration and pilot acceptance remain open.
+
+
+## 2026-10-17 native Linux diagnostic update
+
+ClockBound now has actual ARM64Linux build/load/ABI evidence and bounded fault
+observations:10 accepted readings with1–2ms uncertainty after2 startup refusals,
+and12/12 forced-disruption refusals. See PHASE6-NATIVE-CLOCK-QUALIFICATION for
+all preserved attempts and limitations. The stopped-daemon sequence is confounded
+by unverified recovery from forced disruption; continuous admitted-owner operation
+and production source/service wiring remain unverified. Phase6 is INCOMPLETE.

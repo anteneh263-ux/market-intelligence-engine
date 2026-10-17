@@ -1,7 +1,8 @@
 # Phase 6 ClockBound adapter — implementation candidate
 
-Status: locally implemented and tested with synthetic native responses. Not
-Linux-integrated, deployed, or accepted for a prospective pilot.
+Status: locally tested and exercised in a bounded native Linux diagnostic.
+Not deployed into the admitted source/service path or accepted for a pilot.
+See PHASE6-NATIVE-CLOCK-QUALIFICATION for successful checks and open limitations.
 
 The adapter uses the official ClockBound 2.0.3 C ABI on 64-bit Linux. A required
 SHA256 identifies the library bytes. A bounded copy is hashed and sealed in a
@@ -38,3 +39,9 @@ future validity interval, certify this adapter, or qualify Lambda or the Mac.
 Sources: https://github.com/aws/clock-bound
 https://crates.io/crates/clock-bound-ffi/2.0.3
 https://crates.io/crates/clock-bound-d/2.0.3
+
+
+Diagnostic005 update: real ARM64Linux build/load and C ABI checks completed;
+10 accepted readings had1–2ms bounds after2 initial refusals. Forced disruption
+was refused12/12. This supersedes the earlier statement that all native execution
+was pending, while preserving the remaining qualification requirements above.
