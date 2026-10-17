@@ -106,3 +106,18 @@ https://aws.amazon.com/lambda/pricing/
 https://docs.aws.amazon.com/lambda/latest/dg/furls-http-invoke-decision.html
 https://aws.amazon.com/secrets-manager/pricing/
 https://aws.amazon.com/s3/pricing/
+
+
+## 2026-10-17 capacity/intake implementation update
+
+Explicit capacity-v2 is implemented through the local call chain; the default v1
+limits remain. A30segment/1831observation accelerated local run retained all supplied
+observations and exercised prior-state/receipt binding and simulation checkpoints.
+Optimized maximum segment time measured0.881s, derived storage153100891bytes. This
+reduces the earlier capacity blocker but does not complete live/admitted capacity
+acceptance, peakRAM or worst-supported-frame testing. See SPEC-phase6-capacity-v2.
+SourceIntake now persists actual raw→normalized→receipt links and enforces cumulative
+raw bytes in its owner (including duplicates and non-final bars), with fault tests.
+It is not yet connected to live transport and the complete admitted operator path.
+Clock source, deployment/pricing/permissions, cloud tests, frozen package and the
+approved prospective pilot remain incomplete. No Phase6 completion claim.
