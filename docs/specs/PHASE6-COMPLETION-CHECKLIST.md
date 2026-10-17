@@ -28,14 +28,22 @@ Exact-version read-only S3 inspection is also implemented and tested locally,
 including reading the append adapter output. It does not establish committed-head
 authority or signature validity by itself. A local challenged-head assembly now
 reads committed state consistently twice, inspects every supplied retained version,
-validates the full signature chain and signs the nonce-bound head. The version index
-is still supplied service configuration. A separate immutable DynamoDB index
+validates the full signature chain and signs the nonce-bound head. Version references may be supplied to the lower-level head helper; the indexed
+service path resolves them from the persisted index. A separate immutable DynamoDB index
 adapter now supports conditional publication and exact-request lookup (ADR-MIE-007),
 and is now wired into append before head commit and into indexed challenged-head
 lookup. Index hits alone remain unconfirmed until
 committed-state, signature and retention checks pass. Real
 transport authentication, trusted clocks and AWS behavior remain unverified.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
+
+Original-receipt read-only lookup now verifies the indexed committed chain and
+returns the original signed receipt with a fresh challenged head. A strict Function
+URL event boundary and actual service binding are locally implemented and tested.
+The binding checks verified predecessor identity, duplicate subjects and clock
+ordering before successor writes. The event boundary relies on trusted AWS IAM
+events; it cannot authenticate arbitrary JSON without a correctly deployed URL
+and invocation policy. These are local integration results, not cloud acceptance.
 
 ## Remaining acceptance-critical work
 
