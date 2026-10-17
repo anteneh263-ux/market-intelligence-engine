@@ -58,3 +58,26 @@ def test_suspend_is_included_in_uncertainty(monkeypatch):
     monkeypatch.setattr(module.time,'clock_gettime_ns',lambda _:next(boot))
     with pytest.raises(module.ClockRefused):c.sample()
     assert c.stopped
+
+
+@pytest.mark.parametrize('status',[0,2,3])
+def test_refusal_preserves_exact_native_call_and_clock_brackets(monkeypatch,status):
+    c=clock(monkeypatch);c.native.value=(1000000000,1002000000,status)
+    with pytest.raises(module.ClockRefused) as caught:c.sample()
+    assert caught.value.diagnostic==dict(earliest_ns=1000000000,latest_ns=1002000000,
+        native_status=status,monotonic_before_ns=1000000,monotonic_after_ns=2000000,
+        boottime_before_ns=1000000,boottime_after_ns=2000000)
+    assert c.stopped
+    with pytest.raises(module.ClockRefused) as again:c.sample()
+    assert again.value.diagnostic is None
+
+
+def test_refusal_identifies_bracket_inconsistency_without_relaxing_it(monkeypatch):
+    c=clock(monkeypatch);boot=iter([1000000,1999999])
+    monkeypatch.setattr(module.time,'clock_gettime_ns',lambda _:next(boot))
+    with pytest.raises(module.ClockRefused) as caught:c.sample()
+    d=caught.value.diagnostic
+    assert d['native_status']==1
+    assert d['boottime_after_ns']-d['boottime_before_ns']==999999
+    assert d['monotonic_after_ns']-d['monotonic_before_ns']==1000000
+    assert c.stopped

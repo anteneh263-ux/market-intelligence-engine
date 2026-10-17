@@ -10,7 +10,10 @@ import threading
 import time
 
 
-class ClockRefused(ValueError):pass
+class ClockRefused(ValueError):
+    def __init__(self,message,*,diagnostic=None):
+        super().__init__(message)
+        self.diagnostic=dict(diagnostic) if diagnostic is not None else None
 
 
 class _Timespec(ctypes.Structure):
@@ -107,7 +110,9 @@ class ClockBoundClock:
                     or status!=1 or not 0<=lo<=hi or not 0<=before<=after<2**63
                     or not 0<=boot_before<=boot_after<2**63
                     or boot_after-boot_before<after-before):
-                raise ClockRefused('Unsynchronized or invalid clock interval')
+                raise ClockRefused('Unsynchronized or invalid clock interval',diagnostic=dict(
+                    earliest_ns=lo,latest_ns=hi,native_status=status,monotonic_before_ns=before,
+                    monotonic_after_ns=after,boottime_before_ns=boot_before,boottime_after_ns=boot_after))
             utc=(lo+hi)//2000000
             # BOOTTIME covers the entire bracket, including Linux suspend.
             radius=max(abs(utc*1000000-lo),abs(hi-utc*1000000))+(boot_after-boot_before)
