@@ -24,6 +24,9 @@ now implements single-attempt claim/commit with simulated-client fault tests
 adapter return and conditional commit, with failure/clock checks and simulated
 client integration tests (SPEC-phase6-receipt-append-v1). There is still no
 authenticated endpoint or actual AWS integration run.
+Exact-version read-only S3 inspection is also implemented and tested locally,
+including reading the append adapter output. It does not establish committed-head
+authority or signature validity by itself.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
 
 ## Remaining acceptance-critical work
