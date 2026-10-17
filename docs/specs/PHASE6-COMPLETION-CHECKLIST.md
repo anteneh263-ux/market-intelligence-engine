@@ -121,3 +121,21 @@ raw bytes in its owner (including duplicates and non-final bars), with fault tes
 It is not yet connected to live transport and the complete admitted operator path.
 Clock source, deployment/pricing/permissions, cloud tests, frozen package and the
 approved prospective pilot remain incomplete. No Phase6 completion claim.
+
+
+## 2026-10-17 AWS diagnostic and clock adapter update
+
+A narrowly scoped one-task Fargate clock diagnostic was authorized and executed
+in Stockholm. Task exited successfully and is STOPPED. Its stack remains,
+including a one-day-retention CloudWatch log group; there is no recurring compute.
+This supersedes the earlier blanket statement that no resource activation was
+authorized, but does not authorize an unreviewed pilot or paid-plan upgrade.
+Free plan/100 USD credits were confirmed through the AWS API. Region-specific
+component prices were collected; the complete service deployment remains unfrozen.
+No receipt bucket, signing secret or authenticated receipt endpoint is deployed.
+
+The diagnostic retained 12 raw metadata samples and their hashes. All advertised
+SYNCHRONIZED status and sub-100-ms bounds; these are sampled AWS metadata claims,
+not prospective event-time acceptance. A ClockBound 2.0.3 Linux adapter candidate
+now has synthetic fault tests. See SPEC-phase6-clockbound-v1. Native deployment,
+actual source/service wiring, live integration and pilot acceptance remain open.
