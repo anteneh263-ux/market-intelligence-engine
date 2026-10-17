@@ -29,7 +29,10 @@ including reading the append adapter output. It does not establish committed-hea
 authority or signature validity by itself. A local challenged-head assembly now
 reads committed state consistently twice, inspects every supplied retained version,
 validates the full signature chain and signs the nonce-bound head. The version index
-is still supplied service configuration, not an implemented durable index. Real
+is still supplied service configuration. A separate immutable DynamoDB index
+adapter now supports conditional publication and exact-request lookup (ADR-MIE-007),
+but it is not yet wired into append/head. Index hits remain unconfirmed until
+committed-state, signature and retention checks pass. Real
 transport authentication, trusted clocks and AWS behavior remain unverified.
 DynamoDB is an additional proposed cost/permission item within the same AWS account.
 
