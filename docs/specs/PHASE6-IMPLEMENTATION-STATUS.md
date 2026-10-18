@@ -590,3 +590,27 @@ WP6-3A adds strict raw Binance BTCUSDT normalization and raw/normalized receipt
 link checks.48new+43intake tests pass. No live transport, trusted receipt clock
 or mandatory durable sourcebinding was activated. Phase6 remains incomplete;
 see the completion checklist for external setup, runtime, capacity and pilot gates.
+
+## 2026-10-18 — synthetic qualification CLI and launch operator
+
+`phase6_qualification_runtime` and `phase6_qualification_operator` now provide
+actual explicit command entry points with checked identity/config/artifact pins,
+owned receipt/clock/storage lifecycles and conservative stop observation.56 focused
+tests pass independently. The reproducible Python archive includes42 manifest-listed files plus manifest.json and
+hash-pinned target wheels. See SPEC-phase6-qualification-runtime-v1. All cloud and
+native execution remains unqualified; the archive excludes native binaries,
+identities and complete host bootstrap. Runtime acceptance flags remain false.
+
+PHASE6-FOUNDATION-CREATION-REVIEW prepares a concrete14-resource foundation-only
+creation request with a USD1 first30-day planning allowance. No resources created;
+no account-plan upgrade or market pilot. User approval is still pending.
+
+
+Final local regression on2026-10-18: **3,837 collected/executed/passed**, zero
+failed/skipped/blocked,226.10seconds. The first attempt's3,836 passes and one load
+failure are preserved. Instrumentation confirmed the test-only2second accept
+budget expired at exchange33; the load fixture now uses the existing120second
+service idle budget and reports worker failures. Production10second handshake
+limits are unchanged. The corrected load case passed separately,610frames and
+10segments; full regression then passed. Reviewed runtime/operator hashes and
+the Python archive are unchanged. No target-host or prospective claim follows.

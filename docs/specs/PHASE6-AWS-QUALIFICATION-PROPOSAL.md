@@ -101,3 +101,21 @@ operator watchdog active before the first launch and covering partial stack fail
 final cost freeze and explicit creation approval. Guest shutdown and the conditional
 scheduler do not, by themselves, close the operator-watchdog gap. These controls
 are still outstanding, not activated by successful template validation.
+
+## 2026-10-18 — runtime candidate and staged creation boundary
+
+The synthetic receipt CLI and operator watch/stop candidate are now implemented
+and independently tested (56 focused tests). A reproducible Python/ARM64 wheel
+archive exists; see SPEC-phase6-qualification-runtime-v1. Actual Linux bootstrap,
+native binary freeze, identities/roots/trust, SSM startup, archive verification and
+cloud qualification remain open. The operator is external to the EC2 hosts but
+runs on the operator machine; it is not an independently hosted guaranteed stop.
+
+To obtain concrete storage/role identities before any compute launch, the first
+reviewable deployment step is foundation-only. PHASE6-FOUNDATION-CREATION-REVIEW
+fixes the unchanged template hash,14 resources, exact create parameters and USD1
+first30-day planning allowance. Approval remains pending. No code/data/secrets
+are uploaded and no EC2 instances start in that step. The prior USD5 illustrative
+combined allowance is not an approved budget. Creation remains separate from the
+already-authorized successful template validation. Read-only AWS confirmed the
+proposed stack absent on2026-10-18.

@@ -258,3 +258,29 @@ locally implemented/tested with actual AWS integration still unqualified; point4
 has a cloud-validated infrastructure proposal but no frozen approved pilot; point5
 has not started. Phase6 remains INCOMPLETE. No regression rerun was needed for this
 documentation-only update; the prior3781-test result is unchanged.
+
+## 2026-10-18 — executable local receipt and operator candidates
+
+Receipt qualification CLI and explicit launch/watch/stop operator are implemented;
+56 focused tests passed independently. Linux ARM64 dependency resolution and a
+reproducible Python archive with42 manifest-listed files are checked locally. See
+SPEC-phase6-qualification-runtime-v1 for scope, actual call sites and limits.
+No native/identity bootstrap or AWS runtime acceptance is implied. The template
+remains unchanged and no stack exists. The staged foundation-only request is in
+PHASE6-FOUNDATION-CREATION-REVIEW; creation approval is pending.
+
+Five-item status remains:1 real cloud clock/auth/retention qualification open;
+2 local assembled chain present, actual cloud/source run open;3 local faults/load
+covered, deployed fault/capacity checks open;4 runtime and operator candidates now
+exist, foundation/compute/pilot approval and final freezes open;5 no prospective
+market-data simulated-money pilot yet. Phase6 remains INCOMPLETE.
+
+
+Final local regression on2026-10-18: **3,837 collected/executed/passed**, zero
+failed/skipped/blocked,226.10seconds. The first attempt's3,836 passes and one load
+failure are preserved. Instrumentation confirmed the test-only2second accept
+budget expired at exchange33; the load fixture now uses the existing120second
+service idle budget and reports worker failures. Production10second handshake
+limits are unchanged. The corrected load case passed separately,610frames and
+10segments; full regression then passed. Reviewed runtime/operator hashes and
+the Python archive are unchanged. No target-host or prospective claim follows.

@@ -91,8 +91,14 @@ def test_two_segments_raw_frames_to_fills_and_verified_checkpoints(tmp_path,monk
                 host=ClockBoundReceiptHost(writer('service-clock',config['owner']),library_path='/synthetic/libclockbound.so',
                     library_sha256='a'*64,client_runs={digests['client']:[run]},**config)
                 ready.set()
-                out.append(host.serve(listener,context=tls_factory.server_context,hostname='localhost',max_requests=requests,idle_timeout_seconds=2))
-            except BaseException as exc:errors.append(exc);ready.set()
+                # Load processing includes many fsynced inputs between receipt requests.
+                # Exercise the actual 120s service idle budget; aborted fault cases stay short.
+                out.append(host.serve(listener,context=tls_factory.server_context,hostname='localhost',
+                    max_requests=requests,idle_timeout_seconds=120 if load_mode else 2))
+            except BaseException as exc:
+                errors.append(exc);ready.set()
+                listener.close()  # A dead worker must not leave an accepting TCP backlog.
+
         thread=threading.Thread(target=worker);thread.start();assert ready.wait(5)
         client=VerifiedReceiptClient(writer('client'),run_id=run,owner='test',trust=trust,expected_trust_hash=H(trust),clock=source.event,
             port=port,context=tls_factory.client_context(),hostname='localhost',server_cert_sha256=digests['server'])
@@ -261,6 +267,10 @@ def test_two_segments_raw_frames_to_fills_and_verified_checkpoints(tmp_path,monk
                 assert s['bar_count']==2 and ss['bar_count']==2 and checkpoints[-1]['checkpoint']['last_receipt_seq']==5
                 assert checkpoints[-1]['checkpoint']['previous_checkpoint_hash']==H(checkpoints[0]['checkpoint'])
                 journal.close();assert inspect_objects(w.root,header=w.header,objects=status['objects'])['structural_status']=='VALID'
+        except BaseException as exc:
+            if errors and hasattr(exc,'add_note'):
+                exc.add_note('Receipt worker failed: '+repr(errors[0]))
+            raise
         finally:
             if journal is not None:journal.close()
             client.close();source.close();attempt.close();thread.join(timeout=15)

@@ -1,0 +1,133 @@
+{
+  "schema_version": "p6.qualification_wheels.v1",
+  "target": "CPython 3.11 Linux aarch64 glibc >= 2.28",
+  "source": "https://pypi.org/simple/",
+  "wheels": [
+    {
+      "name": "boto3",
+      "version": "1.43.114",
+      "filename": "boto3-1.43.114-py3-none-any.whl",
+      "sha256": "d9cac2eb921ce674970cef1c9ad750f85ee3a846aedcf188d18368fb9eb6da23",
+      "bytes": 140043,
+      "requires_python": ">= 3.10",
+      "requires_dist": [
+        "botocore (<1.44.0,>=1.43.114)",
+        "jmespath (<2.0.0,>=0.7.1)",
+        "s3transfer (<0.20.0,>=0.19.0)",
+        "botocore[crt] (<2.0a0,>=1.21.0) ; extra == 'crt'"
+      ]
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.114",
+      "filename": "botocore-1.43.114-py3-none-any.whl",
+      "sha256": "d1c441a22e93e158de5b1e026205f5d6d67a4545d10540c5090c62dccb3a9eca",
+      "bytes": 16067885,
+      "requires_python": ">= 3.10",
+      "requires_dist": [
+        "jmespath (<2.0.0,>=0.7.1)",
+        "python-dateutil (<3.0.0,>=2.1)",
+        "urllib3 (!=2.2.0,<3,>=1.25.4)",
+        "awscrt (==0.36.0) ; extra == 'crt'"
+      ]
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "filename": "cffi-2.1.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl",
+      "sha256": "3311ed60d36f83378794e1009ac6258bafbf81f7888b4caa7b35a521e3f95813",
+      "bytes": 218716,
+      "requires_python": ">=3.10",
+      "requires_dist": [
+        "pycparser; implementation_name != \"PyPy\""
+      ]
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "filename": "cryptography-50.0.2-cp311-abi3-manylinux_2_28_aarch64.whl",
+      "sha256": "f9f6143a8c75945eb960d9eb98905a441394abfa24afaae239d514ffb2586480",
+      "bytes": 4738340,
+      "requires_python": ">=3.9, !=3.9.0, !=3.9.1",
+      "requires_dist": [
+        "cffi>=2.0.0 ; platform_python_implementation != 'PyPy'",
+        "typing-extensions>=4.13.2 ; python_full_version < '3.11'",
+        "bcrypt>=3.1.5 ; extra == 'ssh'"
+      ]
+    },
+    {
+      "name": "jmespath",
+      "version": "1.1.0",
+      "filename": "jmespath-1.1.0-py3-none-any.whl",
+      "sha256": "a5663118de4908c91729bea0acadca56526eb2698e83de10cd116ae0f4e97c64",
+      "bytes": 20419,
+      "requires_python": ">=3.9",
+      "requires_dist": []
+    },
+    {
+      "name": "pycparser",
+      "version": "3.11",
+      "filename": "pycparser-3.11-py3-none-any.whl",
+      "sha256": "51d5a8ba2be0bbe440b99d2112604c95bbbc3c2748a64260186c541e1729cd80",
+      "bytes": 51178,
+      "requires_python": ">=3.10",
+      "requires_dist": []
+    },
+    {
+      "name": "python-dateutil",
+      "version": "2.9.0.post0",
+      "filename": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+      "bytes": 229892,
+      "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+      "requires_dist": [
+        "six >=1.5"
+      ]
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "filename": "s3transfer-0.19.2-py3-none-any.whl",
+      "sha256": "d8168eccca828cbb2cd573675333f3bddd254313a9c42494b84c76b539e8ba25",
+      "bytes": 90216,
+      "requires_python": ">= 3.10",
+      "requires_dist": [
+        "botocore (<2.0a.0,>=1.37.4)",
+        "botocore[crt] (<2.0a.0,>=1.37.4) ; extra == 'crt'"
+      ]
+    },
+    {
+      "name": "six",
+      "version": "1.17.0",
+      "filename": "six-1.17.0-py2.py3-none-any.whl",
+      "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
+      "bytes": 11050,
+      "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
+      "requires_dist": []
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0",
+      "filename": "urllib3-2.8.0-py3-none-any.whl",
+      "sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3",
+      "bytes": 135717,
+      "requires_python": ">=3.10",
+      "requires_dist": [
+        "brotli>=1.2.0; (platform_python_implementation == 'CPython') and extra == 'brotli'",
+        "brotlicffi>=1.2.0.0; (platform_python_implementation != 'CPython') and extra == 'brotli'",
+        "h2<5,>=4; extra == 'h2'",
+        "pysocks!=1.5.7,<2.0,>=1.5.6; extra == 'socks'",
+        "backports-zstd>=1.0.0; (python_version < '3.14') and extra == 'zstd'"
+      ]
+    },
+    {
+      "name": "websockets",
+      "version": "16.1.1",
+      "filename": "websockets-16.1.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "86d7f0f8bdb25d2c632b72527325e4776430fd5bc61b9118de4e2b8ddb5f5b01",
+      "bytes": 188095,
+      "requires_python": ">=3.10",
+      "requires_dist": []
+    }
+  ]
+}
