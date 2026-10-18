@@ -241,3 +241,20 @@ cloud/source activation open. (3) integrated fault/load tests pass; target-host
 qualification open. (4) proposed AWS foundation/template/prices being prepared;
 exact runtime/identities/roots/interval approval is not complete. (5) live-market,
 simulated-money pilot has not run. Phase6 remains INCOMPLETE.
+
+
+## 2026-10-18 — actual AWS template validation
+
+CloudFormation ValidateTemplate accepted the unchanged proposed qualification
+infrastructure template in the intended account and Stockholm region. The response
+requires CAPABILITY_IAM for a later deployment. No creation/update/compute/pilot
+occurred. The prior automatic transmission block is resolved for validation only.
+Evidence is in mie-planning/phase6-aws-template-validation-20261018; see the dated
+update in PHASE6-AWS-QUALIFICATION-PROPOSAL for exact hash and limitations.
+
+The server runtime bundle, identity provisioning, deadline guard, independent
+operator watchdog, final costs and creation approval remain open. Points1–3 are
+locally implemented/tested with actual AWS integration still unqualified; point4
+has a cloud-validated infrastructure proposal but no frozen approved pilot; point5
+has not started. Phase6 remains INCOMPLETE. No regression rerun was needed for this
+documentation-only update; the prior3781-test result is unchanged.

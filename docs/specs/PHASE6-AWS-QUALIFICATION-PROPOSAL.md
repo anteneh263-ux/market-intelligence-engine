@@ -76,3 +76,28 @@ writes, faults, latency and capacity. Preserve all outcomes and verify retention
 Only after qualification should a separate future market-data pilot contract fix
 its interval, exact configuration, evidence paths and cost limits. That pilot uses
 simulated money. It has not started. No H-025 artifacts are involved.
+
+
+## 2026-10-18 — AWS template validation completed
+
+After the user resumed the explicitly proposed validation and renewed the
+expired CLI session, AWS CloudFormation ValidateTemplate returned exit0 in
+account989879505232, eu-north-1. The exact template SHA256 was
+`ef9f30a8af6bfb817f2ddcebeedbbe5abf88f6b89a17a2a969fb9e36c4591754`.
+AWS reported both parameters and the required `CAPABILITY_IAM` capability.
+The earlier transmission rejection is resolved for this validation action only.
+The original dated rejection above remains as history.
+
+No stack was created or updated, no resources were launched, and no IAM capability
+was acknowledged for creation. ValidateTemplate does not prove deployment success,
+runtime safety, native-clock/receipt operation or prospective acceptance. The
+exact response and attributed validation record are retained under
+`/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-aws-template-validation-20261018`.
+
+Next execution boundary remains the complete server/launch package: actual runtime
+bundle and dependency pins; provisioned separate identities/trust; approved physical
+roots and run identity; guard rejecting stale or excessive stop intervals; independent
+operator watchdog active before the first launch and covering partial stack failure;
+final cost freeze and explicit creation approval. Guest shutdown and the conditional
+scheduler do not, by themselves, close the operator-watchdog gap. These controls
+are still outstanding, not activated by successful template validation.
