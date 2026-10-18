@@ -138,3 +138,30 @@ approved deployed foundation but needs exact runtime/bootstrap/identities/roots/
 interval/compute freeze; point5 remains an unstarted prospective simulated-money
 pilot. Phase6 remains INCOMPLETE. No production code changed; prior3837 local
 regression passes remain the code baseline, not cloud runtime acceptance.
+
+
+## 2026-10-18 — local host preparation candidate
+
+The next build/readiness-only server package is implemented; no additional AWS
+operations occurred. `prepare-qualification-host.py` validates the pinned runtime
+and native source archives, refuses partial/reused destinations, installs explicit
+Python3.11 offline from locked wheels, performs bounded locked native builds,
+preserves prior chrony configuration and checks one nonroot native clock owner.
+The delivery generator binds an exact uploaded kit version and SHA before extraction.
+No runtime identities, receipt listener, tunnel, scientific roots or pilot starts.
+
+132 relevant tests collected/executed/passed, zero failed/skipped/blocked. This
+includes49 new preparation/readiness/delivery tests and83 existing runtime/operator/
+clock tests; it is not a new full-suite run. The earlier3837-test full regression
+remains the previous code baseline. Dedicated review corrected primary-error
+masking and failed-log durability. The first actual archive check's PAX rejection
+is preserved with the correction; the final actual runtime/native inputs validate.
+
+Kit `66d595ca5fd3ca5aa689969b60eeba57c217949bd4f24615206e48978ba08592`,
+21,585,579bytes,7 manifest files/8tar members, identical independent builds and
+full member readback. Actual Linux/RPM/native/SSM/stop behavior is unqualified.
+See PHASE6-HOST-PREPARATION-REVIEW for the concrete proposed build/readiness
+execution and combinedUSD3 first30-day planning allowance. Approval is pending;
+the earlier foundation-only approval is already executed and is not compute consent.
+Phase6 remains incomplete. Prospective simulated-money pilot and1–6 integration
+remain subsequent work. H-025 is excluded.
