@@ -1,8 +1,8 @@
-# Foundation creation review — approval pending
+# Foundation creation review — approved and deployed
 
 Prepared 2026-10-18 for Anteneh Hailu. This is the concrete first deployment step,
-not permission to start compute or a market-data pilot. The read-only AWS check
-on this date returned ValidationError: the exact proposed stack does not exist.
+not permission to start compute or a market-data pilot. The pre-creation read-only AWS check
+on this date returned ValidationError: the exact proposed stack did not exist.
 
 ## Exact request
 
@@ -54,7 +54,7 @@ per month are the principal recurring allowance (USD0.80/month); empty S3/Dynamo
 stores have no planned workload. Small control/read-request charges remain usage
 based. IAM and native AWS-resource CloudFormation management add no service fee.
 
-This USD1 is a proposed planning allowance, subject to owner approval, not an
+The user approved this USD1 planning allowance on2026-10-18. It is not an
 enforced spending cap.
 It does not include future compute, data uploads or runtime tests. These resources
 persist and can keep accruing charges after30 days until separately removed.
@@ -81,3 +81,16 @@ The next separately reviewable step is host/native bootstrap, identities and
 exact runtime configuration, time interval, roots and compute costs; then actual
 receipt qualification. Market-data simulated-money pilot approval follows that.
 Phase6 remains INCOMPLETE throughout this foundation-only step.
+
+
+## 2026-10-18 — approved request executed and verified
+
+The user answered “Ja, opprett dette grunnoppsettet” to the exact foundation-only
+approval. The stored approval/request and original reviewed document hash are
+preserved in the deployment evidence. One creation request completed; all14
+resources and73 setting checks passed, with empty bucket/secret version inventories
+and two additional consistent empty-table checks. See
+[the actual deployment record](PHASE6-FOUNDATION-DEPLOYMENT-20261018.md) for identity,
+service audit, preserved verification corrections and boundaries. No compute,
+secret values, code/data upload, pilot, account upgrade or cleanup was performed.
+The future compute/runtime/pilot scopes above remain open.

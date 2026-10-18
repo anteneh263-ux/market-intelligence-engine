@@ -1,6 +1,6 @@
-# AWS qualification proposal — not deployed
+# AWS qualification — foundation deployed, runtime pending
 
-Status 2026-10-17: DRAFT. This is a synthetic receipt-service qualification proposal,
+Original proposal status2026-10-17: DRAFT. This is a synthetic receipt-service qualification proposal,
 not the prospective market pilot or approval to create resources. Phase6 is open.
 Owner: Anteneh Hailu. Account: 989879505232. Region: eu-north-1.
 
@@ -119,3 +119,22 @@ are uploaded and no EC2 instances start in that step. The prior USD5 illustrativ
 combined allowance is not an approved budget. Creation remains separate from the
 already-authorized successful template validation. Read-only AWS confirmed the
 proposed stack absent on2026-10-18.
+
+
+## 2026-10-18 — approved AWS foundation created and verified
+
+The user approved the exact14-resource foundation-only scope and USD1 first30-day
+planning allowance. One CreateStack request completed in account989879505232,
+eu-north-1, with LaunchCompute=no.73 actual setting checks and two consistent
+empty-table checks pass; bucket and secret version inventories are empty. See
+PHASE6-FOUNDATION-DEPLOYMENT-20261018 for exact stack/resource identities, raw
+readbacks, CloudTrail failure-policy confirmation and preserved verifier corrections.
+The original template is unchanged. No compute, code/secret-value upload, account
+upgrade, pilot or cleanup occurred. This closes foundation creation/settings only.
+
+Point1 still needs actual receipt-clock/auth/retention qualification; points2–3
+still need target-host/source integration and fault/load tests; point4 now has an
+approved deployed foundation but needs exact runtime/bootstrap/identities/roots/
+interval/compute freeze; point5 remains an unstarted prospective simulated-money
+pilot. Phase6 remains INCOMPLETE. No production code changed; prior3837 local
+regression passes remain the code baseline, not cloud runtime acceptance.

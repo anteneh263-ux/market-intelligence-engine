@@ -1,6 +1,7 @@
 # ADR-MIE-010: Separate qualification archives
 
-Status: PROPOSED, 2026-10-17. No resources created and no runtime/store approval.
+Status: foundation storage/access scope ACCEPTED and deployed2026-10-18;
+runtime/archive-writing authority remains PROPOSED. Original proposal2026-10-17.
 
 ## Scope and ownership
 
@@ -51,3 +52,15 @@ versions, retention attributes, identities and policy, not inferred from local
 mocks or the template. The cloud template is infrastructure only and is not a
 runnable or approved qualification package. See
 `../specs/PHASE6-AWS-QUALIFICATION-PROPOSAL.md`.
+
+
+## 2026-10-18 — foundation scope accepted and created
+
+The user explicitly approved the reviewed foundation-only request, including
+storage ownership/settings and USD1 first30-day planning allowance. One unchanged
+template deployment created and verified the14 foundation resources. Exact actual
+identifiers and readbacks are in PHASE6-FOUNDATION-DEPLOYMENT-20261018. Buckets,
+tables and secret containers are empty; no compute, identity values, code archives,
+runtime roots or pilot evidence were activated. Receipt default30-day COMPLIANCE
+configuration is read back, but object-level retention behavior is untested.
+All runtime migration/equivalence/activation exclusions remain in force.

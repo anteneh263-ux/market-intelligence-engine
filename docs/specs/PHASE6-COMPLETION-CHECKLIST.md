@@ -284,3 +284,22 @@ service idle budget and reports worker failures. Production10second handshake
 limits are unchanged. The corrected load case passed separately,610frames and
 10segments; full regression then passed. Reviewed runtime/operator hashes and
 the Python archive are unchanged. No target-host or prospective claim follows.
+
+
+## 2026-10-18 — approved AWS foundation created and verified
+
+The user approved the exact14-resource foundation-only scope and USD1 first30-day
+planning allowance. One CreateStack request completed in account989879505232,
+eu-north-1, with LaunchCompute=no.73 actual setting checks and two consistent
+empty-table checks pass; bucket and secret version inventories are empty. See
+PHASE6-FOUNDATION-DEPLOYMENT-20261018 for exact stack/resource identities, raw
+readbacks, CloudTrail failure-policy confirmation and preserved verifier corrections.
+The original template is unchanged. No compute, code/secret-value upload, account
+upgrade, pilot or cleanup occurred. This closes foundation creation/settings only.
+
+Point1 still needs actual receipt-clock/auth/retention qualification; points2–3
+still need target-host/source integration and fault/load tests; point4 now has an
+approved deployed foundation but needs exact runtime/bootstrap/identities/roots/
+interval/compute freeze; point5 remains an unstarted prospective simulated-money
+pilot. Phase6 remains INCOMPLETE. No production code changed; prior3837 local
+regression passes remain the code baseline, not cloud runtime acceptance.
