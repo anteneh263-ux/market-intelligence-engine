@@ -660,3 +660,30 @@ execution and combinedUSD3 first30-day planning allowance. Approval is pending;
 the earlier foundation-only approval is already executed and is not compute consent.
 Phase6 remains incomplete. Prospective simulated-money pilot and1–6 integration
 remain subsequent work. H-025 is excluded.
+
+
+## 2026-10-18 — actual host preparation attempt 001, both hosts stopped
+
+The user approved the bounded build/readiness step with the combined USD 3
+first-30-day planning allowance. One existing-stack update completed; one exact
+code-only kit version was uploaded/read back; one preparation command ran per host.
+Source completed all 28 stages and ten native clock observations. Receipt refused
+an incorrectly pinned profile suffix before installation. The local correction
+now passes 52 host-preparation tests and dedicated review; it is not deployed and
+the original failed attempt is preserved. Before delivery a separate parent-mode
+fix was tested/reviewed and committed as 1ea4eb7.
+
+Both instances are independently confirmed stopped; the operator's 200-event
+hash chain is valid, with one update and one protective stop per host. The two
+8 GB encrypted disks remain. Secret containers, receipt bucket and state/index
+tables remain empty; the code bucket holds exactly one kit version. Complete
+source operational logs were exported and byte/hash verified. See
+PHASE6-HOST-PREPARATION-RUN-001 for identities, evidence paths, native pins, failures,
+actual limits and stop verification. This does not supersede historical test
+results with a new full-suite claim.
+
+Next is a concrete, separately reviewed receipt-only recovery attempt with the
+corrected package, new interval and rearmed stop controls. No retry/repair was
+executed. Actual receipt authentication/retention, full data chain, fault/load
+qualification, prospective simulated-money pilot and full 1–6 integration remain.
+Phase 6 is INCOMPLETE; no runtime/pilot/trading authority or H-025 work follows.

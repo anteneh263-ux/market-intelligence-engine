@@ -31,7 +31,7 @@ REGION = 'eu-north-1'
 ROLES = {'source': 'mie-p6-qualification-001-SourceRole-u3M2p6TXADEL',
          'receipt': 'mie-p6-qualification-001-ReceiptRole-6BqOJzmlKtid'}
 PROFILES = {'source': 'mie-p6-qualification-001-SourceRoleProfile-zUFLg78C0FsN',
-            'receipt': 'mie-p6-qualification-001-ReceiptRoleProfile-zUFLg78C0FsN'}
+            'receipt': 'mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp'}
 CRATES = {'clock-bound-d': '57d1b180cf45b60779c85fe5768cde1c399f286721103269268492af6e523f88',
           'clock-bound-ffi': '8905228362818863465fd127b646494ea309e35736c8903555f1fa8fc2d24112'}
 MAX_ARCHIVE = 64 * 1024 * 1024

@@ -373,3 +373,31 @@ def test_delivery_parent_is_explicitly_traversable_under_restrictive_umask(tmp_p
     subprocess.run(['/bin/bash', '-c', 'umask 077; ' + rewritten], check=True)
     assert stat.S_IMODE(parent.stat().st_mode) == 0o700
     assert 'root:755' in script
+
+
+@pytest.mark.parametrize('role,profile,instance', [
+    ('receipt', 'mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp', 'i-0c5a2a75ca70db228'),
+    ('source', 'mie-p6-qualification-001-SourceRoleProfile-zUFLg78C0FsN', 'i-08e89ad2e3feedb8a')])
+def test_imds_accepts_actual_foundation_profile_and_refuses_other_role(monkeypatch, role, profile, instance):
+    # Facts from separately read-back foundation instance-profile identities, not host.PROFILES.
+    observed = dict(InstanceProfileArn='arn:aws:iam::989879505232:instance-profile/' + profile,
+                    Code='Success')
+    document = dict(instanceId=instance, accountId='989879505232', region='eu-north-1',
+                    imageId='ami-04e0c7320ad3a3a48', architecture='arm64', instanceType='t4g.small')
+    calls = []
+    class Metadata:
+        def open(self, request, timeout):
+            calls.append(request.full_url)
+            if request.full_url.endswith('/api/token'):
+                assert request.method == 'PUT'
+                return io.BytesIO(b'test-token')
+            if request.full_url.endswith('/dynamic/instance-identity/document'):
+                return io.BytesIO(json.dumps(document).encode())
+            assert request.full_url.endswith('/meta-data/iam/info')
+            return io.BytesIO(json.dumps(observed).encode())
+    monkeypatch.setattr(host.urllib.request, 'build_opener', lambda *args: Metadata())
+    assert host.imds_identity(instance, role)['profile_arn'] == observed['InstanceProfileArn']
+    observed['InstanceProfileArn'] = 'arn:aws:iam::989879505232:instance-profile/unapproved'
+    with pytest.raises(ValueError):
+        host.imds_identity(instance, role)
+    assert all('/security-credentials' not in path for path in calls)

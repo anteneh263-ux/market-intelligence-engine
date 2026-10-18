@@ -1,3 +1,10 @@
+> Execution update, 2026-10-18: the user approved this bounded preparation step.
+> Attempt 001 is now complete: source preparation succeeded, receipt preparation
+> failed its profile check, both hosts are stopped. See
+> [the execution report](PHASE6-HOST-PREPARATION-RUN-001.md).
+> The original pre-execution review below is preserved as the approved snapshot;
+> its pending-approval/unexecuted wording describes the state before this attempt.
+
 # Phase6 — host preparation execution review
 
 Status2026-10-18: locally implemented/tested/reviewed candidate; cloud preparation
