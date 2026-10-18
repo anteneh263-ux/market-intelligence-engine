@@ -358,3 +358,18 @@ def test_delivery_fixed_version_hash_and_explicit_target_are_shell_parseable(tmp
     p = tmp_path / 'syntax-only.sh'
     p.write_text(script)
     subprocess.run(['/bin/bash', '-n', str(p)], check=True)
+
+
+def test_delivery_parent_is_explicitly_traversable_under_restrictive_umask(tmp_path):
+    import subprocess
+    script = delivery.request('source', 'i-' + '1' * 17, 'version')['Parameters']['commands'][0]
+    line = next(line for line in script.splitlines() if line.startswith('if [ ! -e /opt/mie ]'))
+    parent = tmp_path / 'mie'
+    rewritten = line.replace('/opt/mie', str(parent))
+    subprocess.run(['/bin/bash', '-c', 'umask 077; ' + rewritten], check=True)
+    assert stat.S_IMODE(parent.stat().st_mode) == 0o755
+    # Existing directories are never silently changed by this preparation prerequisite.
+    parent.chmod(0o700)
+    subprocess.run(['/bin/bash', '-c', 'umask 077; ' + rewritten], check=True)
+    assert stat.S_IMODE(parent.stat().st_mode) == 0o700
+    assert 'root:755' in script

@@ -36,6 +36,12 @@ def request(role, instance_id, version_id):
         'test "$(id -u)" = 0',
         'test "$(realpath /var/lib/mie/qualification-001)" = /var/lib/mie/qualification-001',
         'test "$(stat -c %U:%a /var/lib/mie/qualification-001)" = root:700',
+        # The frozen installer sets umask077. Provision its already-approved parent
+        # explicitly so the nonroot clock user can traverse it; never reuse surprises.
+        'test "$(realpath /opt)" = /opt',
+        'if [ ! -e /opt/mie ] && [ ! -L /opt/mie ]; then mkdir -m 0755 /opt/mie; fi',
+        'test "$(realpath /opt/mie)" = /opt/mie',
+        'test "$(stat -c %U:%a /opt/mie)" = root:755',
         'mkdir -m 0700 ' + shlex.quote(DELIVERY),
         shlex.join(aws) + ' > ' + shlex.quote(DELIVERY + '/download-response.json'),
         'printf \'%s  %s\\n\' ' + shlex.quote(KIT_SHA) + ' ' + shlex.quote(DELIVERY + '/host-kit.tar.gz')
