@@ -18,6 +18,14 @@ no later than60minutes after the approved attempt begins. Freeze actual timestam
 immediately before the sole update; reject stale or overlong intervals. The
 existing operator CLI must record ARMED before the update and continue observing
 through stop confirmation. Root operator credentials are for deployment only.
+The operator launch contract's runtime_bundle_sha256 binds the complete host kit
+`66d595ca5fd3ca5aa689969b60eeba57c217949bd4f24615206e48978ba08592`;
+pass that kit to --runtime-bundle. The preparation script separately checks its
+embedded Python archive's original SHA256. The local operation record and
+precreated operator store are proposed at:
+`/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-001/`
+with an empty `operator/` child, both owned by Anteneh. These are deployment
+operation evidence; a preexisting attempt must not be reused or overwritten.
 CloudFormation may roll back a failed update; root disks are retained by the
 existing template. Do not retry an unknown update, launch extra hosts or repair a
 failed preparation automatically.
