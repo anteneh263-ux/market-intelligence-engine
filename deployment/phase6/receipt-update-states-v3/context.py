@@ -117,4 +117,3 @@ def pins():
         live.control.require(hashlib.sha256((WORK/path).read_bytes()).hexdigest()==h)
     live.control.require(hashlib.sha256(KIT.read_bytes()).hexdigest()==SHA and len(KIT.read_bytes())==21585861)
     guard.validate_templates((VARIANT.parent/'qualification-v1.json').read_bytes(),(VARIANT/'qualification-v1.json').read_bytes())
-

@@ -107,4 +107,3 @@ if __name__=='__main__':
     if op=='poll':poll(sys.argv[2])
     elif op=='collect':collect(None if len(sys.argv)==2 else int(sys.argv[2]))
     else:{'admission':admission,'timer':timer,'prepare':prepare,'decode':decode}[op]()
-
