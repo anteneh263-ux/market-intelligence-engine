@@ -50,14 +50,14 @@ class FrozenMatrix:
         """Multi-asset headline aggregation method — DERIVED from `version`, so it
         is NOT part of the hashed field set and does not change v1's hash.
           v1 -> 'concatenation' (stitch all assets' OOS returns; drawdown is an artifact)
-       v2/v3 -> 'per_asset'     (per-asset metrics, then equal-weight aggregate; the
+       v2–v4 -> 'per_asset'     (per-asset metrics, then equal-weight aggregate; the
                                   drawdown gate uses the mean per-asset OOS drawdown)"""
-        return "per_asset" if (self.version.endswith("v2") or self.version == "srp-matrix-v3") else "concatenation"
+        return "per_asset" if (self.version.endswith("v2") or self.version in ("srp-matrix-v3", "srp-matrix-v4")) else "concatenation"
 
     @property
     def random_timing_method(self) -> str:
         """Derived from version; adding v3 must not change legacy serialized fields."""
-        return "executed-runs-v1" if self.version == "srp-matrix-v3" else "bernoulli-redraw-v1"
+        return "executed-runs-v1" if self.version in ("srp-matrix-v3", "srp-matrix-v4") else "bernoulli-redraw-v1"
 
     def canonical_json(self) -> str:
         # asdict() includes only dataclass FIELDS (not the `pooling` property), so
@@ -75,6 +75,8 @@ MATRIX_V1 = DEFAULT_MATRIX
 MATRIX_V2 = FrozenMatrix(version="srp-matrix-v2")
 # v3: v2 pooling, exact engine trade-count benchmark. Explicit opt-in; no migration.
 MATRIX_V3 = FrozenMatrix(version="srp-matrix-v3")
+# v4: v3 methodology, explicit asset dispersion vs unestimated sampling uncertainty.
+MATRIX_V4 = FrozenMatrix(version="srp-matrix-v4")
 
 
 @dataclass(frozen=True)

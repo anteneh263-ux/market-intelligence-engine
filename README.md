@@ -169,19 +169,23 @@ API keys in `.env`.
 
 ## How it works (one paragraph)
 
-**Benchmark version boundary:** v1/v2's random redraws do not match actual trade counts.
-Opt-in `--matrix v3` uses exact engine trade-count matching for every random seed,
-retaining v2 pooling. Existing defaults stay unchanged for compatibility; select v3
-explicitly for the corrected comparison. Turnover, exposure and total costs are not
+**Evaluation version boundary:** v1/v2's random redraws do not match actual trade counts.
+Opt-in `--matrix v4` inherits v3's exact trade-count matching and separates the
+across-asset Sharpe range from sampling uncertainty, which is explicitly not
+estimated. It retains v2 pooling. Existing defaults stay unchanged for compatibility;
+select v4 explicitly for these corrected result semantics. Turnover, exposure and total costs are not
 matched. No historical result has been rerun or replaced by this change. See the
-[trade-matching specification and synthetic examples](docs/specs/RANDOM-TIMING-V3.md).
+[trade-matching specification and synthetic examples](docs/specs/RANDOM-TIMING-V3.md)
+and [uncertainty and causality limits](docs/specs/SHARPE-UNCERTAINTY-V4.md).
 
 Every strategy runs through the **same frozen matrix** (`srp-matrix-v2`): expanding-window
 walk-forward out-of-sample, a `{0,5,10}` bps cost/slippage ladder, buy-and-hold + legacy
 random-timing benchmarks, a **deflated Sharpe** (data-snooping) correction, Benjamini–Hochberg FDR,
 ex-ante regime labelling, and a mechanical four-way verdict (`Supported / Not Supported /
-Inconclusive / Graveyard`). Look-ahead is structurally impossible (positions are shifted forward one
-bar). Matrix versions are content-addressed and immutable — `v1` (historical) and `v2` (active,
+Inconclusive / Graveyard`). Positions execute one bar after their signal. This prevents
+same-bar execution, but cannot prevent a signal from reading future data. Registry-wide
+synthetic prefix and future-perturbation tests check causality under their fixtures;
+point-in-time data availability and unseen cases require separate validation. Matrix versions are content-addressed and immutable — `v1` (historical) and `v2` (active,
 per-asset drawdown pooling) — so conclusions are never silently mixed. The included corpus already
 has all 23 built-in strategies evaluated on v2 (result: 20 Graveyard, 3 Not Supported, 0 Supported —
 zero false positives). Dossiers are produced by a **deterministic generator** (identical inputs →

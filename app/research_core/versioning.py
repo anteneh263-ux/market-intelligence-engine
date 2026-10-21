@@ -7,19 +7,21 @@ versions are never edited — a new method is a new version.
   srp-matrix-v1  concatenation pooling (historical; first four strategies)
   srp-matrix-v2  per-asset-then-aggregate pooling (compatibility default)
   srp-matrix-v3  per-asset pooling + exact trade-count benchmark (explicit opt-in)
+  srp-matrix-v4  v3 + separate asset range and sampling uncertainty (explicit opt-in)
 """
 from __future__ import annotations
 
 from typing import Dict, List
 
-from app.strategy_research.evaluation.frozen import MATRIX_V1, MATRIX_V2, MATRIX_V3, FrozenMatrix
+from app.strategy_research.evaluation.frozen import MATRIX_V1, MATRIX_V2, MATRIX_V3, MATRIX_V4, FrozenMatrix
 
 _MATRICES: Dict[str, FrozenMatrix] = {
     MATRIX_V1.version: MATRIX_V1,
     MATRIX_V2.version: MATRIX_V2,
     MATRIX_V3.version: MATRIX_V3,
+    MATRIX_V4.version: MATRIX_V4,
 }
-_ALIASES = {"v1": MATRIX_V1.version, "v2": MATRIX_V2.version, "v3": MATRIX_V3.version, "latest": MATRIX_V2.version}
+_ALIASES = {"v1": MATRIX_V1.version, "v2": MATRIX_V2.version, "v3": MATRIX_V3.version, "v4": MATRIX_V4.version, "latest": MATRIX_V2.version}
 ACTIVE_VERSION = MATRIX_V2.version
 
 

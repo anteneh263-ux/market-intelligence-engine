@@ -114,9 +114,9 @@ class EvaluationReport:
 def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
              provider_kwargs: Dict | None = None) -> EvaluationReport:
     exact_matching = matrix.random_timing_method == TRADE_MATCHED_METHOD
-    v3_request = request.matrix_version == "srp-matrix-v3"
-    if (exact_matching or v3_request) and request.matrix_version != matrix.version:
-        raise ValueError("v3 request.matrix_version must match the selected matrix")
+    versioned_request = request.matrix_version in ("srp-matrix-v3", "srp-matrix-v4")
+    if (exact_matching or versioned_request) and request.matrix_version != matrix.version:
+        raise ValueError("request.matrix_version must match the selected v3/v4 matrix")
     strategy = get_strategy(request.strategy_id)
     source = get_provider(request.provider, **(provider_kwargs or {}))
     tf = request.timeframe
@@ -231,7 +231,8 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
     headline = {
         **hm,
         "dsr": hdsr["dsr"], "expected_max_sr0": hdsr.get("expected_max_sr0", 0.0),
-        "sharpe_ci95": [sr_lo, sr_hi],
+        # Keep frozen v1-v3 serialized fields/order. The v4 schema separates meanings.
+        **({"sharpe_ci95": [sr_lo, sr_hi]} if matrix.version != "srp-matrix-v4" else {}),
         "buy_hold_sharpe": mean_bh,
         "random_timing_sharpe_p95": rand_bar,
         "beats_buy_hold": hm["oos_sharpe"] > mean_bh,
@@ -245,6 +246,18 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
         "return_aggregation": ("mean_per_asset_cumulative_return"
                                if matrix.pooling == "per_asset" else "pooled_cumulative_return"),
     }
+
+    if matrix.version == "srp-matrix-v4":
+        asset_sharpes = [r["oos_sharpe"] for r in per_asset_headline]
+        headline["sharpe_asset_range"] = ([min(asset_sharpes), max(asset_sharpes)]
+                                          if asset_sharpes else None)
+        headline["sharpe_asset_count"] = len(asset_sharpes)
+        headline["sharpe_uncertainty"] = {
+            "status": "not_estimated", "interval": None,
+            "confidence_level": None, "method": None,
+            "reason": "No sampling uncertainty estimator is specified for the "
+                      "equal-weight mean of per-asset Sharpe. Asset min/max is descriptive.",
+        }
 
     if exact_matching:
         headline["random_timing"] = {

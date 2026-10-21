@@ -26,7 +26,7 @@ evaluation/       the frozen, identical-for-every-strategy pipeline
   frozen.py         FrozenMatrix (costs/slippage/splits/thresholds) + content-addressed hash
   regimes.py        ex-ante trend/range/crisis labels (price only, never outcome)
   walkforward.py    expanding-window OOS: select in-sample, evaluate out-of-sample, stitch
-  backtest.py       position-based backtest; positions SHIFTED forward (no look-ahead)
+  backtest.py       position-based backtest; positions shifted forward (execution lag, not signal validation)
   benchmarks.py     buy-and-hold + matched random-timing (must beat 95th pct)
   stats.py          deflated Sharpe (Bailey–López de Prado) + BH-FDR + bootstrap (ported, golden)
   robustness.py     robustness / stability / generalization / confidence scores
@@ -85,3 +85,19 @@ Or via the API: `GET /api/strategy-research/catalogue`, `POST /api/strategy-rese
 (truncation invariance + shifted backtest), deflated-Sharpe trial penalty, BH-FDR, pipeline
 byte-identical replay, synthetic-not-evidence guard, and dossier/INDEX/meta auto-update. Run without
 pytest via `PYTHONPATH=.:tests python3 tests/_run_no_pytest.py`.
+
+
+### Statistical and timing limits
+
+Opt-in matrix v4 reports the per-asset Sharpe min–max as descriptive dispersion,
+with sampling uncertainty explicitly not estimated. One asset gives a zero-width
+asset range, not certainty. Legacy v2/v3 fields are preserved for reproduction but
+are rendered as asset ranges. See `docs/specs/SHARPE-UNCERTAINTY-V4.md`.
+
+One-bar execution lag does not sanitize a signal that reads future values. The
+registry-derived synthetic causality suite covers every collected strategy's
+standard and grid configurations using truncation and future-only OHLCV changes.
+Passing these finite checks does not establish causality for all inputs, arbitrary
+later registrations or revised/late market data. Some frozen strategy-source
+comments still contain the earlier absolute claim; this limitation supersedes
+that claim without changing source-file hashes used by historical manifests.
