@@ -19,7 +19,7 @@ import json
 
 from . import MATRICES, available_providers, available_strategies
 from .dossier import apply_report
-from .evaluation import DEFAULT_MATRIX, EvalRequest, evaluate
+from .evaluation import EvalRequest, evaluate
 
 
 def main(argv=None) -> int:
@@ -38,17 +38,17 @@ def main(argv=None) -> int:
                     help="write STEP 5 into the dossier + INDEX (real data only)")
     ap.add_argument("--json", action="store_true", help="print full report as JSON")
     args = ap.parse_args(argv)
+    matrix = MATRICES[args.matrix]
 
     if not args.strategy:
         print("Strategies:", ", ".join(available_strategies()))
         print("Providers :", ", ".join(available_providers()))
-        print("Matrix    :", DEFAULT_MATRIX.version, DEFAULT_MATRIX.hash())
+        print("Matrix    :", matrix.version, matrix.hash())
         return 0
 
     strategy_ids = [s.strip() for s in args.strategy.split(",") if s.strip()]
     assets = [a.strip() for a in args.assets.split(",") if a.strip()]
     pk = {"root": args.csv_root} if args.provider == "csv" else {}
-    matrix = MATRICES[args.matrix]
 
     for sid in strategy_ids:
         req = EvalRequest(
