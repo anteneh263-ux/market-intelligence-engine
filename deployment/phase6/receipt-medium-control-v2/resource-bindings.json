@@ -1,0 +1,20 @@
+{
+  "ArtifactBucket": "mie-p6-qualification-001-989879505232-artifacts",
+  "ArtifactBucketPolicy": "mie-p6-qualification-001-989879505232-artifacts",
+  "ExternalStop": "mie-p6-qualification-001-stop",
+  "FixedPortDocument": "mie-p6-qualification-001-port-8443",
+  "IndexTable": "mie-p6-qualification-001-index",
+  "ReceiptBucket": "mie-p6-qualification-001-989879505232-receipts",
+  "ReceiptBucketPolicy": "mie-p6-qualification-001-989879505232-receipts",
+  "ReceiptInstance": "i-0c5a2a75ca70db228",
+  "ReceiptRole": "mie-p6-qualification-001-ReceiptRole-6BqOJzmlKtid",
+  "ReceiptRoleProfile": "mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp",
+  "ReceiptSecret": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/receipt-identity-c1Dg4C",
+  "SecurityGroup": "sg-04209bb68f81f49b9",
+  "SourceInstance": "i-08e89ad2e3feedb8a",
+  "SourceRole": "mie-p6-qualification-001-SourceRole-u3M2p6TXADEL",
+  "SourceRoleProfile": "mie-p6-qualification-001-SourceRoleProfile-zUFLg78C0FsN",
+  "SourceSecret": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp",
+  "StateTable": "mie-p6-qualification-001-state",
+  "StopRole": "mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8"
+}

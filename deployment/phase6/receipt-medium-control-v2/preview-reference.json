@@ -1,0 +1,179 @@
+{
+    "Changes": [
+        {
+            "Type": "Resource",
+            "ResourceChange": {
+                "Action": "Modify",
+                "LogicalResourceId": "ExternalStop",
+                "PhysicalResourceId": "mie-p6-qualification-001-stop",
+                "ResourceType": "AWS::Scheduler::Schedule",
+                "Replacement": "False",
+                "Scope": [
+                    "Properties"
+                ],
+                "Details": [
+                    {
+                        "Target": {
+                            "Attribute": "Properties",
+                            "Name": "Target",
+                            "RequiresRecreation": "Never",
+                            "Path": "/Properties/Target/Input",
+                            "BeforeValue": "{\"InstanceIds\":[\"i-0c5a2a75ca70db228\",\"i-08e89ad2e3feedb8a\"]}",
+                            "AfterValue": "{{changeSet:KNOWN_AFTER_APPLY}}",
+                            "AttributeChangeType": "Modify"
+                        },
+                        "Evaluation": "Dynamic",
+                        "ChangeSource": "ResourceReference",
+                        "CausingEntity": "ReceiptInstance"
+                    },
+                    {
+                        "Target": {
+                            "Attribute": "Properties",
+                            "Name": "Target",
+                            "RequiresRecreation": "Never",
+                            "Path": "/Properties/Target/Input",
+                            "BeforeValue": "{\"InstanceIds\":[\"i-0c5a2a75ca70db228\",\"i-08e89ad2e3feedb8a\"]}",
+                            "AfterValue": "{{changeSet:KNOWN_AFTER_APPLY}}",
+                            "AttributeChangeType": "Modify"
+                        },
+                        "Evaluation": "Dynamic",
+                        "ChangeSource": "DirectModification"
+                    }
+                ],
+                "BeforeContext": "{\"Properties\":{\"ScheduleExpression\":\"at(2026-10-21T14:24:23)\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Target\":{\"Input\":\"{\\\"InstanceIds\\\":[\\\"i-0c5a2a75ca70db228\\\",\\\"i-08e89ad2e3feedb8a\\\"]}\",\"Arn\":\"arn:aws:scheduler:::aws-sdk:ec2:stopInstances\",\"RetryPolicy\":{\"MaximumRetryAttempts\":\"1\",\"MaximumEventAgeInSeconds\":\"3600\"},\"RoleArn\":\"arn:aws:iam::989879505232:role/mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8\"},\"ScheduleExpressionTimezone\":\"UTC\",\"State\":\"ENABLED\",\"Name\":\"mie-p6-qualification-001-stop\"}}",
+                "AfterContext": "{\"Properties\":{\"ScheduleExpression\":\"at(2026-10-21T14:24:23)\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Target\":{\"Input\":\"{{changeSet:KNOWN_AFTER_APPLY}}\",\"Arn\":\"arn:aws:scheduler:::aws-sdk:ec2:stopInstances\",\"RetryPolicy\":{\"MaximumRetryAttempts\":\"1\",\"MaximumEventAgeInSeconds\":\"3600\"},\"RoleArn\":\"arn:aws:iam::989879505232:role/mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8\"},\"ScheduleExpressionTimezone\":\"UTC\",\"State\":\"ENABLED\",\"Name\":\"mie-p6-qualification-001-stop\"}}"
+            }
+        },
+        {
+            "Type": "Resource",
+            "ResourceChange": {
+                "Action": "Modify",
+                "LogicalResourceId": "ReceiptInstance",
+                "PhysicalResourceId": "i-0c5a2a75ca70db228",
+                "ResourceType": "AWS::EC2::Instance",
+                "Replacement": "Conditional",
+                "Scope": [
+                    "Properties"
+                ],
+                "Details": [
+                    {
+                        "Target": {
+                            "Attribute": "Properties",
+                            "Name": "InstanceType",
+                            "RequiresRecreation": "Conditionally",
+                            "Path": "/Properties/InstanceType",
+                            "BeforeValue": "t4g.small",
+                            "AfterValue": "t4g.medium",
+                            "AttributeChangeType": "Modify"
+                        },
+                        "Evaluation": "Static",
+                        "ChangeSource": "DirectModification"
+                    }
+                ],
+                "BeforeContext": "{\"Properties\":{\"MetadataOptions\":{\"HttpPutResponseHopLimit\":\"1\",\"HttpTokens\":\"required\",\"HttpEndpoint\":\"enabled\"},\"UserData\":\"IyEvYmluL2Jhc2gKc2V0IC1ldQp1bWFzayAwNzcKc3lzdGVtZC1ydW4gLS11bml0PW1pZS1xdWFsaWZpY2F0aW9uLXN0b3AgLS1vbi1hY3RpdmU9MzYwMCAvc2Jpbi9zaHV0ZG93biAtaCBub3cKaW5zdGFsbCAtZCAtbSAwNzAwIC92YXIvbGliL21pZS9xdWFsaWZpY2F0aW9uLTAwMQojIFJ1bnRpbWUgY29kZSBhbmQgaWRlbnRpdGllcyBhcmUgaW5zdGFsbGVkIG9ubHkgYWZ0ZXIgaGFzaC9yZWFkaW5lc3MgY2hlY2tzLgo=\",\"InstanceInitiatedShutdownBehavior\":\"stop\",\"NetworkInterfaces\":[{\"DeviceIndex\":\"0\",\"SubnetId\":\"subnet-0063a05d947cface6\",\"GroupSet\":[\"sg-04209bb68f81f49b9\"],\"AssociatePublicIpAddress\":\"true\",\"DeleteOnTermination\":\"true\"}],\"ImageId\":\"ami-04e0c7320ad3a3a48\",\"BlockDeviceMappings\":[{\"Ebs\":{\"VolumeType\":\"gp3\",\"Encrypted\":\"true\",\"VolumeSize\":\"8\",\"DeleteOnTermination\":\"false\"},\"DeviceName\":\"/dev/xvda\"}],\"IamInstanceProfile\":\"mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp\",\"InstanceType\":\"t4g.small\",\"CreditSpecification\":{\"CPUCredits\":\"standard\"},\"Monitoring\":\"false\",\"Tags\":[{\"Value\":\"mie-p6-qualification-001-receiptinstance\",\"Key\":\"Name\"},{\"Value\":\"phase6-qualification-only\",\"Key\":\"Purpose\"}]}}",
+                "AfterContext": "{\"Properties\":{\"MetadataOptions\":{\"HttpPutResponseHopLimit\":\"1\",\"HttpTokens\":\"required\",\"HttpEndpoint\":\"enabled\"},\"UserData\":\"IyEvYmluL2Jhc2gKc2V0IC1ldQp1bWFzayAwNzcKc3lzdGVtZC1ydW4gLS11bml0PW1pZS1xdWFsaWZpY2F0aW9uLXN0b3AgLS1vbi1hY3RpdmU9MzYwMCAvc2Jpbi9zaHV0ZG93biAtaCBub3cKaW5zdGFsbCAtZCAtbSAwNzAwIC92YXIvbGliL21pZS9xdWFsaWZpY2F0aW9uLTAwMQojIFJ1bnRpbWUgY29kZSBhbmQgaWRlbnRpdGllcyBhcmUgaW5zdGFsbGVkIG9ubHkgYWZ0ZXIgaGFzaC9yZWFkaW5lc3MgY2hlY2tzLgo=\",\"InstanceInitiatedShutdownBehavior\":\"stop\",\"NetworkInterfaces\":[{\"DeviceIndex\":\"0\",\"SubnetId\":\"subnet-0063a05d947cface6\",\"GroupSet\":[\"sg-04209bb68f81f49b9\"],\"AssociatePublicIpAddress\":\"true\",\"DeleteOnTermination\":\"true\"}],\"ImageId\":\"ami-04e0c7320ad3a3a48\",\"BlockDeviceMappings\":[{\"Ebs\":{\"VolumeType\":\"gp3\",\"Encrypted\":\"true\",\"VolumeSize\":\"8\",\"DeleteOnTermination\":\"false\"},\"DeviceName\":\"/dev/xvda\"}],\"IamInstanceProfile\":\"mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp\",\"InstanceType\":\"t4g.medium\",\"CreditSpecification\":{\"CPUCredits\":\"standard\"},\"Monitoring\":\"false\",\"Tags\":[{\"Value\":\"mie-p6-qualification-001-receiptinstance\",\"Key\":\"Name\"},{\"Value\":\"phase6-qualification-only\",\"Key\":\"Purpose\"}]}}"
+            }
+        },
+        {
+            "Type": "Resource",
+            "ResourceChange": {
+                "Action": "Modify",
+                "LogicalResourceId": "SourceRole",
+                "PhysicalResourceId": "mie-p6-qualification-001-SourceRole-u3M2p6TXADEL",
+                "ResourceType": "AWS::IAM::Role",
+                "Replacement": "False",
+                "Scope": [
+                    "Properties"
+                ],
+                "Details": [
+                    {
+                        "Target": {
+                            "Attribute": "Properties",
+                            "Name": "Policies",
+                            "RequiresRecreation": "Never",
+                            "Path": "/Properties/Policies/0/PolicyDocument",
+                            "BeforeValue": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp\"},{\"Effect\":\"Allow\",\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/code/*\"},{\"Effect\":\"Allow\",\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/source/*\"},{\"Effect\":\"Allow\",\"Action\":\"ssm:StartSession\",\"Resource\":[\"arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228\",\"arn:aws:ssm:eu-north-1:989879505232:document/mie-p6-qualification-001-port-8443\"]}]}",
+                            "AfterValue": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp\"},{\"Effect\":\"Allow\",\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/code/*\"},{\"Effect\":\"Allow\",\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/source/*\"},{\"Effect\":\"Allow\",\"Action\":\"ssm:StartSession\",\"Resource\":[\"{{changeSet:KNOWN_AFTER_APPLY}}\",\"arn:aws:ssm:eu-north-1:989879505232:document/mie-p6-qualification-001-port-8443\"]}]}",
+                            "AttributeChangeType": "Modify"
+                        },
+                        "Evaluation": "Static",
+                        "ChangeSource": "DirectModification"
+                    }
+                ],
+                "BeforeContext": "{\"Properties\":{\"ManagedPolicyArns\":[\"arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore\"],\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}]},\"Policies\":[{\"PolicyName\":\"qualification-runtime\",\"PolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"secretsmanager:GetSecretValue\"],\"Resource\":[\"arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp\"],\"Effect\":\"Allow\"},{\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":[\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/code/*\"],\"Effect\":\"Allow\"},{\"Action\":[\"s3:PutObject\"],\"Resource\":[\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/source/*\"],\"Effect\":\"Allow\"},{\"Action\":[\"ssm:StartSession\"],\"Resource\":[\"arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228\",\"arn:aws:ssm:eu-north-1:989879505232:document/mie-p6-qualification-001-port-8443\"],\"Effect\":\"Allow\"}]}}]}}",
+                "AfterContext": "{\"Properties\":{\"ManagedPolicyArns\":[\"arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore\"],\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}]},\"Policies\":[{\"PolicyName\":\"qualification-runtime\",\"PolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"secretsmanager:GetSecretValue\"],\"Resource\":[\"arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp\"],\"Effect\":\"Allow\"},{\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":[\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/code/*\"],\"Effect\":\"Allow\"},{\"Action\":[\"s3:PutObject\"],\"Resource\":[\"arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/source/*\"],\"Effect\":\"Allow\"},{\"Action\":[\"ssm:StartSession\"],\"Resource\":[\"{{changeSet:KNOWN_AFTER_APPLY}}\",\"arn:aws:ssm:eu-north-1:989879505232:document/mie-p6-qualification-001-port-8443\"],\"Effect\":\"Allow\"}]}}]}}"
+            }
+        },
+        {
+            "Type": "Resource",
+            "ResourceChange": {
+                "Action": "Modify",
+                "LogicalResourceId": "StopRole",
+                "PhysicalResourceId": "mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8",
+                "ResourceType": "AWS::IAM::Role",
+                "Replacement": "False",
+                "Scope": [
+                    "Properties"
+                ],
+                "Details": [
+                    {
+                        "Target": {
+                            "Attribute": "Properties",
+                            "Name": "Policies",
+                            "RequiresRecreation": "Never",
+                            "Path": "/Properties/Policies/0/PolicyDocument",
+                            "BeforeValue": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"ec2:StopInstances\",\"Resource\":[\"arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228\",\"arn:aws:ec2:eu-north-1:989879505232:instance/i-08e89ad2e3feedb8a\"]}]}",
+                            "AfterValue": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"ec2:StopInstances\",\"Resource\":[\"{{changeSet:KNOWN_AFTER_APPLY}}\",\"arn:aws:ec2:eu-north-1:989879505232:instance/i-08e89ad2e3feedb8a\"]}]}",
+                            "AttributeChangeType": "Modify"
+                        },
+                        "Evaluation": "Static",
+                        "ChangeSource": "DirectModification"
+                    }
+                ],
+                "BeforeContext": "{\"Properties\":{\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"989879505232\"}},\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"scheduler.amazonaws.com\"}}]},\"Policies\":[{\"PolicyName\":\"stop-only-qualification-pair\",\"PolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:StopInstances\"],\"Resource\":[\"arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228\",\"arn:aws:ec2:eu-north-1:989879505232:instance/i-08e89ad2e3feedb8a\"],\"Effect\":\"Allow\"}]}}]}}",
+                "AfterContext": "{\"Properties\":{\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"989879505232\"}},\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"scheduler.amazonaws.com\"}}]},\"Policies\":[{\"PolicyName\":\"stop-only-qualification-pair\",\"PolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:StopInstances\"],\"Resource\":[\"{{changeSet:KNOWN_AFTER_APPLY}}\",\"arn:aws:ec2:eu-north-1:989879505232:instance/i-08e89ad2e3feedb8a\"],\"Effect\":\"Allow\"}]}}]}}"
+            }
+        }
+    ],
+    "ChangeSetName": "mie-p6-receipt-medium-v1-004",
+    "ChangeSetId": "arn:aws:cloudformation:eu-north-1:989879505232:changeSet/mie-p6-receipt-medium-v1-004/76121487-8b03-44e5-bfeb-b9326b6b2894",
+    "StackId": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93",
+    "StackName": "mie-p6-qualification-001",
+    "Description": "Approved attempt004: existing receipt small to medium only; source unchanged; bounded host preparation",
+    "Parameters": [
+        {
+            "ParameterKey": "StopAtUtc",
+            "ParameterValue": "at(2026-10-21T14:24:23)"
+        },
+        {
+            "ParameterKey": "LaunchCompute",
+            "ParameterValue": "yes"
+        }
+    ],
+    "CreationTime": "2026-10-21T13:40:22.541000+00:00",
+    "ExecutionStatus": "AVAILABLE",
+    "Status": "CREATE_COMPLETE",
+    "StatusReason": null,
+    "NotificationARNs": [],
+    "RollbackConfiguration": {},
+    "Capabilities": [
+        "CAPABILITY_IAM"
+    ],
+    "Tags": [
+        {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+        }
+    ],
+    "ParentChangeSetId": null,
+    "IncludeNestedStacks": false,
+    "RootChangeSetId": null,
+    "OnStackFailure": null,
+    "ImportExistingResources": null,
+    "StackDriftStatus": null,
+    "DeploymentMode": null,
+    "DeploymentConfig": {
+        "Mode": "STANDARD",
+        "DisableRollback": false
+    }
+}

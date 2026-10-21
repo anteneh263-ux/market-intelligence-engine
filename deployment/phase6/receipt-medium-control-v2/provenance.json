@@ -1,0 +1,21 @@
+{
+  "classification": "operational reference and local test fixtures; not new runtime or scientific evidence",
+  "source_operation": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-004",
+  "source_commit": "951c7488ee10bbbbce9cbba7f033f2b1b94aad83",
+  "raw_preview_copied_unchanged": {
+    "source": "medium-preview-2-stdout.json",
+    "sha256": "a5f47d625f09d2def971e484cb5d8eb8ebb16f4f912d0d968c6d7a23c4b0b6df"
+  },
+  "resource_bindings": "LogicalResourceId to PhysicalResourceId projection of final-resources-stdout.json",
+  "test_readbacks": {
+    "final-stack-stdout.json": "d74fdf548ef40aed831cad2b1d046685de96a8582196322fc11bc4fe2d3df067",
+    "final-resources-stdout.json": "eca0234d8530db927985f3045b7bced1f1cc34e6ead64f869fe7288ffe898557",
+    "final-instances-stdout.json": "feaae3fae035e1caa35c384efd2823c96fd72fd699db783f906b5af8d7e64e10",
+    "final-volumes-stdout.json": "fdbdb42601bad2329d909c607562689e8b4565e8dd4003e7ff49f81b40ccc680",
+    "final-credits-stdout.json": "24b0aa5700318633b5249ae8153096bcee9101397786d0bafcb1b057fb0b62c6",
+    "final-schedule-stdout.json": "94586c81377b00c459fdcc3bda29ceeaa8ba821026a1531b574546bcd5ef8812",
+    "final-source-policy-stdout.json": "5e625cd14774ad800435a5e9c35f34743ab767e87ef90083287e6873a45adf48",
+    "final-stop-policy-stdout.json": "dc49f0f5ddfb76ce6c027cbbdf43dd8d0c3e5137c44ac46b85c5b32b237bcb19"
+  },
+  "test_changes": "Execution tests explicitly synthesize a v2 change-set ARN and installed policy; actual attempt004 remains unexecuted and refused by v1."
+}

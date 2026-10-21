@@ -1,0 +1,30 @@
+{
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "Update:Modify",
+      "Principal": "*",
+      "Resource": [
+        "LogicalResourceId/ExternalStop",
+        "LogicalResourceId/ReceiptInstance",
+        "LogicalResourceId/SourceRole",
+        "LogicalResourceId/StopRole"
+      ]
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "Update:Replace",
+        "Update:Delete"
+      ],
+      "Principal": "*",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Deny",
+      "Action": "Update:*",
+      "Principal": "*",
+      "Resource": "LogicalResourceId/SourceInstance"
+    }
+  ]
+}
