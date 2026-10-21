@@ -83,10 +83,9 @@ The old v1/004 ARN is refused by execution_request even though content classific
 can explain its shape. A repeated call in the same operation directory is refused.
 Unknown API outcomes preserve the intent and must never be retried automatically.
 
-The API adapter must itself bound calls, disable SDK retries and persist raw requests
-and responses. The supervisory callback must be backed by the authentic reviewed
-operator, with its UTC/continuous-clock checks and evidence chain. These are injected
-caller responsibilities and must be verified in the actual live wrapper. The intent
+The API and supervisory dependencies are now connected by the explicit execute-live.py
+entry point described below. Tests exercise that entry point with synthetic AWS
+responses. Its installed AWS policy and real cloud outcome remain unverified. The intent
 provides cooperative once-per-directory behavior, not account-wide exclusion against
 another administrator. No atomic AWS policy/preview snapshot is claimed.
 
@@ -139,10 +138,48 @@ No AWS API mutation, policy installation or running cloud workload occurred this
 A later proposed attempt005 would install this exact persistent policy only if the
 fresh existing policy is absent (or verify an already identical policy), read it
 back, then reuse the existing medium kit in one fresh 45-minute window. It needs a
-new approved result root, authentic watch-only supervision, fresh recorded bounded
-API readbacks and use of execute_once at the actual execution call site. The earlier
-004 wrapper must not be used unmodified: its v1 validator cannot accept the real
-preview. No production claim follows until that live path and outcome are reviewed.
+new approved result root, reviewed watch-only supervision and use of execute-live.py
+at the actual execution call site. The earlier004 wrapper must not be used unmodified:
+its v1 validator cannot accept the real preview. No production claim follows until
+the actual cloud path and outcome are independently reviewed.
 
 Reviewer confirmed the final control hash after removal of one blank EOF line from
 control.py and its test. No functional change or additional test execution occurred.
+
+
+## Completed local live-call adapter
+
+execute-live.py is the explicit main -> Supervisor + RecordedAPI -> execute_once
+entry point. Import and --help do not call AWS. It requires an existing approved
+0700 evidence root, pinned fresh launch contract, exact live operator PID/arguments,
+new v2 change-set ARN and stop expression, plus --execute-approved. It does not
+install policy, create a root/plan, arm an operator, start hosts or run preparation.
+
+RecordedAPI uses the fixed AWS CLI/profile/region and explicit AWS service endpoints.
+The CLI has one total attempt, 3s connect/15s read timeouts, a 30s outer deadline and
+1MiB bound per captured stream. Timeout/overflow kills the subprocess group and
+raises; partial bounded output and unknown status are preserved. An exclusive fsynced
+request precedes each call. Execute requires the matching already persisted guard
+intent. The control refuses a repeated execution, even after an unknown response.
+
+Supervisor checks the exact launch-contract hash, writer owner/run hash, contiguous
+full event chain and every blob hash. It accepts only the armed record and healthy
+observations with source/receipt stopped. Per-step UTC/continuous clocks must advance
+without >2s drift; live continuous time must also remain within the armed-derived
+40–45 minute remaining window. Exact watch-only process arguments are checked before
+and after reading the chain; the control invokes supervision again before intent.
+Process identity and source hashes assume a trusted local operator environment; they
+are not OS attestation of all loaded modules or independent receipt evidence.
+
+Independent reviewer /root/phase5_contract_review inspected this adapter and ran its
+28 tests, all passed. Approved LOCAL candidate SHA256
+170a99ce1e41d7c0923fc87db6dcdb7bbcb942513ce45222c2e121bec7fe32b4. Residual diagnostic
+limitation: a process cleanup failure can mask the original subprocess exception;
+it still fails closed without retry or false success. A later logging failure can
+leave an unknown outcome; the durable request/intent must not be removed or retried.
+
+Final expanded relevant suite: **388 executed and passed, 0 failed/skipped**, including
+115 v2 controls, 28 live-adapter tests and 245 unchanged relevant tests. Independent
+115/28 test runs overlap these counts. Subprocess timeout/output-limit tests execute
+local synthetic Python processes; AWS responses in main-path tests are simulated.
+There has been no AWS API call or mutation from this local candidate work.
