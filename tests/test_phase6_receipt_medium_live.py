@@ -185,3 +185,20 @@ def test_api_execute_requires_matching_preexisting_guard_intent(tmp_path):
     live.save(tmp_path,'medium-v2-execute-intent.json',{'request':{'different':True}})
     with pytest.raises(ValueError):api.call('cloudformation','execute-change-set',{})
     assert not calls
+
+
+@pytest.mark.parametrize('service,operation,region,endpoint',[
+    ('iam','get-role-policy','us-east-1','https://iam.amazonaws.com'),
+    ('cloudformation','get-stack-policy','eu-north-1','https://cloudformation.eu-north-1.amazonaws.com'),
+    ('ec2','describe-instances','eu-north-1','https://ec2.eu-north-1.amazonaws.com'),
+])
+def test_explicit_endpoint_uses_correct_signing_region(tmp_path,service,operation,region,endpoint):
+    """IAM is global: actual005 rejected eu-north-1 signature with explicit endpoint."""
+    tmp_path.chmod(0o700)
+    def runner(argv,env):
+        assert argv[argv.index('--region')+1]==region
+        assert argv[argv.index('--endpoint-url')+1]==endpoint
+        return subprocess.CompletedProcess(argv,0,b'{}',b'')
+    live.RecordedAPI(tmp_path,runner).call(service,operation,{})
+    request=json.loads(next(tmp_path.glob('*-request.json')).read_bytes())
+    assert request['signing_region']==region

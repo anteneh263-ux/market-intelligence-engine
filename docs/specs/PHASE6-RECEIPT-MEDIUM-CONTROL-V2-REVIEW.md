@@ -183,3 +183,20 @@ Final expanded relevant suite: **388 executed and passed, 0 failed/skipped**, in
 115/28 test runs overlap these counts. Subprocess timeout/output-limit tests execute
 local synthetic Python processes; AWS responses in main-path tests are simulated.
 There has been no AWS API call or mutation from this local candidate work.
+
+## Attempt005 preflight correction — IAM signing region
+
+The first actual005 read-only preflight returned SignatureDoesNotMatch for IAM
+with an explicit iam.amazonaws.com endpoint and eu-north-1 signing. No policy,
+watch window, resize or start had occurred. The client is corrected to sign IAM
+calls in us-east-1; all Stockholm resource calls remain in eu-north-1. Endpoint,
+account, role, permissions, templates, policy and operational scope are unchanged.
+AWS documents IAM as a global endpoint; see [service endpoints](https://docs.aws.amazon.com/general/latest/gr/iam-service.html)
+and [global endpoint routing](https://docs.aws.amazon.com/general/latest/gr/rande.html).
+
+Three regression cases failed before the patch (IAM signing and request-region
+provenance); the expanded relevant suite then passed **391 tests**, 0failed/skipped,
+in3.23s. Corrected adapter SHA256
+f1bed0aad725163ef6fd069416c3660d6d05cd27fa1e8f82b71c73d6319c23c1 supersedes170a99
+for future execution. Preserve the failed preflight and original candidate pins;
+fresh readbacks use new names. A successful local test is still not AWS execution.

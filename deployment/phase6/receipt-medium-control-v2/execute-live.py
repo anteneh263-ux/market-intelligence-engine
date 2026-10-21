@@ -134,13 +134,14 @@ class RecordedAPI:
         self.sequence += 1
         name = f'medium-v2-api-{self.sequence:03d}-{operation}'
         endpoint = 'https://iam.amazonaws.com' if service == 'iam' else f'https://{service}.eu-north-1.amazonaws.com'
+        signing_region = 'us-east-1' if service == 'iam' else 'eu-north-1'
         argv = ['/opt/homebrew/bin/aws', service, operation, '--profile', 'mie-phase6',
-                '--region', 'eu-north-1', '--endpoint-url', endpoint, '--output', 'json',
+                '--region', signing_region, '--endpoint-url', endpoint, '--output', 'json',
                 '--no-cli-pager', '--no-cli-auto-prompt', '--cli-connect-timeout', '3',
                 '--cli-read-timeout', '15', '--cli-input-json', control.canonical(payload)]
         env = dict(os.environ, AWS_MAX_ATTEMPTS='1', AWS_RETRY_MODE='standard')
         save(self.root, name+'-request.json', dict(service=service, operation=operation,
-             payload=payload, endpoint=endpoint, profile='mie-phase6', requested_utc_ms=time.time_ns()//1000000,
+             payload=payload, endpoint=endpoint, signing_region=signing_region, profile='mie-phase6', requested_utc_ms=time.time_ns()//1000000,
              total_attempts=1, timeout_seconds=30, output_limit_each=1024*1024))
         try:
             response = self.runner(argv, env)
