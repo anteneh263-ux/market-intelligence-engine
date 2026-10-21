@@ -264,4 +264,3 @@ def execute_once(api, *, expected_id, stop_expression, supervisor, evidence_dir,
     response = call('cloudformation', 'execute-change-set', request)
     return dict(status='EXECUTE_RESPONSE_RECEIVED', response=response,
                 resize_complete=False, runtime_accepted=False, retry_allowed=False)
-

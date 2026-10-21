@@ -126,7 +126,7 @@ was fixed before review.
 
 Independent reviewer /root/phase5_contract_review separately ran the 115 tests and
 approved the LOCAL candidate with no blocking finding. Reviewed control SHA256
-225c2a7529e08425fdaeceaadda1d9a59298b81ba934e93ecc2f9d13b83ef90b. Counts overlap and
+5263f1cb5a9937cc7f5cc0ac2574760b517f82acf3e312ee63b223749b0281b7. Counts overlap and
 are not additive. AWS policy enforcement, capacity, rollback consequences and host
 preparation remain untested. This is not cloud-readiness or deployment approval.
 
@@ -143,3 +143,6 @@ new approved result root, authentic watch-only supervision, fresh recorded bound
 API readbacks and use of execute_once at the actual execution call site. The earlier
 004 wrapper must not be used unmodified: its v1 validator cannot accept the real
 preview. No production claim follows until that live path and outcome are reviewed.
+
+Reviewer confirmed the final control hash after removal of one blank EOF line from
+control.py and its test. No functional change or additional test execution occurred.

@@ -277,4 +277,3 @@ def test_no_implicit_creation_of_evidence_directory(tmp_path):
     with pytest.raises(FileNotFoundError):
         control.execute_once(api,expected_id=CID,stop_expression=STOP,supervisor=supervisor,evidence_dir=str(tmp_path/'absent'),now_ms=lambda:NOW)
     assert not api.calls and not (tmp_path/'absent').exists()
-
