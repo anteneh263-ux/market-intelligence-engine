@@ -1,0 +1,25 @@
+{
+  "classification": "Unmodified operational readback copies used only as local test fixtures; not new runtime/scientific evidence",
+  "files": [
+    {
+      "fixture": "schedule-poll-0-stdout.json",
+      "source": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/schedule-poll-0-stdout.json",
+      "sha256": "8d4f812b5d813e747edd3b4cd628ae3a1390e883fb524ffea0361834058f2d0c"
+    },
+    {
+      "fixture": "schedule-poll-1-stdout.json",
+      "source": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/schedule-poll-1-stdout.json",
+      "sha256": "0c0bee4e51e4fe94e488aa525fad2b2fde3292c3ca2280d3f412a18518323ca7"
+    },
+    {
+      "fixture": "schedule-poll-2-stdout.json",
+      "source": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/schedule-poll-2-stdout.json",
+      "sha256": "d60cdb7d25e247a31ea6c5279db68e5632198fa1ce76a0c2bda7e8f581096c79"
+    },
+    {
+      "fixture": "schedule-outcome-readonly-stdout.json",
+      "source": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/schedule-outcome-readonly-stdout.json",
+      "sha256": "f291f3ffd49c650c90ae3e7cc71dd50314f718ad7ab66b0e30c6835c9aea5196"
+    }
+  ]
+}

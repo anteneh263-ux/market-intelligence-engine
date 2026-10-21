@@ -1,0 +1,87 @@
+{
+    "Stacks": [
+        {
+            "StackId": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93",
+            "StackName": "mie-p6-qualification-001",
+            "Description": "PROPOSED Phase6 synthetic qualification only. No pilot activation. Requires reviewed operator approval.",
+            "Parameters": [
+                {
+                    "ParameterKey": "StopAtUtc",
+                    "ParameterValue": "at(2026-10-21T15:17:43)"
+                },
+                {
+                    "ParameterKey": "LaunchCompute",
+                    "ParameterValue": "yes"
+                }
+            ],
+            "CreationTime": "2026-10-18T13:20:56.581000+00:00",
+            "LastUpdatedTime": "2026-10-21T14:33:17.373000+00:00",
+            "RollbackConfiguration": {},
+            "StackStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+            "DisableRollback": false,
+            "DeploymentConfig": {
+                "Mode": "STANDARD",
+                "DisableRollback": false
+            },
+            "NotificationARNs": [],
+            "TimeoutInMinutes": 10,
+            "Capabilities": [
+                "CAPABILITY_IAM"
+            ],
+            "Outputs": [
+                {
+                    "OutputKey": "ArtifactBucket",
+                    "OutputValue": "mie-p6-qualification-001-989879505232-artifacts"
+                },
+                {
+                    "OutputKey": "StateTable",
+                    "OutputValue": "mie-p6-qualification-001-state"
+                },
+                {
+                    "OutputKey": "ReceiptInstance",
+                    "OutputValue": "i-0c5a2a75ca70db228"
+                },
+                {
+                    "OutputKey": "ReceiptBucket",
+                    "OutputValue": "mie-p6-qualification-001-989879505232-receipts"
+                },
+                {
+                    "OutputKey": "SourceInstance",
+                    "OutputValue": "i-08e89ad2e3feedb8a"
+                },
+                {
+                    "OutputKey": "ReceiptSecret",
+                    "OutputValue": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/receipt-identity-c1Dg4C"
+                },
+                {
+                    "OutputKey": "IndexTable",
+                    "OutputValue": "mie-p6-qualification-001-index"
+                },
+                {
+                    "OutputKey": "FixedPortDocument",
+                    "OutputValue": "mie-p6-qualification-001-port-8443"
+                },
+                {
+                    "OutputKey": "SourceSecret",
+                    "OutputValue": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp"
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Purpose",
+                    "Value": "phase6-qualification-only"
+                }
+            ],
+            "EnableTerminationProtection": true,
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            },
+            "LastOperations": [
+                {
+                    "OperationType": "UPDATE_STACK",
+                    "OperationId": "5af22520-cd5c-11f1-9896-06fff00aec43"
+                }
+            ]
+        }
+    ]
+}
