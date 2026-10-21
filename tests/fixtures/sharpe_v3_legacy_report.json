@@ -1,0 +1,168 @@
+{
+  "assets_evaluated": [
+    "A",
+    "B"
+  ],
+  "cause_of_death": null,
+  "condition_rows": [
+    {
+      "asset": "A",
+      "cost_bps": 5.0,
+      "dsr": 0.007179353566101276,
+      "grid_size": 1,
+      "in_sample_sharpe": -0.0732479717505048,
+      "max_drawdown": 0.0399623440456686,
+      "n_bars": 208,
+      "num_trades": 15,
+      "oos_sharpe": -0.16341894885803376,
+      "oos_sharpe_annual": -3.1221146341447166,
+      "slippage_bps": 5.0,
+      "total_return": -0.033352126340310595
+    },
+    {
+      "asset": "B",
+      "cost_bps": 5.0,
+      "dsr": 0.0007828334714944374,
+      "grid_size": 1,
+      "in_sample_sharpe": -0.1860264597437752,
+      "max_drawdown": 0.03129963746705933,
+      "n_bars": 208,
+      "num_trades": 15,
+      "oos_sharpe": -0.19454623774915303,
+      "oos_sharpe_annual": -3.7168006534057945,
+      "slippage_bps": 5.0,
+      "total_return": -0.028202236923770108
+    }
+  ],
+  "confidence_score": 0.0009952733796994642,
+  "generalization_score": 0.0,
+  "headline": {
+    "bar_frequency": "1d",
+    "beats_buy_hold": false,
+    "beats_random": false,
+    "buy_hold_sharpe": 0.3098760724335129,
+    "cost_bps": 5.0,
+    "dsr": 0.003981093518797857,
+    "expected_max_sr0": 0.0,
+    "max_drawdown": 0.03563099075636396,
+    "n_bars": 416,
+    "num_trades": 30,
+    "oos_sharpe": -0.1789825933035934,
+    "oos_sharpe_annual": -3.4194576437752557,
+    "periods_per_year": 365.0,
+    "pooling": "per_asset",
+    "random_timing": {
+      "matched_metric": "num_trades",
+      "method": "executed-runs-v1",
+      "per_asset": [
+        {
+          "asset": "A",
+          "direction": "long_short",
+          "executable_slots": 207,
+          "exposed_bars": [
+            207,
+            207,
+            207
+          ],
+          "exposure_denominator": "executable_slots",
+          "exposure_fraction": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "method": "executed-runs-v1",
+          "metric": "num_trades",
+          "n_bars": 208,
+          "num_trades": [
+            15,
+            15,
+            15
+          ],
+          "rng": "numpy.PCG64",
+          "seeds": [
+            12345,
+            12346,
+            12347
+          ],
+          "target_trades": 15,
+          "total_turnover": [
+            29.0,
+            29.0,
+            29.0
+          ]
+        },
+        {
+          "asset": "B",
+          "direction": "long_short",
+          "executable_slots": 207,
+          "exposed_bars": [
+            207,
+            207,
+            207
+          ],
+          "exposure_denominator": "executable_slots",
+          "exposure_fraction": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "method": "executed-runs-v1",
+          "metric": "num_trades",
+          "n_bars": 208,
+          "num_trades": [
+            15,
+            15,
+            15
+          ],
+          "rng": "numpy.PCG64",
+          "seeds": [
+            12345,
+            12346,
+            12347
+          ],
+          "target_trades": 15,
+          "total_turnover": [
+            29.0,
+            29.0,
+            29.0
+          ]
+        }
+      ]
+    },
+    "random_timing_sharpe_p95": -0.056506126101263744,
+    "return_aggregation": "mean_per_asset_cumulative_return",
+    "sharpe_ci95": [
+      -0.19454623774915303,
+      -0.16341894885803376
+    ],
+    "sharpe_unit": "per_bar",
+    "slippage_bps": 5.0,
+    "total_return": -0.03077718163204035
+  },
+  "is_real": false,
+  "matrix_hash": "3527088f0b4551f2",
+  "matrix_version": "srp-matrix-v3",
+  "notes": [
+    "ILLUSTRATIVE ONLY \u2014 synthetic data (is_real=False). This report demonstrates the pipeline; it is NOT evidence about the real strategy and must not enter a dossier as a verdict.",
+    "Random timing matches reported OOS trade count per asset and seed; it does not match exposure, turnover, holding durations or total cost. The existing walk-forward fold-boundary accounting is unchanged."
+  ],
+  "per_asset_oos_sharpe": {
+    "A": -0.16341894885803376,
+    "B": -0.19454623774915303
+  },
+  "provider": "synthetic",
+  "request_hash": "6954fad80955843a",
+  "robustness_score": 0.0,
+  "stability_score": 0.9200002809325586,
+  "strategy_class": "test",
+  "strategy_id": "TEST-UNCERTAINTY",
+  "strategy_name": "Synthetic uncertainty fixture",
+  "verdict": "Not Supported",
+  "verdict_reasons": [
+    "failed: deflated Sharpe clears bar",
+    "failed: OOS Sharpe positive",
+    "failed: beats buy-and-hold (risk-adjusted)",
+    "failed: beats matched random-timing",
+    "failed: robust across majority of conditions"
+  ]
+}

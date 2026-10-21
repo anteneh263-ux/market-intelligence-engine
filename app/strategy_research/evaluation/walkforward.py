@@ -5,9 +5,10 @@ each test block k, parameters are selected on ALL data before it (in-sample) and
 then applied to block k (out-of-sample). The OOS net-return segments are stitched
 into a single out-of-sample equity curve — the only curve the verdict trusts.
 
-Because indicators are causal (EMA/RSI/rolling use only past bars), positions can
-be computed once on the full frame and then sliced per fold without leaking future
-information into either selection or evaluation.
+Precomputing positions on the full frame and slicing per fold requires each
+strategy to be causal. Trailing indicators can satisfy that requirement, but this
+function does not enforce it for arbitrary strategies or point-in-time datasets.
+Prefix and future-perturbation tests provide finite checks, not a universal proof.
 
 The number of parameter configurations in the grid is the per-strategy
 data-snooping budget, passed to the deflated-Sharpe correction.

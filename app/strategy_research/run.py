@@ -33,7 +33,7 @@ def main(argv=None) -> int:
     ap.add_argument("--limit", type=int, default=1500)
     ap.add_argument("--csv-root", default="data_csv", help="folder of CSVs for csv provider")
     ap.add_argument("--matrix", default="v2", choices=sorted(MATRICES),
-                    help="v3 matches trade counts; v1/v2 retained for reproduction (default v2)")
+                    help="v4 separates dispersion/uncertainty and matches trades; legacy default v2")
     ap.add_argument("--write", action="store_true",
                     help="write STEP 5 into the dossier + INDEX (real data only)")
     ap.add_argument("--json", action="store_true", help="print full report as JSON")

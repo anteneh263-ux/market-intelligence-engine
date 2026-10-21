@@ -3,8 +3,10 @@
 Given a target-position series in {-1,0,+1} and a price frame, compute net
 per-bar returns under frozen cost and slippage assumptions, plus trade-level
 and risk metrics. The position is SHIFTED FORWARD one bar before returns are
-applied, so a strategy can never trade on information from the bar it is pricing
-(look-ahead is structurally impossible).
+applied: the signal at close t first affects the return at t+1. This prevents
+same-bar execution, but does not validate signal causality. A signal that reads
+future input can still leak through this function; independent causal-input
+checks and point-in-time data validation are required.
 
 Costs: charged on |change in held position| × (fee + slippage), in basis points
 per unit of position turned over. A flat→long entry turns over 1 unit; a

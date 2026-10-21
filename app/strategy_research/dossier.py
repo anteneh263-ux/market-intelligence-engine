@@ -82,6 +82,25 @@ def _fmt(x, pct=False):
         return str(x)
 
 
+def _sharpe_interval_rows(rep: EvaluationReport) -> list[str]:
+    """Correct display semantics without mutating legacy records or their hashes."""
+    h = rep.headline
+    per_asset = rep.matrix_version in ("srp-matrix-v2", "srp-matrix-v3", "srp-matrix-v4")
+    if per_asset or h.get("pooling") == "per_asset":
+        bounds = h.get("sharpe_asset_range", h.get("sharpe_ci95"))
+        count = h.get("sharpe_asset_count", len(rep.assets_evaluated))
+        display = f"[{_fmt(bounds[0])}, {_fmt(bounds[1])}]" if bounds is not None and count else "Unavailable"
+        return [f"| Sharpe range across assets (per-period; descriptive) | {display} |",
+                f"| Assets in Sharpe range | {count} |",
+                "| Sharpe sampling uncertainty | Not estimated — asset range is not a confidence interval |"]
+    bounds = h.get("sharpe_ci95")
+    if rep.matrix_version == "srp-matrix-v1" and bounds is not None and h.get("n_bars", 0) >= 2:
+        return [f"| Sharpe nominal 95% IID-bootstrap interval (per-period) | "
+                f"[{_fmt(bounds[0])}, {_fmt(bounds[1])}] |",
+                "| Interval limitation | IID resampling; serial dependence and post-selection coverage not established |"]
+    return ["| Sharpe sampling uncertainty | Unavailable — no supported interval with sufficient observations |"]
+
+
 def render_step5_markdown(rep: EvaluationReport) -> str:
     h = rep.headline
     lines = [
@@ -98,8 +117,7 @@ def render_step5_markdown(rep: EvaluationReport) -> str:
         "|---|---|",
         f"| OOS Sharpe (annualised) | {_fmt(h.get('oos_sharpe_annual', 0))} |",
         f"| Deflated Sharpe (prob. edge is real) | {_fmt(h.get('dsr', 0))} |",
-        f"| Sharpe 95% CI (per-period) | [{_fmt(h.get('sharpe_ci95',[0,0])[0])}, "
-        f"{_fmt(h.get('sharpe_ci95',[0,0])[1])}] |",
+        *_sharpe_interval_rows(rep),
         f"| Beats buy-and-hold | {h.get('beats_buy_hold')} |",
         f"| Beats matched random-timing (p95) | {h.get('beats_random')} |",
         f"| Max drawdown (OOS) | {_fmt(h.get('max_drawdown',0), pct=True)} |",
@@ -257,6 +275,9 @@ def write_results(kb_root: str, rep: EvaluationReport) -> str:
         "verdict_reasons": rep.verdict_reasons, "cause_of_death": rep.cause_of_death,
     }
     record["matrix_version"] = rep.matrix_version
+    if rep.matrix_version == "srp-matrix-v4":
+        for key in ("sharpe_asset_range", "sharpe_asset_count", "sharpe_uncertainty"):
+            record[key] = h[key]
     if "random_timing" in h:
         record["random_timing"] = h["random_timing"]
     # Archive per version, and keep <id>.json as the 'latest' pointer.

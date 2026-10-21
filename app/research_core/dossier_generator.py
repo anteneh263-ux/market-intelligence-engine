@@ -64,7 +64,8 @@ def _inputs(strategy_id: str, matrix) -> Dict:
         "literature_version": lit.literature_version(),
         "protocol": _protocol(matrix),
         "meta": STRATEGY_META.get(s.strategy_id),
-        "generator": DOSSIER_GENERATOR_VERSION,
+        "generator": ("dossier-gen-v2" if matrix.version == "srp-matrix-v4"
+                      else DOSSIER_GENERATOR_VERSION),
     }
 
 
@@ -95,6 +96,15 @@ def render(strategy_id: str, matrix=None) -> Tuple[str, str]:
              f"out-of-sample result becomes one vote for or against {meta}."
              if meta else "Meta-hypothesis mapping: (unassigned).")
 
+    timing_statement = sp.get('lookahead', 'engine shifts positions forward one bar, so look-ahead is structurally impossible')
+    if I["generator"] == "dossier-gen-v2":
+        timing_statement = (
+            "Signals must use only information available by their bar close. "
+            "The engine applies them one bar later; this prevents same-bar execution "
+            "but does not validate signal causality. Prefix/future-perturbation tests "
+            "are finite checks, and point-in-time data availability must be verified separately"
+        )
+
     md = f"""# Strategy Dossier — {I['strategy_id']}: {I['name']}
 
 **strategy_id:** {I['strategy_id']} · **source:** {sp.get('source', 'unknown')} · **class:** {I['class']} · **direction:** {I['direction']}
@@ -122,7 +132,7 @@ implementation is the frozen, auditable source of truth.
 - **Position sizing:** {sp.get('sizing', 'n/a')}
 - **Implicit assumptions (the real targets of testing):**
 {_bullets(sp.get('assumptions', [])) or '- (none recorded)'}
-- **Script-integrity / look-ahead check:** {sp.get('lookahead', 'engine shifts positions forward one bar, so look-ahead is structurally impossible')}.
+- **Script-integrity / look-ahead check:** {timing_statement}.
 
 ## STEP 2 — Falsifiable Hypothesis
 
