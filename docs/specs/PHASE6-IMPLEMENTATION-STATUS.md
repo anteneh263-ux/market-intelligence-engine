@@ -687,3 +687,21 @@ corrected package, new interval and rearmed stop controls. No retry/repair was
 executed. Actual receipt authentication/retention, full data chain, fault/load
 qualification, prospective simulated-money pilot and full 1–6 integration remain.
 Phase 6 is INCOMPLETE; no runtime/pilot/trading authority or H-025 work follows.
+
+
+## 2026-10-21 — receipt attempt002 candidate prepared
+
+After AWS login renewal, read-only calls confirmed both existing hosts stopped,
+expected account/profiles and an expired18October stop schedule. The corrected
+receipt kit is byte-identical across two local builds, all payloads verified:
+SHAea831b59505cfdd04e4c6f78bff4de63fc3fa71045e5279d5d7fe6b7d02c5c69,21585589bytes.
+A new delivery-v2 path and receipt-only target pin preserve attempt001. The guest
+timer candidate checks numeric deadline, exact shutdown action and remaining time
+before download and again before preparation. The existing watcher remains
+pair-scoped for protection and does not itself restart instances.
+
+107 targeted local tests pass, with82 independently rerun; no blocking review
+finding remains. Actual AL2023 timer behavior still requires readback. See
+PHASE6-RECEIPT-RECOVERY-002-REVIEW for the concrete45minute/sameUSD3 proposal,
+paths and no-repeat boundary. At this checkpoint no upload, restart, timer,
+stack mutation or receipt preparation for attempt002 has executed. Phase6 incomplete.
