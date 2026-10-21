@@ -4,8 +4,8 @@ One entry point over the whole platform:
 
     python -m app.cli list [strategies|providers|matrices|modules]
     python -m app.cli matrix                         # version log
-    python -m app.cli evaluate --target H-010 --assets AAPL,BTC/USD --matrix v2 [--no-write]
-    python -m app.cli batch --targets H-003,H-004,... --assets AAPL,BTC/USD --matrix v2
+    python -m app.cli evaluate --target H-010 --assets AAPL,BTC/USD --matrix v4 [--no-write]
+    python -m app.cli batch --targets H-003,H-004,... --assets AAPL,BTC/USD --matrix v4
     python -m app.cli learn                          # run meta-learning, write LEARNING_REPORT.md
     python -m app.cli ask "which strategies generalize across markets?"
     python -m app.cli kb show H-010                  # a strategy's recorded result
@@ -37,13 +37,13 @@ def main(argv=None) -> int:
     p = sub.add_parser("evaluate")
     p.add_argument("--target", required=True); p.add_argument("--assets", required=True)
     p.add_argument("--module", default="strategy_evaluation")
-    p.add_argument("--matrix", default="v2"); p.add_argument("--provider", default="csv")
+    p.add_argument("--matrix", default=versioning.ACTIVE_VERSION); p.add_argument("--provider", default="csv")
     p.add_argument("--timeframe", default="1d"); p.add_argument("--csv-root", default="data_csv")
     p.add_argument("--no-write", action="store_true")
     p = sub.add_parser("batch")
     p.add_argument("--targets", required=True); p.add_argument("--assets", required=True)
     p.add_argument("--module", default="strategy_evaluation")
-    p.add_argument("--matrix", default="v2"); p.add_argument("--provider", default="csv")
+    p.add_argument("--matrix", default=versioning.ACTIVE_VERSION); p.add_argument("--provider", default="csv")
     p.add_argument("--timeframe", default="1d"); p.add_argument("--csv-root", default="data_csv")
     sub.add_parser("learn")
     p = sub.add_parser("discover")

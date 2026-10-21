@@ -214,7 +214,7 @@ def test_legacy_hashes_defaults_and_version_resolution():
     assert MATRIX_V3.hash() not in (MATRIX_V1.hash(), MATRIX_V2.hash())
     assert MATRIX_V3.pooling == MATRIX_V2.pooling == "per_asset"
     assert DEFAULT_MATRIX is MATRIX_V1
-    assert versioning.resolve(None) is versioning.resolve("latest") is MATRIX_V2
+    assert versioning.resolve("v2") is versioning.resolve("srp-matrix-v2") is MATRIX_V2
     assert versioning.resolve("v3") is versioning.resolve("srp-matrix-v3") is MATRIX_V3
     assert MATRICES["v3"] is MATRICES["srp-matrix-v3"] is MATRIX_V3
     assert MATRIX_V1.random_timing_method == MATRIX_V2.random_timing_method == "bernoulli-redraw-v1"

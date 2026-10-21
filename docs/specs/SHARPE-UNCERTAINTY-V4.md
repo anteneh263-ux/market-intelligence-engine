@@ -1,5 +1,10 @@
 # Sharpe dispersion, sampling uncertainty and causal-input limits
 
+> Default-selection update: the introduction-time defaults described below are
+> superseded for new evaluation entrypoints by
+> [NEW-EVALUATION-DEFAULT-V4](NEW-EVALUATION-DEFAULT-V4.md). Frozen matrix
+> definitions, historical results and explicit version selection remain unchanged.
+
 ## Scope and version boundary
 
 This package implements the user's next two review tasks: stop labeling an

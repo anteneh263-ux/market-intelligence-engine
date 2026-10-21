@@ -21,11 +21,11 @@ def _fixture_csv(tmp_path, sym="AAPL", n=500):
     }).to_csv(tmp_path / f"{sym}_1d.csv", index=False)
 
 
-def test_versioning_v1_preserved_v2_active():
+def test_versioning_v1_preserved_v4_active():
     v1 = versioning.resolve("v1"); v2 = versioning.resolve("v2")
     assert v1.hash() == "a740f3acbf6572d6"          # v1 immutable
     assert v1.pooling == "concatenation" and v2.pooling == "per_asset"
-    assert versioning.ACTIVE_VERSION == v2.version
+    assert versioning.ACTIVE_VERSION == versioning.resolve("v4").version
 
 
 def test_module_registry_has_strategy_evaluation():

@@ -1,5 +1,10 @@
 # Random-timing trade matching: matrix v3
 
+> Default-selection update: the introduction-time defaults described below are
+> superseded for new evaluation entrypoints by
+> [NEW-EVALUATION-DEFAULT-V4](NEW-EVALUATION-DEFAULT-V4.md). Frozen matrix
+> definitions, historical results and explicit version selection remain unchanged.
+
 ## Scope and provenance
 
 User work package: verify and correct the random-timing benchmark's trade matching.
