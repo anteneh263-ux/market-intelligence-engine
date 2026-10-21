@@ -1,0 +1,844 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "PROPOSED Phase6 synthetic qualification only. No pilot activation. Requires reviewed operator approval.",
+  "Metadata": {
+    "MIE": {
+      "status": "PROPOSED_NOT_DEPLOYED",
+      "scope": "synthetic receipt qualification only",
+      "preserve_disks": true,
+      "target_compute_minutes": 60,
+      "initial_creation": "foundation_only_no_compute"
+    }
+  },
+  "Parameters": {
+    "StopAtUtc": {
+      "Type": "String",
+      "AllowedPattern": "(^$)|(^at\\([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\)$)",
+      "Description": "Required one-time UTC stop at no more than 60 minutes after launch; freeze immediately before approved creation.",
+      "Default": ""
+    },
+    "LaunchCompute": {
+      "Type": "String",
+      "Default": "no",
+      "AllowedValues": [
+        "no",
+        "yes"
+      ],
+      "Description": "Default creates the reviewed foundation only; compute requires frozen runtime, approval and active operator watchdog."
+    }
+  },
+  "Rules": {
+    "FixedAccountRegion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AWS::AccountId"
+              },
+              "989879505232"
+            ]
+          },
+          "AssertDescription": "Only the reviewed account"
+        },
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AWS::Region"
+              },
+              "eu-north-1"
+            ]
+          },
+          "AssertDescription": "Only Stockholm"
+        }
+      ]
+    },
+    "ComputeNeedsDeadline": {
+      "RuleCondition": {
+        "Fn::Equals": [
+          {
+            "Ref": "LaunchCompute"
+          },
+          "yes"
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "StopAtUtc"
+                  },
+                  ""
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "A reviewed fresh UTC stop is required for compute"
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "ReceiptBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "mie-p6-qualification-001-989879505232-receipts",
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ],
+        "ObjectLockEnabled": true,
+        "ObjectLockConfiguration": {
+          "ObjectLockEnabled": "Enabled",
+          "Rule": {
+            "DefaultRetention": {
+              "Mode": "COMPLIANCE",
+              "Days": 30
+            }
+          }
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "ReceiptBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ReceiptBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "RequireTLS",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ReceiptBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ReceiptBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ArtifactBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "mie-p6-qualification-001-989879505232-artifacts",
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "ArtifactBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ArtifactBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "RequireTLS",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ArtifactBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "StateTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "mie-p6-qualification-001-state",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "run_id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "run_id",
+            "KeyType": "HASH"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "IndexTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "mie-p6-qualification-001-index",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "entry_id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "entry_id",
+            "KeyType": "HASH"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "ReceiptSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": "mie-p6-qualification-001/receipt-identity",
+        "Description": "Qualification-only identity; populate through approved operator provisioning, never logs.",
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "SourceSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": "mie-p6-qualification-001/source-identity",
+        "Description": "Qualification-only identity; populate through approved operator provisioning, never logs.",
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "FixedPortDocument": {
+      "Type": "AWS::SSM::Document",
+      "Properties": {
+        "Name": "mie-p6-qualification-001-port-8443",
+        "DocumentType": "Session",
+        "DocumentFormat": "JSON",
+        "Content": {
+          "schemaVersion": "1.0",
+          "description": "Only local forwarding to receipt port 8443. No parameters or shell.",
+          "sessionType": "Port",
+          "properties": {
+            "portNumber": "8443",
+            "localPortNumber": "8443",
+            "type": "LocalPortForwarding"
+          }
+        }
+      }
+    },
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Phase6 qualification: no inbound traffic, HTTPS outbound only",
+        "VpcId": "vpc-08598a29ae0886e9d",
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      }
+    },
+    "ReceiptRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "qualification-runtime",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": [
+                    {
+                      "Ref": "ReceiptSecret"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:GetObjectVersion"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/code/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/receipt/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:PutObjectRetention",
+                    "s3:GetObject",
+                    "s3:GetObjectVersion",
+                    "s3:GetObjectRetention"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ReceiptBucket.Arn}/receipts/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "StateTable",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "IndexTable",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ReceiptRoleProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "ReceiptRole"
+          }
+        ]
+      }
+    },
+    "SourceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "qualification-runtime",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": [
+                    {
+                      "Ref": "SourceSecret"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:GetObjectVersion"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/code/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/source/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:StartSession"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::If": [
+                        "ComputeEnabled",
+                        {
+                          "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${ReceiptInstance}"
+                        },
+                        {
+                          "Ref": "AWS::NoValue"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:document/${FixedPortDocument}"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SourceRoleProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "SourceRole"
+          }
+        ]
+      }
+    },
+    "ReceiptInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-04e0c7320ad3a3a48",
+        "InstanceType": "t4g.medium",
+        "IamInstanceProfile": {
+          "Ref": "ReceiptRoleProfile"
+        },
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "CreditSpecification": {
+          "CPUCredits": "standard"
+        },
+        "Monitoring": false,
+        "MetadataOptions": {
+          "HttpTokens": "required",
+          "HttpPutResponseHopLimit": 1,
+          "HttpEndpoint": "enabled"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8,
+              "VolumeType": "gp3",
+              "Encrypted": true,
+              "DeleteOnTermination": false
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "SubnetId": "subnet-0063a05d947cface6",
+            "GroupSet": [
+              {
+                "Ref": "SecurityGroup"
+              }
+            ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": "#!/bin/bash\nset -eu\numask 077\nsystemd-run --unit=mie-qualification-stop --on-active=3600 /sbin/shutdown -h now\ninstall -d -m 0700 /var/lib/mie/qualification-001\n# Runtime code and identities are installed only after hash/readiness checks.\n"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mie-p6-qualification-001-receiptinstance"
+          },
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "Condition": "ComputeEnabled"
+    },
+    "SourceInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-04e0c7320ad3a3a48",
+        "InstanceType": "t4g.small",
+        "IamInstanceProfile": {
+          "Ref": "SourceRoleProfile"
+        },
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "CreditSpecification": {
+          "CPUCredits": "standard"
+        },
+        "Monitoring": false,
+        "MetadataOptions": {
+          "HttpTokens": "required",
+          "HttpPutResponseHopLimit": 1,
+          "HttpEndpoint": "enabled"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8,
+              "VolumeType": "gp3",
+              "Encrypted": true,
+              "DeleteOnTermination": false
+            }
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "SubnetId": "subnet-0063a05d947cface6",
+            "GroupSet": [
+              {
+                "Ref": "SecurityGroup"
+              }
+            ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": "#!/bin/bash\nset -eu\numask 077\nsystemd-run --unit=mie-qualification-stop --on-active=3600 /sbin/shutdown -h now\ninstall -d -m 0700 /var/lib/mie/qualification-001\n# Runtime code and identities are installed only after hash/readiness checks.\n"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mie-p6-qualification-001-sourceinstance"
+          },
+          {
+            "Key": "Purpose",
+            "Value": "phase6-qualification-only"
+          }
+        ]
+      },
+      "Condition": "ComputeEnabled"
+    },
+    "StopRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "scheduler.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": "989879505232"
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "stop-only-qualification-pair",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:StopInstances"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${ReceiptInstance}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${SourceInstance}"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Condition": "ComputeEnabled"
+    },
+    "ExternalStop": {
+      "Type": "AWS::Scheduler::Schedule",
+      "Properties": {
+        "Name": "mie-p6-qualification-001-stop",
+        "FlexibleTimeWindow": {
+          "Mode": "OFF"
+        },
+        "ScheduleExpression": {
+          "Ref": "StopAtUtc"
+        },
+        "ScheduleExpressionTimezone": "UTC",
+        "State": "ENABLED",
+        "Target": {
+          "Arn": "arn:aws:scheduler:::aws-sdk:ec2:stopInstances",
+          "RoleArn": {
+            "Fn::GetAtt": [
+              "StopRole",
+              "Arn"
+            ]
+          },
+          "Input": {
+            "Fn::Sub": "{\"InstanceIds\":[\"${ReceiptInstance}\",\"${SourceInstance}\"]}"
+          },
+          "RetryPolicy": {
+            "MaximumEventAgeInSeconds": 3600,
+            "MaximumRetryAttempts": 1
+          }
+        }
+      },
+      "Condition": "ComputeEnabled"
+    }
+  },
+  "Outputs": {
+    "ReceiptBucket": {
+      "Value": {
+        "Ref": "ReceiptBucket"
+      }
+    },
+    "ArtifactBucket": {
+      "Value": {
+        "Ref": "ArtifactBucket"
+      }
+    },
+    "StateTable": {
+      "Value": {
+        "Ref": "StateTable"
+      }
+    },
+    "IndexTable": {
+      "Value": {
+        "Ref": "IndexTable"
+      }
+    },
+    "ReceiptSecret": {
+      "Value": {
+        "Ref": "ReceiptSecret"
+      }
+    },
+    "SourceSecret": {
+      "Value": {
+        "Ref": "SourceSecret"
+      }
+    },
+    "ReceiptInstance": {
+      "Value": {
+        "Ref": "ReceiptInstance"
+      },
+      "Condition": "ComputeEnabled"
+    },
+    "SourceInstance": {
+      "Value": {
+        "Ref": "SourceInstance"
+      },
+      "Condition": "ComputeEnabled"
+    },
+    "FixedPortDocument": {
+      "Value": {
+        "Ref": "FixedPortDocument"
+      }
+    }
+  },
+  "Conditions": {
+    "ComputeEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "LaunchCompute"
+        },
+        "yes"
+      ]
+    }
+  }
+}
