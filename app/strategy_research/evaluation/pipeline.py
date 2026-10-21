@@ -29,7 +29,8 @@ import pandas as pd
 from ..providers import DataRequest, get_provider
 from ..strategies import get_strategy
 from .backtest import PERIODS_PER_YEAR, _max_drawdown, _trade_returns
-from .benchmarks import buy_and_hold, random_timing
+from .benchmarks import (TRADE_MATCHED_METHOD, buy_and_hold, random_timing,
+                         random_timing_trade_matched)
 from .frozen import DEFAULT_MATRIX, EvalRequest, FrozenMatrix
 from .regimes import label_regimes
 from .robustness import (
@@ -112,6 +113,10 @@ class EvaluationReport:
 
 def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
              provider_kwargs: Dict | None = None) -> EvaluationReport:
+    exact_matching = matrix.random_timing_method == TRADE_MATCHED_METHOD
+    v3_request = request.matrix_version == "srp-matrix-v3"
+    if (exact_matching or v3_request) and request.matrix_version != matrix.version:
+        raise ValueError("v3 request.matrix_version must match the selected matrix")
     strategy = get_strategy(request.strategy_id)
     source = get_provider(request.provider, **(provider_kwargs or {}))
     tf = request.timeframe
@@ -123,6 +128,7 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
     per_asset_headline: List[Dict] = []
     headline_bh: List[float] = []
     headline_rand_p95: List[float] = []
+    benchmark_matching: List[Dict] = []
     assets_done: List[str] = []
     notes: List[str] = []
     family_dsr_inputs: List[Dict] = []
@@ -160,11 +166,15 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
                     pooled_pos.append(wf.oos_pos)
                     df_oos = df.iloc[wf.oos_index].reset_index(drop=True)
                     bh = buy_and_hold(df_oos, tf, cost, slip)
-                    rnd = random_timing(df_oos, tf, cost, slip,
-                                        target_trades=max(m["num_trades"], 1),
+                    benchmark = random_timing_trade_matched if exact_matching else random_timing
+                    target_trades = m["num_trades"] if exact_matching else max(m["num_trades"], 1)
+                    rnd = benchmark(df_oos, tf, cost, slip,
+                                        target_trades=target_trades,
                                         direction=strategy.direction,
                                         n_seeds=matrix.random_seeds,
                                         base_seed=matrix.random_base_seed)
+                    if exact_matching:
+                        benchmark_matching.append({"asset": asset, **rnd["matching"]})
                     headline_bh.append(bh["sharpe_per_period"])
                     headline_rand_p95.append(rnd["sharpe_p95"])
                     per_asset_headline.append({
@@ -235,6 +245,15 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
         "return_aggregation": ("mean_per_asset_cumulative_return"
                                if matrix.pooling == "per_asset" else "pooled_cumulative_return"),
     }
+
+    if exact_matching:
+        headline["random_timing"] = {
+            "method": TRADE_MATCHED_METHOD, "matched_metric": "num_trades",
+            "per_asset": benchmark_matching,
+        }
+        notes.append("Random timing matches reported OOS trade count per asset and seed; "
+                     "it does not match exposure, turnover, holding durations or total cost. "
+                     "The existing walk-forward fold-boundary accounting is unchanged.")
 
     rob = robustness_score(condition_rows, matrix.dsr_threshold)
     stab = stability_score([r["oos_sharpe"] for r in condition_rows])

@@ -32,7 +32,8 @@ def main(argv=None) -> int:
     ap.add_argument("--end", default=None)
     ap.add_argument("--limit", type=int, default=1500)
     ap.add_argument("--csv-root", default="data_csv", help="folder of CSVs for csv provider")
-    ap.add_argument("--matrix", default="v2", help="frozen matrix: v1 | v2 (default v2)")
+    ap.add_argument("--matrix", default="v2", choices=sorted(MATRICES),
+                    help="v3 matches trade counts; v1/v2 retained for reproduction (default v2)")
     ap.add_argument("--write", action="store_true",
                     help="write STEP 5 into the dossier + INDEX (real data only)")
     ap.add_argument("--json", action="store_true", help="print full report as JSON")
@@ -47,7 +48,7 @@ def main(argv=None) -> int:
     strategy_ids = [s.strip() for s in args.strategy.split(",") if s.strip()]
     assets = [a.strip() for a in args.assets.split(",") if a.strip()]
     pk = {"root": args.csv_root} if args.provider == "csv" else {}
-    matrix = MATRICES.get(args.matrix, DEFAULT_MATRIX)
+    matrix = MATRICES[args.matrix]
 
     for sid in strategy_ids:
         req = EvalRequest(

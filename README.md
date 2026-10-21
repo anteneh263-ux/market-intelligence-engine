@@ -169,8 +169,15 @@ API keys in `.env`.
 
 ## How it works (one paragraph)
 
+**Benchmark version boundary:** v1/v2's random redraws do not match actual trade counts.
+Opt-in `--matrix v3` uses exact engine trade-count matching for every random seed,
+retaining v2 pooling. Existing defaults stay unchanged for compatibility; select v3
+explicitly for the corrected comparison. Turnover, exposure and total costs are not
+matched. No historical result has been rerun or replaced by this change. See the
+[trade-matching specification and synthetic examples](docs/specs/RANDOM-TIMING-V3.md).
+
 Every strategy runs through the **same frozen matrix** (`srp-matrix-v2`): expanding-window
-walk-forward out-of-sample, a `{0,5,10}` bps cost/slippage ladder, buy-and-hold + matched
+walk-forward out-of-sample, a `{0,5,10}` bps cost/slippage ladder, buy-and-hold + legacy
 random-timing benchmarks, a **deflated Sharpe** (data-snooping) correction, Benjamini–Hochberg FDR,
 ex-ante regime labelling, and a mechanical four-way verdict (`Supported / Not Supported /
 Inconclusive / Graveyard`). Look-ahead is structurally impossible (positions are shifted forward one
