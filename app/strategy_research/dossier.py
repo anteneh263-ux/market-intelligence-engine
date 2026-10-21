@@ -113,6 +113,14 @@ def render_step5_markdown(rep: EvaluationReport) -> str:
         "",
         "Reasons: " + "; ".join(rep.verdict_reasons),
     ]
+    if "random_timing" in h:
+        matching = h["random_timing"]
+        lines += ["", f"Random-timing method: `{matching['method']}`; matches engine "
+                  "`num_trades` per asset and seed (not turnover or exposure)."]
+        for item in matching["per_asset"]:
+            counts = item["num_trades"]
+            lines.append(f"- {item['asset']}: target {item['target_trades']}; "
+                         f"actual {min(counts)}–{max(counts)} across {len(counts)} seeds.")
     if rep.notes:
         lines += ["", "Notes:"] + [f"- {n}" for n in rep.notes]
     return "\n".join(lines)
@@ -167,7 +175,7 @@ def update_index(index_path: str, rep: EvaluationReport) -> bool:
         cells = [c.strip() for c in m.group(1).split("|")]
         # cells: ['', id, name, class, status, verdict, robustness, generalization, link, '']
         if len(cells) >= 9:
-            vtag = "v2" if rep.matrix_version.endswith("v2") else "v1"
+            vtag = rep.matrix_version.removeprefix("srp-matrix-")
             cells[4] = f"STEP 1–5 done ({vtag})"
             cells[5] = f"{rep.verdict} ({vtag})"
             cells[6] = _fmt(rep.robustness_score)
@@ -249,6 +257,8 @@ def write_results(kb_root: str, rep: EvaluationReport) -> str:
         "verdict_reasons": rep.verdict_reasons, "cause_of_death": rep.cause_of_death,
     }
     record["matrix_version"] = rep.matrix_version
+    if "random_timing" in h:
+        record["random_timing"] = h["random_timing"]
     # Archive per version, and keep <id>.json as the 'latest' pointer.
     for path in (os.path.join(rdir, f"{rep.strategy_id}.{rep.matrix_version}.json"),
                  os.path.join(rdir, f"{rep.strategy_id}.json")):

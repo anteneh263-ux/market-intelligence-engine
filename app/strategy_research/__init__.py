@@ -15,6 +15,7 @@ from .evaluation import (
     DEFAULT_MATRIX,
     MATRIX_V1,
     MATRIX_V2,
+    MATRIX_V3,
     EvalRequest,
     EvaluationReport,
     FrozenMatrix,
@@ -23,11 +24,12 @@ from .evaluation import (
 from .providers import available_providers, get_provider
 from .strategies import available_strategies, get_strategy
 
-MATRICES = {"srp-matrix-v1": MATRIX_V1, "srp-matrix-v2": MATRIX_V2, "v1": MATRIX_V1, "v2": MATRIX_V2}
+MATRICES = {"srp-matrix-v1": MATRIX_V1, "srp-matrix-v2": MATRIX_V2,
+            "srp-matrix-v3": MATRIX_V3, "v1": MATRIX_V1, "v2": MATRIX_V2, "v3": MATRIX_V3}
 
 __all__ = [
     "evaluate", "EvalRequest", "EvaluationReport", "FrozenMatrix",
-    "DEFAULT_MATRIX", "MATRIX_V1", "MATRIX_V2", "MATRICES",
+    "DEFAULT_MATRIX", "MATRIX_V1", "MATRIX_V2", "MATRIX_V3", "MATRICES",
     "available_strategies", "get_strategy",
     "available_providers", "get_provider",
 ]

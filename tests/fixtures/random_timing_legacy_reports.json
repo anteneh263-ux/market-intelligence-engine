@@ -1,0 +1,177 @@
+{
+  "srp-matrix-v1": {
+    "assets_evaluated": [
+      "TEST-A",
+      "TEST-B"
+    ],
+    "cause_of_death": null,
+    "condition_rows": [
+      {
+        "asset": "TEST-A",
+        "cost_bps": 5.0,
+        "dsr": 0.5934277985782288,
+        "grid_size": 1,
+        "in_sample_sharpe": -0.003775871669433488,
+        "max_drawdown": 0.2355438416247489,
+        "n_bars": 208,
+        "num_trades": 15,
+        "oos_sharpe": 0.016476554266850407,
+        "oos_sharpe_annual": 0.3147841272770757,
+        "slippage_bps": 5.0,
+        "total_return": 0.025668616347858553
+      },
+      {
+        "asset": "TEST-B",
+        "cost_bps": 5.0,
+        "dsr": 0.6033171572253424,
+        "grid_size": 1,
+        "in_sample_sharpe": -0.09981855353723505,
+        "max_drawdown": 0.3249187867394391,
+        "n_bars": 208,
+        "num_trades": 15,
+        "oos_sharpe": 0.018192277095143865,
+        "oos_sharpe_annual": 0.3475629658865729,
+        "slippage_bps": 5.0,
+        "total_return": 0.033287411024212066
+      }
+    ],
+    "confidence_score": 0.3190614095570987,
+    "generalization_score": 1.0,
+    "headline": {
+      "bar_frequency": "1d",
+      "beats_buy_hold": true,
+      "beats_random": false,
+      "buy_hold_sharpe": -0.07170203870671418,
+      "cost_bps": 5.0,
+      "dsr": 0.6381228191141974,
+      "expected_max_sr0": 0.0,
+      "max_drawdown": 0.41880344531524816,
+      "n_bars": 416,
+      "num_trades": 30,
+      "oos_sharpe": 0.017368278790587652,
+      "oos_sharpe_annual": 0.3318205003821577,
+      "periods_per_year": 365.0,
+      "pooling": "concatenation",
+      "random_timing_sharpe_p95": 0.04084748771427641,
+      "return_aggregation": "pooled_cumulative_return",
+      "sharpe_ci95": [
+        -0.06002749659840028,
+        0.09672081953931928
+      ],
+      "sharpe_unit": "per_bar",
+      "slippage_bps": 5.0,
+      "total_return": 0.05981046915486665,
+      "win_rate": 0.5333333333333333
+    },
+    "is_real": false,
+    "matrix_hash": "eb8c3fde06957ccc",
+    "matrix_version": "srp-matrix-v1",
+    "notes": [
+      "ILLUSTRATIVE ONLY \u2014 synthetic data (is_real=False). This report demonstrates the pipeline; it is NOT evidence about the real strategy and must not enter a dossier as a verdict."
+    ],
+    "per_asset_oos_sharpe": {
+      "TEST-A": 0.016476554266850407,
+      "TEST-B": 0.018192277095143865
+    },
+    "provider": "synthetic",
+    "request_hash": "79d94a5b6b859da6",
+    "robustness_score": 0.0,
+    "stability_score": 0.9528447504122246,
+    "strategy_class": "test",
+    "strategy_id": "TEST-BENCHMARK",
+    "strategy_name": "Synthetic trade-matching fixture",
+    "verdict": "Not Supported",
+    "verdict_reasons": [
+      "failed: deflated Sharpe clears bar",
+      "failed: beats matched random-timing",
+      "failed: robust across majority of conditions"
+    ]
+  },
+  "srp-matrix-v2": {
+    "assets_evaluated": [
+      "TEST-A",
+      "TEST-B"
+    ],
+    "cause_of_death": null,
+    "condition_rows": [
+      {
+        "asset": "TEST-A",
+        "cost_bps": 5.0,
+        "dsr": 0.5934277985782288,
+        "grid_size": 1,
+        "in_sample_sharpe": -0.003775871669433488,
+        "max_drawdown": 0.2355438416247489,
+        "n_bars": 208,
+        "num_trades": 15,
+        "oos_sharpe": 0.016476554266850407,
+        "oos_sharpe_annual": 0.3147841272770757,
+        "slippage_bps": 5.0,
+        "total_return": 0.025668616347858553
+      },
+      {
+        "asset": "TEST-B",
+        "cost_bps": 5.0,
+        "dsr": 0.6033171572253424,
+        "grid_size": 1,
+        "in_sample_sharpe": -0.09981855353723505,
+        "max_drawdown": 0.3249187867394391,
+        "n_bars": 208,
+        "num_trades": 15,
+        "oos_sharpe": 0.018192277095143865,
+        "oos_sharpe_annual": 0.3475629658865729,
+        "slippage_bps": 5.0,
+        "total_return": 0.033287411024212066
+      }
+    ],
+    "confidence_score": 0.2991862389508928,
+    "generalization_score": 1.0,
+    "headline": {
+      "bar_frequency": "1d",
+      "beats_buy_hold": true,
+      "beats_random": false,
+      "buy_hold_sharpe": -0.07170203870671418,
+      "cost_bps": 5.0,
+      "dsr": 0.5983724779017856,
+      "expected_max_sr0": 0.0,
+      "max_drawdown": 0.280231314182094,
+      "n_bars": 416,
+      "num_trades": 30,
+      "oos_sharpe": 0.017334415680997136,
+      "oos_sharpe_annual": 0.3311735465818243,
+      "periods_per_year": 365.0,
+      "pooling": "per_asset",
+      "random_timing_sharpe_p95": 0.04084748771427641,
+      "return_aggregation": "mean_per_asset_cumulative_return",
+      "sharpe_ci95": [
+        0.016476554266850407,
+        0.018192277095143865
+      ],
+      "sharpe_unit": "per_bar",
+      "slippage_bps": 5.0,
+      "total_return": 0.02947801368603531
+    },
+    "is_real": false,
+    "matrix_hash": "0a4001ce278cc5ac",
+    "matrix_version": "srp-matrix-v2",
+    "notes": [
+      "ILLUSTRATIVE ONLY \u2014 synthetic data (is_real=False). This report demonstrates the pipeline; it is NOT evidence about the real strategy and must not enter a dossier as a verdict."
+    ],
+    "per_asset_oos_sharpe": {
+      "TEST-A": 0.016476554266850407,
+      "TEST-B": 0.018192277095143865
+    },
+    "provider": "synthetic",
+    "request_hash": "48da4b464e9c88ef",
+    "robustness_score": 0.0,
+    "stability_score": 0.9528447504122246,
+    "strategy_class": "test",
+    "strategy_id": "TEST-BENCHMARK",
+    "strategy_name": "Synthetic trade-matching fixture",
+    "verdict": "Not Supported",
+    "verdict_reasons": [
+      "failed: deflated Sharpe clears bar",
+      "failed: beats matched random-timing",
+      "failed: robust across majority of conditions"
+    ]
+  }
+}
