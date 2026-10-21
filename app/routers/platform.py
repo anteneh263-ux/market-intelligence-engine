@@ -26,7 +26,7 @@ def modules():
 
 @router.post("/evaluate")
 def evaluate(target: str = Body(...), assets: list[str] = Body(...),
-             module: str = Body("strategy_evaluation"), matrix: str = Body("v2"),
+             module: str = Body("strategy_evaluation"), matrix: str = Body(versioning.ACTIVE_VERSION),
              provider: str = Body("csv"), timeframe: str = Body("1d"),
              csv_root: str = Body("data_csv"), write: bool = Body(True)):
     pk = {"root": csv_root} if provider == "csv" else {}

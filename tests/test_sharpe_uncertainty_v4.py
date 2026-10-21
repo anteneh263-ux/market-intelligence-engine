@@ -128,13 +128,13 @@ def test_v3_evaluation_unchanged_v4_changes_only_interval_semantics(monkeypatch)
     assert v3['headline']['sharpe_ci95'] == v4['headline']['sharpe_asset_range']
 
 
-def test_v4_preserves_existing_hashes_and_default_resolution():
+def test_v4_preserves_existing_hashes_and_explicit_resolution():
     from app.research_core import versioning
     from app.strategy_research import MATRICES
     assert [m.hash() for m in (MATRIX_V1,MATRIX_V2,MATRIX_V3)] == [
         'a740f3acbf6572d6','4c2aa61eccfd276c','3b838b31e151d7d1']
     assert MATRIX_V4.hash() not in [m.hash() for m in (MATRIX_V1,MATRIX_V2,MATRIX_V3)]
-    assert versioning.resolve(None) is versioning.resolve('latest') is MATRIX_V2
+    assert versioning.resolve('v2') is versioning.resolve('srp-matrix-v2') is MATRIX_V2
     assert versioning.resolve('v4') is MATRICES['v4'] is MATRICES['srp-matrix-v4'] is MATRIX_V4
     assert MATRIX_V4.random_timing_method == MATRIX_V3.random_timing_method
 
@@ -150,7 +150,8 @@ def test_v4_identity_mismatch_rejected_before_fetch(monkeypatch,request_version,
         pipeline.evaluate(req,selected)
 
 
-def test_v4_persists_separate_semantics_without_touching_old_archives(monkeypatch,tmp_path):
+@pytest.mark.parametrize('choice', [None,'v4'])
+def test_v4_persists_separate_semantics_without_touching_old_archives(monkeypatch,tmp_path,choice):
     from app.knowledge_base import KnowledgeBase
     from app.research_core import Orchestrator
     monkeypatch.setattr(pipeline,'get_strategy',lambda _:Fixture())
@@ -161,7 +162,7 @@ def test_v4_persists_separate_semantics_without_touching_old_archives(monkeypatc
         rep=report(monkeypatch,matrix)
         path=Path(dossier.write_results(str(tmp_path),rep));prior[path]=path.read_bytes()
     out=Orchestrator(KnowledgeBase(root=str(tmp_path))).run(
-        'TEST-UNCERTAINTY',['A','B'],provider='synthetic',matrix_version='v4',limit=260,write=True)
+        'TEST-UNCERTAINTY',['A','B'],provider='synthetic',matrix_version=choice,limit=260,write=True)
     archived=json.loads((rdir/'TEST-UNCERTAINTY.srp-matrix-v4.json').read_text())
     for key in ('sharpe_asset_range','sharpe_asset_count','sharpe_uncertainty'):
         assert archived[key] == out.report['headline'][key]

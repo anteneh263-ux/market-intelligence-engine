@@ -70,7 +70,11 @@ python -m app.strategy_research.run --strategy H-020 --provider synthetic \
     --assets BTC/USDT,ETH/USDT --timeframe 1d
 ```
 
-Or via the API: `GET /api/strategy-research/catalogue`, `POST /api/strategy-research/evaluate`.
+The standalone CLI defaults to v4. Select `--matrix v1`, `v2` or `v3` explicitly
+for legacy methods. The older API (`GET /api/strategy-research/catalogue`,
+`POST /api/strategy-research/evaluate`) and direct low-level evaluator stay on v1;
+`POST /api/engine/evaluate` defaults to v4. See
+[default selection and compatibility](../../docs/specs/NEW-EVALUATION-DEFAULT-V4.md).
 
 ## Extending
 
@@ -89,7 +93,7 @@ pytest via `PYTHONPATH=.:tests python3 tests/_run_no_pytest.py`.
 
 ### Statistical and timing limits
 
-Opt-in matrix v4 reports the per-asset Sharpe min–max as descriptive dispersion,
+Matrix v4 reports the per-asset Sharpe min–max as descriptive dispersion,
 with sampling uncertainty explicitly not estimated. One asset gives a zero-width
 asset range, not certainty. Legacy v2/v3 fields are preserved for reproduction but
 are rendered as asset ranges. See `docs/specs/SHARPE-UNCERTAINTY-V4.md`.

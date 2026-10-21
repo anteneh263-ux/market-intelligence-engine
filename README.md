@@ -56,7 +56,7 @@ Expect **36 passing tests** across strategy logic, the platform layers, discover
 dossier generator, and the end-to-end research workflow. A quick smoke check without pytest:
 
 ```bash
-mie matrix          # prints the frozen evaluation-matrix versions (v1 historical, v2 active)
+mie matrix          # prints the frozen evaluation-matrix versions (v1-v3 available, v4 active for Core evaluation)
 ```
 
 ---
@@ -89,10 +89,10 @@ mie list modules           # research modules registered in the engine
 mie matrix                 # version log for the evaluation matrix
 
 # Evaluate one strategy on real data (bundled CSVs), writing results to the Knowledge Base:
-mie evaluate --target H-010 --assets AAPL,BTC/USD,ETH/USD,SPY,XAU/USD --matrix v2
+mie evaluate --target H-010 --assets AAPL,BTC/USD,ETH/USD,SPY,XAU/USD --matrix v4
 
 # Evaluate several at once, then refresh meta-learning:
-mie batch --targets H-003,H-004,H-009 --assets AAPL,SPY --matrix v2
+mie batch --targets H-003,H-004,H-009 --assets AAPL,SPY --matrix v4
 
 mie learn                  # re-mine the corpus -> knowledge_base/LEARNING_REPORT.md
 
@@ -169,27 +169,31 @@ API keys in `.env`.
 
 ## How it works (one paragraph)
 
-**Evaluation version boundary:** v1/v2's random redraws do not match actual trade counts.
-Opt-in `--matrix v4` inherits v3's exact trade-count matching and separates the
-across-asset Sharpe range from sampling uncertainty, which is explicitly not
-estimated. It retains v2 pooling. Existing defaults stay unchanged for compatibility;
-select v4 explicitly for these corrected result semantics. Turnover, exposure and total costs are not
-matched. No historical result has been rerun or replaced by this change. See the
-[trade-matching specification and synthetic examples](docs/specs/RANDOM-TIMING-V3.md)
-and [uncertainty and causality limits](docs/specs/SHARPE-UNCERTAINTY-V4.md).
+**Evaluation version boundary:** new standalone evaluations, `mie evaluate` /
+`batch`, Research Core and `/api/engine/evaluate` select **v4** when the matrix is
+omitted. V4 inherits v3's exact trade-count benchmark and separates across-asset
+Sharpe dispersion from sampling uncertainty, which remains **not estimated**.
+Turnover, exposure, holding duration and total costs are not matched.
 
-Every strategy runs through the **same frozen matrix** (`srp-matrix-v2`): expanding-window
-walk-forward out-of-sample, a `{0,5,10}` bps cost/slippage ladder, buy-and-hold + legacy
-random-timing benchmarks, a **deflated Sharpe** (data-snooping) correction, Benjamini–Hochberg FDR,
-ex-ante regime labelling, and a mechanical four-way verdict (`Supported / Not Supported /
-Inconclusive / Graveyard`). Positions execute one bar after their signal. This prevents
-same-bar execution, but cannot prevent a signal from reading future data. Registry-wide
-synthetic prefix and future-perturbation tests check causality under their fixtures;
-point-in-time data availability and unseen cases require separate validation. Matrix versions are content-addressed and immutable — `v1` (historical) and `v2` (active,
-per-asset drawdown pooling) — so conclusions are never silently mixed. The included corpus already
-has all 23 built-in strategies evaluated on v2 (result: 20 Graveyard, 3 Not Supported, 0 Supported —
-zero false positives). Dossiers are produced by a **deterministic generator** (identical inputs →
-byte-identical output) that only assembles structured spec + real literature; it never invents.
+Select `--matrix v2` (or API `"matrix": "v2"`) to reproduce the prior evaluation
+method. The low-level evaluator and older `/api/strategy-research/evaluate` stay
+on v1. Discovery, the Pine research workflow, safety and forward workflows retain
+their existing v2 choices. See the [complete default-selection and compatibility
+policy](docs/specs/NEW-EVALUATION-DEFAULT-V4.md).
+
+The selected frozen matrix governs expanding-window walk-forward evaluation, the
+`{0,5,10}` bps cost/slippage ladder, buy-and-hold and random benchmarks, deflated
+Sharpe, and the mechanical four-way verdict (`Supported / Not Supported /
+Inconclusive / Graveyard`). Positions execute one bar after their signal. This
+prevents same-bar execution, but cannot prevent a signal from reading future data.
+Registry-wide synthetic prefix and future-perturbation tests check causality under
+their fixtures; point-in-time data availability and unseen cases require separate
+validation.
+
+V1-v4 definitions and hashes remain unchanged. Bundled historical results retain
+their recorded versions and verdicts; selecting a new default does not rerun or
+migrate the corpus. See the [trade-matching specification](docs/specs/RANDOM-TIMING-V3.md)
+and [uncertainty and causality limits](docs/specs/SHARPE-UNCERTAINTY-V4.md).
 
 ---
 

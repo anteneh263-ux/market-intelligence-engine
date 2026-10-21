@@ -5,9 +5,9 @@ content-addressed; results are tagged with the version that produced them. Older
 versions are never edited — a new method is a new version.
 
   srp-matrix-v1  concatenation pooling (historical; first four strategies)
-  srp-matrix-v2  per-asset-then-aggregate pooling (compatibility default)
+  srp-matrix-v2  per-asset-then-aggregate pooling (explicit compatibility selection)
   srp-matrix-v3  per-asset pooling + exact trade-count benchmark (explicit opt-in)
-  srp-matrix-v4  v3 + separate asset range and sampling uncertainty (explicit opt-in)
+  srp-matrix-v4  v3 + separate asset range and sampling uncertainty (default for new Core evaluations)
 """
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ _MATRICES: Dict[str, FrozenMatrix] = {
     MATRIX_V3.version: MATRIX_V3,
     MATRIX_V4.version: MATRIX_V4,
 }
-_ALIASES = {"v1": MATRIX_V1.version, "v2": MATRIX_V2.version, "v3": MATRIX_V3.version, "v4": MATRIX_V4.version, "latest": MATRIX_V2.version}
-ACTIVE_VERSION = MATRIX_V2.version
+_ALIASES = {"v1": MATRIX_V1.version, "v2": MATRIX_V2.version, "v3": MATRIX_V3.version, "v4": MATRIX_V4.version, "latest": MATRIX_V4.version}
+ACTIVE_VERSION = MATRIX_V4.version
 
 
 def resolve(version: str | None) -> FrozenMatrix:

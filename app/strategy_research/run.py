@@ -17,6 +17,8 @@ from __future__ import annotations
 import argparse
 import json
 
+from app.research_core import versioning
+
 from . import MATRICES, available_providers, available_strategies
 from .dossier import apply_report
 from .evaluation import EvalRequest, evaluate
@@ -32,8 +34,8 @@ def main(argv=None) -> int:
     ap.add_argument("--end", default=None)
     ap.add_argument("--limit", type=int, default=1500)
     ap.add_argument("--csv-root", default="data_csv", help="folder of CSVs for csv provider")
-    ap.add_argument("--matrix", default="v2", choices=sorted(MATRICES),
-                    help="v4 separates dispersion/uncertainty and matches trades; legacy default v2")
+    ap.add_argument("--matrix", default=versioning.ACTIVE_VERSION, choices=sorted(MATRICES),
+                    help="evaluation matrix (default: %(default)s); select v1-v3 explicitly for legacy methods")
     ap.add_argument("--write", action="store_true",
                     help="write STEP 5 into the dossier + INDEX (real data only)")
     ap.add_argument("--json", action="store_true", help="print full report as JSON")
