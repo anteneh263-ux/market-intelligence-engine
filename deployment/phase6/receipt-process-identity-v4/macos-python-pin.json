@@ -1,0 +1,8 @@
+{
+  "kernel_executable": "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+  "kernel_sha256": "104402c76823baa218defcdb2a96c2e3d94302dd12cabf0db3c1f39cd620cb64",
+  "launcher": "/Users/antenehhailu/Desktop/market-intelligence-engine/.venv/bin/python",
+  "launcher_realpath": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "launcher_sha256": "07919b0fbf82742c24420d7dcadbd459f61bc1feb638eca02b81dccab2daf4d5",
+  "schema_version": "p6.interpreter_pin.v4"
+}
