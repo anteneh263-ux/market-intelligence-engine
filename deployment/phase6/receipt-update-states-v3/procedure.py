@@ -81,7 +81,8 @@ def schedule():
     assert m.ids(r)==read('preflight-summary.json')['resources']
     t=call('schedule-template-before','cloudformation','get-template',dict(StackName=m.STACK,TemplateStage='Original'))
     assert m.body(t)==json.loads((m.VARIANT.parent/'qualification-v1.json').read_bytes())
-    m.health(2480)
+    # Do not send an update with less time than its immediate wait gate requires.
+    m.health(2520)
     r=call('schedule-update-once','cloudformation','update-stack',dict(StackName=m.STACK,UsePreviousTemplate=True,Capabilities=['CAPABILITY_IAM'],Parameters=[dict(ParameterKey='LaunchCompute',UsePreviousValue=True),dict(ParameterKey='StopAtUtc',ParameterValue=m.stop_expression())],ClientRequestToken=hashlib.sha256((m.ROOT/'launch-contract.json').read_bytes()).hexdigest()))
     assert r['StackId']==m.STACK
     log('schedule-update-accepted.json',dict(stack_id=m.STACK,stop_expression=m.stop_expression(),repeat_allowed=False))
@@ -173,7 +174,7 @@ def interrupt():
 def main(argv=None):
     args=sys.argv[1:] if argv is None else argv
     operations={f.__name__:f for f in (verify_policy,reuse_kit,watch,schedule,create_preview,execute,after_resize,interrupt)}
-    m.live.control.require(len(args)==1 and args[0] in operations)
+    m.live.control.require(__debug__ and len(args)==1 and args[0] in operations)
     # Protective interruption must remain usable after a preparation-pin failure.
     if args[0]!='interrupt':m.pins()
     return operations[args[0]]()

@@ -94,7 +94,11 @@ def schedule_ok(s,expression):
     return True
 def stop_expression():
     return datetime.fromtimestamp(read('launch-contract.json')['stop_utc_ms']//1000,timezone.utc).strftime('at(%Y-%m-%dT%H:%M:%S)')
+REQUIRED_SOURCES=['context.py','procedure.py','guest.py','progress.py','watch-operator.py','execute-live.py',
+                  'checks.py','create-root.py','baseline005.json']
+
 def pins():
+    live.control.require(__debug__)
     live.root_check(ROOT)
     authorization=read('authorization.json')
     live.control.require(authorization['evidence_root']==str(ROOT)
@@ -110,8 +114,9 @@ def pins():
     live.control.require(not subprocess.check_output(['git','status','--porcelain'],cwd=WORK).strip())
     for path,h in expected['files'].items():
         live.control.require(hashlib.sha256((WORK/path).read_bytes()).hexdigest()==h)
-    required=['context.py','procedure.py','guest.py','progress.py','watch-operator.py','execute-live.py']
-    live.control.require(all('deployment/phase6/receipt-update-states-v3/'+name in expected['files'] for name in required))
+    live.control.require(expected['attempt']=='006' and expected['control_version']==live.progress.VERSION
+        and expected['evidence_root']==str(ROOT))
+    live.control.require(all('deployment/phase6/receipt-update-states-v3/'+name in expected['files'] for name in REQUIRED_SOURCES))
     original=json.loads((CANDIDATE/'medium-v1-artifact-verification.json').read_bytes())
     for path,h in original['files'].items():
         live.control.require(hashlib.sha256((WORK/path).read_bytes()).hexdigest()==h)

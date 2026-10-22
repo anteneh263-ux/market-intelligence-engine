@@ -1,0 +1,1747 @@
+{
+  "classification": "Historical005 readback copies for exact configuration comparison; not current AWS state or new runtime/scientific evidence. Reads occurred at different times; security group was preflight2, and final stack was later after rate limiting.",
+  "data": {
+    "credits": {
+      "InstanceCreditSpecifications": [
+        {
+          "CpuCredits": "standard",
+          "InstanceId": "i-08e89ad2e3feedb8a"
+        },
+        {
+          "CpuCredits": "standard",
+          "InstanceId": "i-0c5a2a75ca70db228"
+        }
+      ]
+    },
+    "identity": {
+      "Account": "989879505232",
+      "Arn": "arn:aws:iam::989879505232:root",
+      "UserId": "989879505232"
+    },
+    "instances": {
+      "Reservations": [
+        {
+          "Groups": [],
+          "Instances": [
+            {
+              "AmiLaunchIndex": 0,
+              "Architecture": "arm64",
+              "BlockDeviceMappings": [
+                {
+                  "DeviceName": "/dev/xvda",
+                  "Ebs": {
+                    "AttachTime": "2026-10-18T14:13:49+00:00",
+                    "DeleteOnTermination": false,
+                    "EbsCardIndex": 0,
+                    "Status": "attached",
+                    "VolumeId": "vol-0c92009fa2fb849af"
+                  }
+                }
+              ],
+              "BootMode": "uefi",
+              "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "open"
+              },
+              "ClientToken": "a6f78114-9245-f145-4fe0-d5268564865f",
+              "CpuOptions": {
+                "CoreCount": 2,
+                "ThreadsPerCore": 1
+              },
+              "CurrentInstanceBootMode": "uefi",
+              "EbsOptimized": false,
+              "EnaSupport": true,
+              "EnclaveOptions": {
+                "Enabled": false
+              },
+              "HibernationOptions": {
+                "Configured": false
+              },
+              "Hypervisor": "xen",
+              "IamInstanceProfile": {
+                "Arn": "arn:aws:iam::989879505232:instance-profile/mie-p6-qualification-001-SourceRoleProfile-zUFLg78C0FsN",
+                "Id": "AIPA6M6LKSFIP657H4ZIO"
+              },
+              "ImageId": "ami-04e0c7320ad3a3a48",
+              "InstanceId": "i-08e89ad2e3feedb8a",
+              "InstanceType": "t4g.small",
+              "LaunchTime": "2026-10-18T14:13:48+00:00",
+              "MaintenanceOptions": {
+                "AutoRecovery": "default",
+                "RebootMigration": "default"
+              },
+              "MetadataOptions": {
+                "HttpEndpoint": "enabled",
+                "HttpProtocolIpv6": "disabled",
+                "HttpPutResponseHopLimit": 1,
+                "HttpTokens": "required",
+                "InstanceMetadataTags": "disabled",
+                "State": "applied"
+              },
+              "Monitoring": {
+                "State": "disabled"
+              },
+              "NetworkInterfaces": [
+                {
+                  "Attachment": {
+                    "AttachTime": "2026-10-18T14:13:48+00:00",
+                    "AttachmentId": "eni-attach-0d7a9225155dde9f2",
+                    "DeleteOnTermination": true,
+                    "DeviceIndex": 0,
+                    "NetworkCardIndex": 0,
+                    "Status": "attached"
+                  },
+                  "Description": "",
+                  "Groups": [
+                    {
+                      "GroupId": "sg-04209bb68f81f49b9",
+                      "GroupName": "mie-p6-qualification-001-SecurityGroup-HeadpUm6dWcj"
+                    }
+                  ],
+                  "InterfaceType": "interface",
+                  "Ipv6Addresses": [],
+                  "MacAddress": "06:ff:ff:ed:3a:d9",
+                  "NetworkInterfaceId": "eni-0775e4cc4f34ca23a",
+                  "Operator": {
+                    "Managed": false
+                  },
+                  "OwnerId": "989879505232",
+                  "PrivateDnsName": "ip-172-31-24-133.eu-north-1.compute.internal",
+                  "PrivateIpAddress": "172.31.24.133",
+                  "PrivateIpAddresses": [
+                    {
+                      "Primary": true,
+                      "PrivateDnsName": "ip-172-31-24-133.eu-north-1.compute.internal",
+                      "PrivateIpAddress": "172.31.24.133"
+                    }
+                  ],
+                  "SourceDestCheck": true,
+                  "Status": "in-use",
+                  "SubnetId": "subnet-0063a05d947cface6",
+                  "VpcId": "vpc-08598a29ae0886e9d"
+                }
+              ],
+              "NetworkPerformanceOptions": {
+                "BandwidthWeighting": "default"
+              },
+              "Operator": {
+                "HiddenByDefault": false,
+                "Managed": false
+              },
+              "Placement": {
+                "AvailabilityZone": "eu-north-1a",
+                "AvailabilityZoneId": "eun1-az1",
+                "GroupName": "",
+                "Tenancy": "default"
+              },
+              "PlatformDetails": "Linux/UNIX",
+              "PrivateDnsName": "ip-172-31-24-133.eu-north-1.compute.internal",
+              "PrivateDnsNameOptions": {
+                "EnableResourceNameDnsAAAARecord": false,
+                "EnableResourceNameDnsARecord": false,
+                "HostnameType": "ip-name"
+              },
+              "PrivateIpAddress": "172.31.24.133",
+              "ProductCodes": [],
+              "PublicDnsName": "",
+              "RootDeviceName": "/dev/xvda",
+              "RootDeviceType": "ebs",
+              "SecurityGroups": [
+                {
+                  "GroupId": "sg-04209bb68f81f49b9",
+                  "GroupName": "mie-p6-qualification-001-SecurityGroup-HeadpUm6dWcj"
+                }
+              ],
+              "SourceDestCheck": true,
+              "State": {
+                "Code": 80,
+                "Name": "stopped"
+              },
+              "StateReason": {
+                "Code": "Client.UserInitiatedShutdown",
+                "Message": "Client.UserInitiatedShutdown: User initiated shutdown"
+              },
+              "StateTransitionReason": "User initiated (2026-10-18 14:32:24 GMT)",
+              "SubnetId": "subnet-0063a05d947cface6",
+              "Tags": [
+                {
+                  "Key": "aws:cloudformation:logical-id",
+                  "Value": "SourceInstance"
+                },
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                },
+                {
+                  "Key": "Name",
+                  "Value": "mie-p6-qualification-001-sourceinstance"
+                },
+                {
+                  "Key": "aws:cloudformation:stack-name",
+                  "Value": "mie-p6-qualification-001"
+                },
+                {
+                  "Key": "aws:cloudformation:stack-id",
+                  "Value": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93"
+                }
+              ],
+              "UsageOperation": "RunInstances",
+              "UsageOperationUpdateTime": "2026-10-18T14:13:48+00:00",
+              "VirtualizationType": "hvm",
+              "VpcId": "vpc-08598a29ae0886e9d"
+            }
+          ],
+          "OwnerId": "989879505232",
+          "RequesterId": "547167575488",
+          "ReservationId": "r-04f5a7d01edf82ed5"
+        },
+        {
+          "Groups": [],
+          "Instances": [
+            {
+              "AmiLaunchIndex": 0,
+              "Architecture": "arm64",
+              "BlockDeviceMappings": [
+                {
+                  "DeviceName": "/dev/xvda",
+                  "Ebs": {
+                    "AttachTime": "2026-10-18T14:13:16+00:00",
+                    "DeleteOnTermination": false,
+                    "EbsCardIndex": 0,
+                    "Status": "attached",
+                    "VolumeId": "vol-0d777f69ef62e0bbd"
+                  }
+                }
+              ],
+              "BootMode": "uefi",
+              "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "open"
+              },
+              "ClientToken": "744bb6db-6adf-642c-a603-e413e5b0d5c0",
+              "CpuOptions": {
+                "CoreCount": 2,
+                "ThreadsPerCore": 1
+              },
+              "CurrentInstanceBootMode": "uefi",
+              "EbsOptimized": false,
+              "EnaSupport": true,
+              "EnclaveOptions": {
+                "Enabled": false
+              },
+              "HibernationOptions": {
+                "Configured": false
+              },
+              "Hypervisor": "xen",
+              "IamInstanceProfile": {
+                "Arn": "arn:aws:iam::989879505232:instance-profile/mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp",
+                "Id": "AIPA6M6LKSFIFVPHV6OGB"
+              },
+              "ImageId": "ami-04e0c7320ad3a3a48",
+              "InstanceId": "i-0c5a2a75ca70db228",
+              "InstanceType": "t4g.small",
+              "LaunchTime": "2026-10-18T14:13:15+00:00",
+              "MaintenanceOptions": {
+                "AutoRecovery": "default",
+                "RebootMigration": "default"
+              },
+              "MetadataOptions": {
+                "HttpEndpoint": "enabled",
+                "HttpProtocolIpv6": "disabled",
+                "HttpPutResponseHopLimit": 1,
+                "HttpTokens": "required",
+                "InstanceMetadataTags": "disabled",
+                "State": "applied"
+              },
+              "Monitoring": {
+                "State": "disabled"
+              },
+              "NetworkInterfaces": [
+                {
+                  "Attachment": {
+                    "AttachTime": "2026-10-18T14:13:15+00:00",
+                    "AttachmentId": "eni-attach-04bf5fae5790976fc",
+                    "DeleteOnTermination": true,
+                    "DeviceIndex": 0,
+                    "NetworkCardIndex": 0,
+                    "Status": "attached"
+                  },
+                  "Description": "",
+                  "Groups": [
+                    {
+                      "GroupId": "sg-04209bb68f81f49b9",
+                      "GroupName": "mie-p6-qualification-001-SecurityGroup-HeadpUm6dWcj"
+                    }
+                  ],
+                  "InterfaceType": "interface",
+                  "Ipv6Addresses": [],
+                  "MacAddress": "06:ff:e7:8c:21:b1",
+                  "NetworkInterfaceId": "eni-01b79eeb1cb3f69fc",
+                  "Operator": {
+                    "Managed": false
+                  },
+                  "OwnerId": "989879505232",
+                  "PrivateDnsName": "ip-172-31-19-199.eu-north-1.compute.internal",
+                  "PrivateIpAddress": "172.31.19.199",
+                  "PrivateIpAddresses": [
+                    {
+                      "Primary": true,
+                      "PrivateDnsName": "ip-172-31-19-199.eu-north-1.compute.internal",
+                      "PrivateIpAddress": "172.31.19.199"
+                    }
+                  ],
+                  "SourceDestCheck": true,
+                  "Status": "in-use",
+                  "SubnetId": "subnet-0063a05d947cface6",
+                  "VpcId": "vpc-08598a29ae0886e9d"
+                }
+              ],
+              "NetworkPerformanceOptions": {
+                "BandwidthWeighting": "default"
+              },
+              "Operator": {
+                "HiddenByDefault": false,
+                "Managed": false
+              },
+              "Placement": {
+                "AvailabilityZone": "eu-north-1a",
+                "AvailabilityZoneId": "eun1-az1",
+                "GroupName": "",
+                "Tenancy": "default"
+              },
+              "PlatformDetails": "Linux/UNIX",
+              "PrivateDnsName": "ip-172-31-19-199.eu-north-1.compute.internal",
+              "PrivateDnsNameOptions": {
+                "EnableResourceNameDnsAAAARecord": false,
+                "EnableResourceNameDnsARecord": false,
+                "HostnameType": "ip-name"
+              },
+              "PrivateIpAddress": "172.31.19.199",
+              "ProductCodes": [],
+              "PublicDnsName": "",
+              "RootDeviceName": "/dev/xvda",
+              "RootDeviceType": "ebs",
+              "SecurityGroups": [
+                {
+                  "GroupId": "sg-04209bb68f81f49b9",
+                  "GroupName": "mie-p6-qualification-001-SecurityGroup-HeadpUm6dWcj"
+                }
+              ],
+              "SourceDestCheck": true,
+              "State": {
+                "Code": 80,
+                "Name": "stopped"
+              },
+              "StateReason": {
+                "Code": "Client.UserInitiatedShutdown",
+                "Message": "Client.UserInitiatedShutdown: User initiated shutdown"
+              },
+              "StateTransitionReason": "User initiated (2026-10-18 14:32:26 GMT)",
+              "SubnetId": "subnet-0063a05d947cface6",
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "mie-p6-qualification-001-receiptinstance"
+                },
+                {
+                  "Key": "aws:cloudformation:stack-name",
+                  "Value": "mie-p6-qualification-001"
+                },
+                {
+                  "Key": "aws:cloudformation:logical-id",
+                  "Value": "ReceiptInstance"
+                },
+                {
+                  "Key": "aws:cloudformation:stack-id",
+                  "Value": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93"
+                },
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "UsageOperation": "RunInstances",
+              "UsageOperationUpdateTime": "2026-10-18T14:13:15+00:00",
+              "VirtualizationType": "hvm",
+              "VpcId": "vpc-08598a29ae0886e9d"
+            }
+          ],
+          "OwnerId": "989879505232",
+          "RequesterId": "547167575488",
+          "ReservationId": "r-0f5053f569aa729bb"
+        }
+      ]
+    },
+    "policy": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "ec2:StopInstances"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              "arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228",
+              "arn:aws:ec2:eu-north-1:989879505232:instance/i-08e89ad2e3feedb8a"
+            ]
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "PolicyName": "stop-only-qualification-pair",
+      "RoleName": "mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8"
+    },
+    "resources": {
+      "StackResourceSummaries": [
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:16.190000+00:00",
+          "LogicalResourceId": "ArtifactBucket",
+          "PhysicalResourceId": "mie-p6-qualification-001-989879505232-artifacts",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::S3::Bucket"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:18.861000+00:00",
+          "LogicalResourceId": "ArtifactBucketPolicy",
+          "PhysicalResourceId": "mie-p6-qualification-001-989879505232-artifacts",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::S3::BucketPolicy"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-21T14:33:27.184000+00:00",
+          "LogicalResourceId": "ExternalStop",
+          "PhysicalResourceId": "mie-p6-qualification-001-stop",
+          "ResourceStatus": "UPDATE_COMPLETE",
+          "ResourceType": "AWS::Scheduler::Schedule"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:32.473000+00:00",
+          "LogicalResourceId": "FixedPortDocument",
+          "PhysicalResourceId": "mie-p6-qualification-001-port-8443",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::SSM::Document"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:14.723000+00:00",
+          "LogicalResourceId": "IndexTable",
+          "PhysicalResourceId": "mie-p6-qualification-001-index",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::DynamoDB::Table"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:16.230000+00:00",
+          "LogicalResourceId": "ReceiptBucket",
+          "PhysicalResourceId": "mie-p6-qualification-001-989879505232-receipts",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::S3::Bucket"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:18.728000+00:00",
+          "LogicalResourceId": "ReceiptBucketPolicy",
+          "PhysicalResourceId": "mie-p6-qualification-001-989879505232-receipts",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::S3::BucketPolicy"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T14:13:27.392000+00:00",
+          "LogicalResourceId": "ReceiptInstance",
+          "PhysicalResourceId": "i-0c5a2a75ca70db228",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::EC2::Instance"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:36.187000+00:00",
+          "LogicalResourceId": "ReceiptRole",
+          "PhysicalResourceId": "mie-p6-qualification-001-ReceiptRole-6BqOJzmlKtid",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::IAM::Role"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:23:48.527000+00:00",
+          "LogicalResourceId": "ReceiptRoleProfile",
+          "PhysicalResourceId": "mie-p6-qualification-001-ReceiptRoleProfile-9F2A3mVypDyp",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::IAM::InstanceProfile"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:02.207000+00:00",
+          "LogicalResourceId": "ReceiptSecret",
+          "PhysicalResourceId": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/receipt-identity-c1Dg4C",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::SecretsManager::Secret"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:09.748000+00:00",
+          "LogicalResourceId": "SecurityGroup",
+          "PhysicalResourceId": "sg-04209bb68f81f49b9",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::EC2::SecurityGroup"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T14:14:01.063000+00:00",
+          "LogicalResourceId": "SourceInstance",
+          "PhysicalResourceId": "i-08e89ad2e3feedb8a",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::EC2::Instance"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T14:13:46.150000+00:00",
+          "LogicalResourceId": "SourceRole",
+          "PhysicalResourceId": "mie-p6-qualification-001-SourceRole-u3M2p6TXADEL",
+          "ResourceStatus": "UPDATE_COMPLETE",
+          "ResourceType": "AWS::IAM::Role"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:24:03.489000+00:00",
+          "LogicalResourceId": "SourceRoleProfile",
+          "PhysicalResourceId": "mie-p6-qualification-001-SourceRoleProfile-zUFLg78C0FsN",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::IAM::InstanceProfile"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:02.193000+00:00",
+          "LogicalResourceId": "SourceSecret",
+          "PhysicalResourceId": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::SecretsManager::Secret"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T13:21:14.663000+00:00",
+          "LogicalResourceId": "StateTable",
+          "PhysicalResourceId": "mie-p6-qualification-001-state",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::DynamoDB::Table"
+        },
+        {
+          "DriftInformation": {
+            "StackResourceDriftStatus": "NOT_CHECKED"
+          },
+          "LastUpdatedTimestamp": "2026-10-18T14:14:19.533000+00:00",
+          "LogicalResourceId": "StopRole",
+          "PhysicalResourceId": "mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8",
+          "ResourceStatus": "CREATE_COMPLETE",
+          "ResourceType": "AWS::IAM::Role"
+        }
+      ]
+    },
+    "schedule": {
+      "ActionAfterCompletion": "NONE",
+      "Arn": "arn:aws:scheduler:eu-north-1:989879505232:schedule/default/mie-p6-qualification-001-stop",
+      "CreationDate": "2026-10-18T16:14:21.652000+02:00",
+      "FlexibleTimeWindow": {
+        "Mode": "OFF"
+      },
+      "GroupName": "default",
+      "LastModificationDate": "2026-10-21T16:33:26.506000+02:00",
+      "Name": "mie-p6-qualification-001-stop",
+      "ScheduleExpression": "at(2026-10-21T15:17:43)",
+      "ScheduleExpressionTimezone": "UTC",
+      "State": "ENABLED",
+      "Target": {
+        "Arn": "arn:aws:scheduler:::aws-sdk:ec2:stopInstances",
+        "Input": "{\"InstanceIds\":[\"i-0c5a2a75ca70db228\",\"i-08e89ad2e3feedb8a\"]}",
+        "RetryPolicy": {
+          "MaximumEventAgeInSeconds": 3600,
+          "MaximumRetryAttempts": 1
+        },
+        "RoleArn": "arn:aws:iam::989879505232:role/mie-p6-qualification-001-StopRole-NmFR4Lj25Xw8"
+      }
+    },
+    "security": {
+      "SecurityGroups": [
+        {
+          "Description": "Phase6 qualification: no inbound traffic, HTTPS outbound only",
+          "GroupId": "sg-04209bb68f81f49b9",
+          "GroupName": "mie-p6-qualification-001-SecurityGroup-HeadpUm6dWcj",
+          "IpPermissions": [],
+          "IpPermissionsEgress": [
+            {
+              "FromPort": 443,
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "ToPort": 443,
+              "UserIdGroupPairs": []
+            }
+          ],
+          "OwnerId": "989879505232",
+          "SecurityGroupArn": "arn:aws:ec2:eu-north-1:989879505232:security-group/sg-04209bb68f81f49b9",
+          "Tags": [
+            {
+              "Key": "aws:cloudformation:logical-id",
+              "Value": "SecurityGroup"
+            },
+            {
+              "Key": "aws:cloudformation:stack-name",
+              "Value": "mie-p6-qualification-001"
+            },
+            {
+              "Key": "Purpose",
+              "Value": "phase6-qualification-only"
+            },
+            {
+              "Key": "aws:cloudformation:stack-id",
+              "Value": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93"
+            }
+          ],
+          "VpcId": "vpc-08598a29ae0886e9d"
+        }
+      ]
+    },
+    "source_policy": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "secretsmanager:GetSecretValue"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp"
+            ]
+          },
+          {
+            "Action": [
+              "s3:GetObject",
+              "s3:GetObjectVersion"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              "arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/code/*"
+            ]
+          },
+          {
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              "arn:aws:s3:::mie-p6-qualification-001-989879505232-artifacts/source/*"
+            ]
+          },
+          {
+            "Action": [
+              "ssm:StartSession"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              "arn:aws:ec2:eu-north-1:989879505232:instance/i-0c5a2a75ca70db228",
+              "arn:aws:ssm:eu-north-1:989879505232:document/mie-p6-qualification-001-port-8443"
+            ]
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "PolicyName": "qualification-runtime",
+      "RoleName": "mie-p6-qualification-001-SourceRole-u3M2p6TXADEL"
+    },
+    "stack": {
+      "Stacks": [
+        {
+          "Capabilities": [
+            "CAPABILITY_IAM"
+          ],
+          "CreationTime": "2026-10-18T13:20:56.581000+00:00",
+          "DeploymentConfig": {
+            "DisableRollback": false,
+            "Mode": "STANDARD"
+          },
+          "Description": "PROPOSED Phase6 synthetic qualification only. No pilot activation. Requires reviewed operator approval.",
+          "DisableRollback": false,
+          "DriftInformation": {
+            "StackDriftStatus": "NOT_CHECKED"
+          },
+          "EnableTerminationProtection": true,
+          "LastOperations": [
+            {
+              "OperationId": "5af22520-cd5c-11f1-9896-06fff00aec43",
+              "OperationType": "UPDATE_STACK"
+            }
+          ],
+          "LastUpdatedTime": "2026-10-21T14:33:17.373000+00:00",
+          "NotificationARNs": [],
+          "Outputs": [
+            {
+              "OutputKey": "ArtifactBucket",
+              "OutputValue": "mie-p6-qualification-001-989879505232-artifacts"
+            },
+            {
+              "OutputKey": "StateTable",
+              "OutputValue": "mie-p6-qualification-001-state"
+            },
+            {
+              "OutputKey": "ReceiptInstance",
+              "OutputValue": "i-0c5a2a75ca70db228"
+            },
+            {
+              "OutputKey": "ReceiptBucket",
+              "OutputValue": "mie-p6-qualification-001-989879505232-receipts"
+            },
+            {
+              "OutputKey": "SourceInstance",
+              "OutputValue": "i-08e89ad2e3feedb8a"
+            },
+            {
+              "OutputKey": "ReceiptSecret",
+              "OutputValue": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/receipt-identity-c1Dg4C"
+            },
+            {
+              "OutputKey": "IndexTable",
+              "OutputValue": "mie-p6-qualification-001-index"
+            },
+            {
+              "OutputKey": "FixedPortDocument",
+              "OutputValue": "mie-p6-qualification-001-port-8443"
+            },
+            {
+              "OutputKey": "SourceSecret",
+              "OutputValue": "arn:aws:secretsmanager:eu-north-1:989879505232:secret:mie-p6-qualification-001/source-identity-oC0mbp"
+            }
+          ],
+          "Parameters": [
+            {
+              "ParameterKey": "StopAtUtc",
+              "ParameterValue": "at(2026-10-21T15:17:43)"
+            },
+            {
+              "ParameterKey": "LaunchCompute",
+              "ParameterValue": "yes"
+            }
+          ],
+          "RollbackConfiguration": {},
+          "StackId": "arn:aws:cloudformation:eu-north-1:989879505232:stack/mie-p6-qualification-001/c0769b00-caf6-11f1-8e71-0affdc797e93",
+          "StackName": "mie-p6-qualification-001",
+          "StackStatus": "UPDATE_COMPLETE",
+          "Tags": [
+            {
+              "Key": "Purpose",
+              "Value": "phase6-qualification-only"
+            }
+          ],
+          "TimeoutInMinutes": 10
+        }
+      ]
+    },
+    "stack_policy": {
+      "StackPolicyBody": "{\"Statement\":[{\"Action\":\"Update:Modify\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":[\"LogicalResourceId/ExternalStop\",\"LogicalResourceId/ReceiptInstance\",\"LogicalResourceId/SourceRole\",\"LogicalResourceId/StopRole\"]},{\"Action\":[\"Update:Replace\",\"Update:Delete\"],\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":\"*\"},{\"Action\":\"Update:*\",\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":\"LogicalResourceId/SourceInstance\"}]}"
+    },
+    "template": {
+      "StagesAvailable": [
+        "Original",
+        "Processed"
+      ],
+      "TemplateBody": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Conditions": {
+          "ComputeEnabled": {
+            "Fn::Equals": [
+              {
+                "Ref": "LaunchCompute"
+              },
+              "yes"
+            ]
+          }
+        },
+        "Description": "PROPOSED Phase6 synthetic qualification only. No pilot activation. Requires reviewed operator approval.",
+        "Metadata": {
+          "MIE": {
+            "initial_creation": "foundation_only_no_compute",
+            "preserve_disks": true,
+            "scope": "synthetic receipt qualification only",
+            "status": "PROPOSED_NOT_DEPLOYED",
+            "target_compute_minutes": 60
+          }
+        },
+        "Outputs": {
+          "ArtifactBucket": {
+            "Value": {
+              "Ref": "ArtifactBucket"
+            }
+          },
+          "FixedPortDocument": {
+            "Value": {
+              "Ref": "FixedPortDocument"
+            }
+          },
+          "IndexTable": {
+            "Value": {
+              "Ref": "IndexTable"
+            }
+          },
+          "ReceiptBucket": {
+            "Value": {
+              "Ref": "ReceiptBucket"
+            }
+          },
+          "ReceiptInstance": {
+            "Condition": "ComputeEnabled",
+            "Value": {
+              "Ref": "ReceiptInstance"
+            }
+          },
+          "ReceiptSecret": {
+            "Value": {
+              "Ref": "ReceiptSecret"
+            }
+          },
+          "SourceInstance": {
+            "Condition": "ComputeEnabled",
+            "Value": {
+              "Ref": "SourceInstance"
+            }
+          },
+          "SourceSecret": {
+            "Value": {
+              "Ref": "SourceSecret"
+            }
+          },
+          "StateTable": {
+            "Value": {
+              "Ref": "StateTable"
+            }
+          }
+        },
+        "Parameters": {
+          "LaunchCompute": {
+            "AllowedValues": [
+              "no",
+              "yes"
+            ],
+            "Default": "no",
+            "Description": "Default creates the reviewed foundation only; compute requires frozen runtime, approval and active operator watchdog.",
+            "Type": "String"
+          },
+          "StopAtUtc": {
+            "AllowedPattern": "(^$)|(^at\\([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\)$)",
+            "Default": "",
+            "Description": "Required one-time UTC stop at no more than 60 minutes after launch; freeze immediately before approved creation.",
+            "Type": "String"
+          }
+        },
+        "Resources": {
+          "ArtifactBucket": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              },
+              "BucketName": "mie-p6-qualification-001-989879505232-artifacts",
+              "OwnershipControls": {
+                "Rules": [
+                  {
+                    "ObjectOwnership": "BucketOwnerEnforced"
+                  }
+                ]
+              },
+              "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": true,
+                "BlockPublicPolicy": true,
+                "IgnorePublicAcls": true,
+                "RestrictPublicBuckets": true
+              },
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "VersioningConfiguration": {
+                "Status": "Enabled"
+              }
+            },
+            "Type": "AWS::S3::Bucket",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "ArtifactBucketPolicy": {
+            "Properties": {
+              "Bucket": {
+                "Ref": "ArtifactBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": "false"
+                      }
+                    },
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket",
+                          "Arn"
+                        ]
+                      },
+                      {
+                        "Fn::Sub": "${ArtifactBucket.Arn}/*"
+                      }
+                    ],
+                    "Sid": "RequireTLS"
+                  }
+                ],
+                "Version": "2012-10-17"
+              }
+            },
+            "Type": "AWS::S3::BucketPolicy"
+          },
+          "ExternalStop": {
+            "Condition": "ComputeEnabled",
+            "Properties": {
+              "FlexibleTimeWindow": {
+                "Mode": "OFF"
+              },
+              "Name": "mie-p6-qualification-001-stop",
+              "ScheduleExpression": {
+                "Ref": "StopAtUtc"
+              },
+              "ScheduleExpressionTimezone": "UTC",
+              "State": "ENABLED",
+              "Target": {
+                "Arn": "arn:aws:scheduler:::aws-sdk:ec2:stopInstances",
+                "Input": {
+                  "Fn::Sub": "{\"InstanceIds\":[\"${ReceiptInstance}\",\"${SourceInstance}\"]}"
+                },
+                "RetryPolicy": {
+                  "MaximumEventAgeInSeconds": 3600,
+                  "MaximumRetryAttempts": 1
+                },
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "StopRole",
+                    "Arn"
+                  ]
+                }
+              }
+            },
+            "Type": "AWS::Scheduler::Schedule"
+          },
+          "FixedPortDocument": {
+            "Properties": {
+              "Content": {
+                "description": "Only local forwarding to receipt port 8443. No parameters or shell.",
+                "properties": {
+                  "localPortNumber": "8443",
+                  "portNumber": "8443",
+                  "type": "LocalPortForwarding"
+                },
+                "schemaVersion": "1.0",
+                "sessionType": "Port"
+              },
+              "DocumentFormat": "JSON",
+              "DocumentType": "Session",
+              "Name": "mie-p6-qualification-001-port-8443"
+            },
+            "Type": "AWS::SSM::Document"
+          },
+          "IndexTable": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "entry_id",
+                  "AttributeType": "S"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST",
+              "DeletionProtectionEnabled": true,
+              "KeySchema": [
+                {
+                  "AttributeName": "entry_id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "SSESpecification": {
+                "SSEEnabled": true
+              },
+              "TableName": "mie-p6-qualification-001-index",
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ]
+            },
+            "Type": "AWS::DynamoDB::Table",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "ReceiptBucket": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              },
+              "BucketName": "mie-p6-qualification-001-989879505232-receipts",
+              "ObjectLockConfiguration": {
+                "ObjectLockEnabled": "Enabled",
+                "Rule": {
+                  "DefaultRetention": {
+                    "Days": 30,
+                    "Mode": "COMPLIANCE"
+                  }
+                }
+              },
+              "ObjectLockEnabled": true,
+              "OwnershipControls": {
+                "Rules": [
+                  {
+                    "ObjectOwnership": "BucketOwnerEnforced"
+                  }
+                ]
+              },
+              "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": true,
+                "BlockPublicPolicy": true,
+                "IgnorePublicAcls": true,
+                "RestrictPublicBuckets": true
+              },
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "VersioningConfiguration": {
+                "Status": "Enabled"
+              }
+            },
+            "Type": "AWS::S3::Bucket",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "ReceiptBucketPolicy": {
+            "Properties": {
+              "Bucket": {
+                "Ref": "ReceiptBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": "false"
+                      }
+                    },
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::GetAtt": [
+                          "ReceiptBucket",
+                          "Arn"
+                        ]
+                      },
+                      {
+                        "Fn::Sub": "${ReceiptBucket.Arn}/*"
+                      }
+                    ],
+                    "Sid": "RequireTLS"
+                  }
+                ],
+                "Version": "2012-10-17"
+              }
+            },
+            "Type": "AWS::S3::BucketPolicy"
+          },
+          "ReceiptInstance": {
+            "Condition": "ComputeEnabled",
+            "Properties": {
+              "BlockDeviceMappings": [
+                {
+                  "DeviceName": "/dev/xvda",
+                  "Ebs": {
+                    "DeleteOnTermination": false,
+                    "Encrypted": true,
+                    "VolumeSize": 8,
+                    "VolumeType": "gp3"
+                  }
+                }
+              ],
+              "CreditSpecification": {
+                "CPUCredits": "standard"
+              },
+              "IamInstanceProfile": {
+                "Ref": "ReceiptRoleProfile"
+              },
+              "ImageId": "ami-04e0c7320ad3a3a48",
+              "InstanceInitiatedShutdownBehavior": "stop",
+              "InstanceType": "t4g.small",
+              "MetadataOptions": {
+                "HttpEndpoint": "enabled",
+                "HttpPutResponseHopLimit": 1,
+                "HttpTokens": "required"
+              },
+              "Monitoring": false,
+              "NetworkInterfaces": [
+                {
+                  "AssociatePublicIpAddress": true,
+                  "DeleteOnTermination": true,
+                  "DeviceIndex": "0",
+                  "GroupSet": [
+                    {
+                      "Ref": "SecurityGroup"
+                    }
+                  ],
+                  "SubnetId": "subnet-0063a05d947cface6"
+                }
+              ],
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "mie-p6-qualification-001-receiptinstance"
+                },
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "UserData": {
+                "Fn::Base64": "#!/bin/bash\nset -eu\numask 077\nsystemd-run --unit=mie-qualification-stop --on-active=3600 /sbin/shutdown -h now\ninstall -d -m 0700 /var/lib/mie/qualification-001\n# Runtime code and identities are installed only after hash/readiness checks.\n"
+              }
+            },
+            "Type": "AWS::EC2::Instance"
+          },
+          "ReceiptRole": {
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "sts:AssumeRole",
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "ec2.amazonaws.com"
+                    }
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "ManagedPolicyArns": [
+                "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+              ],
+              "Policies": [
+                {
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Action": [
+                          "secretsmanager:GetSecretValue"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Ref": "ReceiptSecret"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:GetObjectVersion"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "${ArtifactBucket.Arn}/code/*"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:PutObject"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "${ArtifactBucket.Arn}/receipt/*"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:PutObject",
+                          "s3:PutObjectRetention",
+                          "s3:GetObject",
+                          "s3:GetObjectVersion",
+                          "s3:GetObjectRetention"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "${ReceiptBucket.Arn}/receipts/*"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "dynamodb:GetItem",
+                          "dynamodb:UpdateItem"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "StateTable",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "dynamodb:GetItem",
+                          "dynamodb:PutItem"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "IndexTable",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Version": "2012-10-17"
+                  },
+                  "PolicyName": "qualification-runtime"
+                }
+              ]
+            },
+            "Type": "AWS::IAM::Role"
+          },
+          "ReceiptRoleProfile": {
+            "Properties": {
+              "Roles": [
+                {
+                  "Ref": "ReceiptRole"
+                }
+              ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+          },
+          "ReceiptSecret": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "Description": "Qualification-only identity; populate through approved operator provisioning, never logs.",
+              "Name": "mie-p6-qualification-001/receipt-identity",
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ]
+            },
+            "Type": "AWS::SecretsManager::Secret",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "SecurityGroup": {
+            "Properties": {
+              "GroupDescription": "Phase6 qualification: no inbound traffic, HTTPS outbound only",
+              "SecurityGroupEgress": [
+                {
+                  "CidrIp": "0.0.0.0/0",
+                  "FromPort": 443,
+                  "IpProtocol": "tcp",
+                  "ToPort": 443
+                }
+              ],
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "VpcId": "vpc-08598a29ae0886e9d"
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+          },
+          "SourceInstance": {
+            "Condition": "ComputeEnabled",
+            "Properties": {
+              "BlockDeviceMappings": [
+                {
+                  "DeviceName": "/dev/xvda",
+                  "Ebs": {
+                    "DeleteOnTermination": false,
+                    "Encrypted": true,
+                    "VolumeSize": 8,
+                    "VolumeType": "gp3"
+                  }
+                }
+              ],
+              "CreditSpecification": {
+                "CPUCredits": "standard"
+              },
+              "IamInstanceProfile": {
+                "Ref": "SourceRoleProfile"
+              },
+              "ImageId": "ami-04e0c7320ad3a3a48",
+              "InstanceInitiatedShutdownBehavior": "stop",
+              "InstanceType": "t4g.small",
+              "MetadataOptions": {
+                "HttpEndpoint": "enabled",
+                "HttpPutResponseHopLimit": 1,
+                "HttpTokens": "required"
+              },
+              "Monitoring": false,
+              "NetworkInterfaces": [
+                {
+                  "AssociatePublicIpAddress": true,
+                  "DeleteOnTermination": true,
+                  "DeviceIndex": "0",
+                  "GroupSet": [
+                    {
+                      "Ref": "SecurityGroup"
+                    }
+                  ],
+                  "SubnetId": "subnet-0063a05d947cface6"
+                }
+              ],
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "mie-p6-qualification-001-sourceinstance"
+                },
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ],
+              "UserData": {
+                "Fn::Base64": "#!/bin/bash\nset -eu\numask 077\nsystemd-run --unit=mie-qualification-stop --on-active=3600 /sbin/shutdown -h now\ninstall -d -m 0700 /var/lib/mie/qualification-001\n# Runtime code and identities are installed only after hash/readiness checks.\n"
+              }
+            },
+            "Type": "AWS::EC2::Instance"
+          },
+          "SourceRole": {
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "sts:AssumeRole",
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "ec2.amazonaws.com"
+                    }
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "ManagedPolicyArns": [
+                "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+              ],
+              "Policies": [
+                {
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Action": [
+                          "secretsmanager:GetSecretValue"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Ref": "SourceSecret"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:GetObjectVersion"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "${ArtifactBucket.Arn}/code/*"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:PutObject"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "${ArtifactBucket.Arn}/source/*"
+                          }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "ssm:StartSession"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::If": [
+                              "ComputeEnabled",
+                              {
+                                "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${ReceiptInstance}"
+                              },
+                              {
+                                "Ref": "AWS::NoValue"
+                              }
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:document/${FixedPortDocument}"
+                          }
+                        ]
+                      }
+                    ],
+                    "Version": "2012-10-17"
+                  },
+                  "PolicyName": "qualification-runtime"
+                }
+              ]
+            },
+            "Type": "AWS::IAM::Role"
+          },
+          "SourceRoleProfile": {
+            "Properties": {
+              "Roles": [
+                {
+                  "Ref": "SourceRole"
+                }
+              ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+          },
+          "SourceSecret": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "Description": "Qualification-only identity; populate through approved operator provisioning, never logs.",
+              "Name": "mie-p6-qualification-001/source-identity",
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ]
+            },
+            "Type": "AWS::SecretsManager::Secret",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "StateTable": {
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "run_id",
+                  "AttributeType": "S"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST",
+              "DeletionProtectionEnabled": true,
+              "KeySchema": [
+                {
+                  "AttributeName": "run_id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "SSESpecification": {
+                "SSEEnabled": true
+              },
+              "TableName": "mie-p6-qualification-001-state",
+              "Tags": [
+                {
+                  "Key": "Purpose",
+                  "Value": "phase6-qualification-only"
+                }
+              ]
+            },
+            "Type": "AWS::DynamoDB::Table",
+            "UpdateReplacePolicy": "Retain"
+          },
+          "StopRole": {
+            "Condition": "ComputeEnabled",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "sts:AssumeRole",
+                    "Condition": {
+                      "StringEquals": {
+                        "aws:SourceAccount": "989879505232"
+                      }
+                    },
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "scheduler.amazonaws.com"
+                    }
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "Policies": [
+                {
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Action": [
+                          "ec2:StopInstances"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${ReceiptInstance}"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${SourceInstance}"
+                          }
+                        ]
+                      }
+                    ],
+                    "Version": "2012-10-17"
+                  },
+                  "PolicyName": "stop-only-qualification-pair"
+                }
+              ]
+            },
+            "Type": "AWS::IAM::Role"
+          }
+        },
+        "Rules": {
+          "ComputeNeedsDeadline": {
+            "Assertions": [
+              {
+                "Assert": {
+                  "Fn::Not": [
+                    {
+                      "Fn::Equals": [
+                        {
+                          "Ref": "StopAtUtc"
+                        },
+                        ""
+                      ]
+                    }
+                  ]
+                },
+                "AssertDescription": "A reviewed fresh UTC stop is required for compute"
+              }
+            ],
+            "RuleCondition": {
+              "Fn::Equals": [
+                {
+                  "Ref": "LaunchCompute"
+                },
+                "yes"
+              ]
+            }
+          },
+          "FixedAccountRegion": {
+            "Assertions": [
+              {
+                "Assert": {
+                  "Fn::Equals": [
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "989879505232"
+                  ]
+                },
+                "AssertDescription": "Only the reviewed account"
+              },
+              {
+                "Assert": {
+                  "Fn::Equals": [
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "eu-north-1"
+                  ]
+                },
+                "AssertDescription": "Only Stockholm"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "volumes": {
+      "Volumes": [
+        {
+          "Attachments": [
+            {
+              "AttachTime": "2026-10-18T14:13:16+00:00",
+              "DeleteOnTermination": false,
+              "Device": "/dev/xvda",
+              "EbsCardIndex": 0,
+              "InstanceId": "i-0c5a2a75ca70db228",
+              "State": "attached",
+              "VolumeId": "vol-0d777f69ef62e0bbd"
+            }
+          ],
+          "AvailabilityZone": "eu-north-1a",
+          "AvailabilityZoneId": "eun1-az1",
+          "CreateTime": "2026-10-18T14:13:16.077000+00:00",
+          "Encrypted": true,
+          "Iops": 3000,
+          "KmsKeyId": "arn:aws:kms:eu-north-1:989879505232:key/f4530ec8-4567-4abd-a769-8993658b6c71",
+          "MultiAttachEnabled": false,
+          "Operator": {
+            "HiddenByDefault": false,
+            "Managed": false
+          },
+          "Size": 8,
+          "SnapshotId": "snap-01e6b76b56fbfc399",
+          "State": "in-use",
+          "Throughput": 125,
+          "VolumeId": "vol-0d777f69ef62e0bbd",
+          "VolumeType": "gp3"
+        },
+        {
+          "Attachments": [
+            {
+              "AttachTime": "2026-10-18T14:13:49+00:00",
+              "DeleteOnTermination": false,
+              "Device": "/dev/xvda",
+              "EbsCardIndex": 0,
+              "InstanceId": "i-08e89ad2e3feedb8a",
+              "State": "attached",
+              "VolumeId": "vol-0c92009fa2fb849af"
+            }
+          ],
+          "AvailabilityZone": "eu-north-1a",
+          "AvailabilityZoneId": "eun1-az1",
+          "CreateTime": "2026-10-18T14:13:49.584000+00:00",
+          "Encrypted": true,
+          "Iops": 3000,
+          "KmsKeyId": "arn:aws:kms:eu-north-1:989879505232:key/f4530ec8-4567-4abd-a769-8993658b6c71",
+          "MultiAttachEnabled": false,
+          "Operator": {
+            "HiddenByDefault": false,
+            "Managed": false
+          },
+          "Size": 8,
+          "SnapshotId": "snap-01e6b76b56fbfc399",
+          "State": "in-use",
+          "Throughput": 125,
+          "VolumeId": "vol-0c92009fa2fb849af",
+          "VolumeType": "gp3"
+        }
+      ]
+    }
+  },
+  "sources": {
+    "credits": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-credits-stdout.json",
+      "sha256": "24b0aa5700318633b5249ae8153096bcee9101397786d0bafcb1b057fb0b62c6"
+    },
+    "identity": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-identity-stdout.json",
+      "sha256": "b33fbc79a4182133ec3e6982ef84f504d3ceb1411d7e5439e7a44fdeaace88c3"
+    },
+    "instances": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-instances-stdout.json",
+      "sha256": "feaae3fae035e1caa35c384efd2823c96fd72fd699db783f906b5af8d7e64e10"
+    },
+    "policy": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-stop-policy-stdout.json",
+      "sha256": "dc49f0f5ddfb76ce6c027cbbdf43dd8d0c3e5137c44ac46b85c5b32b237bcb19"
+    },
+    "resources": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-resources-stdout.json",
+      "sha256": "bf82cdb5149b67ec4b85bd1555a5d61fd7eb4936465a24d37b04462ff5a4e6af"
+    },
+    "schedule": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-schedule-stdout.json",
+      "sha256": "9f00f9057cdcb2d284d32a1be5e286ad8fbc6c80b693915eb2bdfe5ece4bb02c"
+    },
+    "security": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/preflight2-security-group-stdout.json",
+      "sha256": "ca75e3248439a26a5671674e061a1d4002b487e470f16e18134a615e1110ae70"
+    },
+    "source_policy": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-source-policy-stdout.json",
+      "sha256": "5e625cd14774ad800435a5e9c35f34743ab767e87ef90083287e6873a45adf48"
+    },
+    "stack": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-stack-after-rate-limit-stdout.json",
+      "sha256": "f291f3ffd49c650c90ae3e7cc71dd50314f718ad7ab66b0e30c6835c9aea5196"
+    },
+    "stack_policy": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-stack-policy-stdout.json",
+      "sha256": "8370ecfaa574cea99ed9d03c8f3c39048bba751ff4dac0ca1d6a5b1ac88ab12c"
+    },
+    "template": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-template-stdout.json",
+      "sha256": "00ddda0af3d2e3b29f380f31b867b0306cc0231e8142f4b89900178bc263b0c4"
+    },
+    "volumes": {
+      "path": "/Users/antenehhailu/.codex/visualizations/2026/10/01/01a0f6c9-d66b-7d51-85fa-da98aabc6ae7/mie-planning/phase6-host-preparation-run-005/final-volumes-stdout.json",
+      "sha256": "fdbdb42601bad2329d909c607562689e8b4565e8dd4003e7ff49f81b40ccc680"
+    }
+  }
+}

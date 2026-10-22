@@ -53,8 +53,9 @@ when confirming shutdown.
 
 The candidate script command surfaces are individually invoked operations, not an
 unattended whole-phase runner. Do not invoke them on a closed attempt or invent
-missing preflight/approval files. A future operation still requires its complete
-reviewed preflight and closure procedure, source pins, separate approval and root.
+missing preflight/approval files. The complete candidate preflight/closure and approval sequence is now specified in
+[ATTEMPT006-RUNBOOK.md](ATTEMPT006-RUNBOOK.md). Source pins, separate approval and
+the explicitly approved root are still required before execution.
 
 ## Version and preservation boundary
 
@@ -108,3 +109,22 @@ Dedicated independent review approved the six candidate source files after the t
 protective-interruption findings were corrected. The local completion record in
 `mie-planning/phase6-receipt-recovery-20261021` contains review hashes, final combined
 test output, original-version preservation and closed-attempt inventory checks.
+
+
+## Attempt006 preflight and closure package (22 October 2026)
+
+`checks.py preflight` consumes a newly collected sequential batch and validates the
+exact final005 configuration baseline, including the installed policy and security
+group egress. `checks.py closure` reconciles only freshly collected readbacks with
+the new attempt's recorded requests. It keeps stopped hosts, observer history and
+preparation evidence as separate results, with explicit missing/unknown branches.
+Neither command mutates AWS. `create-root.py` creates only the separately approved
+new root, after checking the review and full source pins; it never calls AWS.
+
+`baseline005.json` contains historical raw copies and source hashes. The files are
+used as configuration expectations, never presented as new cloud observations.
+The v3 context now requires all package files in the source manifest. Python
+optimization mode is refused so procedural assertions cannot be stripped.
+The immediate pre-schedule gate is tightened from2480 to2520 seconds; deadlines
+are unchanged and no mutation retry has been added. See the runbook for the exact
+command order and conditions for stopping. This package has not been cloud-run.
