@@ -16,7 +16,10 @@ from app.strategy_research.strategies.base import Strategy
 from app.strategy_research.evaluation.backtest import run_backtest
 
 # Derived from the actual registry at collection, not a hand-maintained ID list.
-REGISTERED_AT_COLLECTION = tuple(available_strategies())
+# Only permanent built-ins (H-###): other test modules (e.g. test_forward.py) register
+# deliberately NON-causal fixtures such as FWD-REPAINT at import time, and pytest imports
+# those modules before this one, so an unfiltered snapshot is order-dependent.
+REGISTERED_AT_COLLECTION = tuple(sid for sid in available_strategies() if sid.startswith('H-'))
 
 
 def fixture(seed, n=850):
