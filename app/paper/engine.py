@@ -37,10 +37,15 @@ DEFAULT_MARKETS = ["BTC/USD", "ETH/USD"]
 # active strategies: never paper-traded and never connected to a broker/live execution.
 NON_ACTIVE_STRATEGIES = {"H-028"}   # Hull MA Slope Trend (Graveyard)
 
+# Pre-registered hypotheses that are evaluation-only: excluded from the legacy paper
+# universe until a verdict and holdout explicitly authorise any forward stage.
+EVALUATION_ONLY_STRATEGIES = {"H-030"}   # docs/H-030_PREREGISTRATION.md (srp-matrix-v5)
+
 
 def strategy_ids() -> List[str]:
     return [s for s in available_strategies()
-            if s.startswith("H-") and s not in NON_ACTIVE_STRATEGIES]
+            if s.startswith("H-") and s not in NON_ACTIVE_STRATEGIES
+            and s not in EVALUATION_ONLY_STRATEGIES]
 
 
 class PaperEngine:

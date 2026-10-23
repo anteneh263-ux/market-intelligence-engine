@@ -651,6 +651,35 @@ class VolatilityGatedTimeSeriesMomentumStrategy(Strategy):
                           volatility_baseline=[252], volatility_multiplier=[1.5])
 
 
+class CrossAssetTimeSeriesMomentumStrategy(Strategy):
+    """H-030 — pre-registered cross-asset time-series momentum (portfolio hypothesis).
+
+    Position is the sign of the trailing close-to-close return over ``lookback`` bars:
+    long when positive, short when negative, cash during warm-up or at exactly zero.
+    The hypothesis concerns an equal-weight portfolio across a frozen 24-ETF universe
+    evaluated with srp-matrix-v5 (docs/H-030_PREREGISTRATION.md). Separate from H-025.
+    """
+
+    strategy_id = "H-030"
+    declared_inputs = {"close"}
+    name = "Cross-Asset Time-Series Momentum"
+    strategy_class = "time-series-momentum"
+    direction = "long_short"
+    default_params = {"lookback": 252}
+
+    def positions(self, df: pd.DataFrame, params: Dict | None = None) -> pd.Series:
+        n = int({**self.default_params, **(params or {})}["lookback"])
+        momentum = df["close"].astype(float) / df["close"].astype(float).shift(n) - 1.0
+        out = pd.Series(0.0, index=df.index)
+        out[momentum > 0.0] = 1.0
+        out[momentum < 0.0] = -1.0
+        return out
+
+    def param_grid(self) -> List[Dict]:
+        # Frozen before any H-030 data was downloaded: four trials.
+        return self._grid(lookback=[21, 63, 126, 252])
+
+
 EXT_STRATEGIES: List[type] = [
     BollingerBandsStrategy, BollingerBandsDirectedStrategy, ConsecutiveUpDownStrategy,
     GreedyStrategy, InSideBarStrategy, KeltnerChannelsStrategy, MomentumStrategy,
@@ -662,4 +691,5 @@ EXT_STRATEGIES: List[type] = [
     ConnorsRSI2Strategy,
     HullMASlopeTrendStrategy,
     VolatilityGatedTimeSeriesMomentumStrategy,
+    CrossAssetTimeSeriesMomentumStrategy,
 ]
