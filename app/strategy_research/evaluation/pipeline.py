@@ -32,6 +32,7 @@ from .backtest import PERIODS_PER_YEAR, _max_drawdown, _trade_returns
 from .benchmarks import (TRADE_MATCHED_METHOD, buy_and_hold, random_timing,
                          random_timing_trade_matched)
 from .frozen import DEFAULT_MATRIX, EvalRequest, FrozenMatrix
+from .portfolio import PORTFOLIO_VERSION, evaluate_portfolio
 from .regimes import label_regimes
 from .robustness import (
     confidence_score,
@@ -113,6 +114,8 @@ class EvaluationReport:
 
 def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
              provider_kwargs: Dict | None = None) -> EvaluationReport:
+    if PORTFOLIO_VERSION in (matrix.version, request.matrix_version):
+        return evaluate_portfolio(request, matrix, provider_kwargs)
     exact_matching = matrix.random_timing_method == TRADE_MATCHED_METHOD
     versioned_request = request.matrix_version in ("srp-matrix-v3", "srp-matrix-v4")
     if (exact_matching or versioned_request) and request.matrix_version != matrix.version:
