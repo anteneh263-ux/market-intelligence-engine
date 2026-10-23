@@ -42,6 +42,9 @@ class Orchestrator:
             provider_kwargs: Optional[Dict] = None, write: bool = True) -> RunOutcome:
         mod = module_registry.get_module(module)
         matrix = versioning.resolve(matrix_version)
+        if matrix.version == "srp-matrix-v5" and write:
+            raise ValueError("srp-matrix-v5 is evaluation-only until its persistence and dossier "
+                             "format are reviewed; run with write=False / --no-write.")
         # Pre-registered corpus strategies (H-###) get a complete, reproducible dossier
         # BEFORE STEP 5. Generated (G-) and user-imported (U-) strategies are tracked in
         # their own namespaces (discovery ledger / workflow reports), not the H corpus.

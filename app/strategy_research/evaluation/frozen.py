@@ -52,12 +52,14 @@ class FrozenMatrix:
           v1 -> 'concatenation' (stitch all assets' OOS returns; drawdown is an artifact)
        v2–v4 -> 'per_asset'     (per-asset metrics, then equal-weight aggregate; the
                                   drawdown gate uses the mean per-asset OOS drawdown)"""
+        if self.version == "srp-matrix-v5":
+            return "portfolio"   # v5: equal-weight portfolio across assets (portfolio.py)
         return "per_asset" if (self.version.endswith("v2") or self.version in ("srp-matrix-v3", "srp-matrix-v4")) else "concatenation"
 
     @property
     def random_timing_method(self) -> str:
         """Derived from version; adding v3 must not change legacy serialized fields."""
-        return "executed-runs-v1" if self.version in ("srp-matrix-v3", "srp-matrix-v4") else "bernoulli-redraw-v1"
+        return "executed-runs-v1" if self.version in ("srp-matrix-v3", "srp-matrix-v4", "srp-matrix-v5") else "bernoulli-redraw-v1"
 
     def canonical_json(self) -> str:
         # asdict() includes only dataclass FIELDS (not the `pooling` property), so
@@ -77,6 +79,9 @@ MATRIX_V2 = FrozenMatrix(version="srp-matrix-v2")
 MATRIX_V3 = FrozenMatrix(version="srp-matrix-v3")
 # v4: v3 methodology, explicit asset dispersion vs unestimated sampling uncertainty.
 MATRIX_V4 = FrozenMatrix(version="srp-matrix-v4")
+# v5: v4 thresholds/costs/benchmark method, evaluated as ONE equal-weight portfolio across
+# assets with one shared parameter per fold. Explicit opt-in; not the default.
+MATRIX_V5 = FrozenMatrix(version="srp-matrix-v5")
 
 
 @dataclass(frozen=True)
