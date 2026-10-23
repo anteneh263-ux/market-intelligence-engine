@@ -24,7 +24,7 @@ def _btc():
 def test_every_registered_h_strategy_has_accurate_declared_inputs():
     df = _btc()
     ids = [sid for sid in available_strategies() if sid.startswith("H-")]
-    assert len(ids) == 28
+    assert len(ids) == 29  # H-002..H-030 (H-030 pre-registered 2026-10-23)
     for sid in ids:
         audit = run_audit(get_strategy(sid), df)
         assert audit["declared_present"] is True, sid

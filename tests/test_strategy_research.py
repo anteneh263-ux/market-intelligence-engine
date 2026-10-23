@@ -51,7 +51,7 @@ def test_registry_lists():
     # registered by earlier tests (discovery/workflow) in the same process and
     # must not affect this count.
     h_ids = [s for s in available_strategies() if s.startswith("H-")]
-    assert len(h_ids) == 28                                   # permanent H-strategy universe
+    assert len(h_ids) == 29                                   # permanent H-strategy universe (H-030 added 2026-10-23)
     assert {"csv", "binance", "fmp", "coindesk", "synthetic"} <= set(available_providers())
 
 

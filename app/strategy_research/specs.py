@@ -197,6 +197,16 @@ STRATEGY_SPECS: Dict[str, Dict] = {
               "sizing": "fixed full-notional long/short when allowed, otherwise cash; no fractional sizing",
               "assumptions": ["medium-term own-price trends persist", "unusually high recent volatility weakens trend reliability or raises drawdown", "relative volatility is more comparable across BTC, ETH, SPY and gold than one absolute volatility ceiling", "grid frozen before first evaluation: trend {126,252} x recent volatility {30,60}; baseline 252 and multiplier 1.5 fixed"],
               "lookahead": "all returns and rolling statistics are trailing; signal uses the completed close and the engine executes next bar"},
+    "H-030": {"source": "Pre-registered MIE hypothesis: cross-asset time-series momentum evaluated as an equal-weight portfolio (srp-matrix-v5); original implementation, no third-party code copied; separate from H-025.",
+              "indicators": ["trailing close return over 21, 63, 126 or 252 bars"],
+              "entry_long": "positive trailing momentum",
+              "entry_short": "negative trailing momentum",
+              "exit": "reverse when momentum changes sign; cash only during warm-up or at exactly zero momentum",
+              "filters": "none; discrete {-1,0,+1} exposure",
+              "risk": "no stop/target; diversification across a frozen 24-ETF universe; frozen maximum absolute exposure 1.0 per asset",
+              "sizing": "fixed full-notional per asset; equal capital weight across assets in the v5 portfolio; no volatility scaling",
+              "assumptions": ["time-series momentum persists across asset classes", "pooling many weakly correlated assets is required to detect a realistic edge (2026-10-23 calibration)", "grid frozen before data download: lookback {21,63,126,252}", "evaluation data through 2024-12-31; 2025-01-01..2026-09-30 sealed holdout"],
+              "lookahead": "trailing close return only; signal uses the completed close and the engine executes next bar"},
 }
 
 
