@@ -1,0 +1,673 @@
+{
+  "version": "VANTA-SMA200-EXPOSURE-v1",
+  "base_commit": "4af0725",
+  "data_sha256": "d3085c72f4d0e0b646a050756fa3f3252e1befe214910417999b70bcfc744841",
+  "method": "Entry allocation of 10%,20%,100% of equity, fixed units until exit; remaining cash unremunerated. No exposure tuning. Same overlapping suffixes as initial screen. Not a validator simulation or qualification test.",
+  "scenarios": {
+    "zero_cost_0.1": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "challenge_eod_gt_5pct": "2019-07-16",
+          "main_eod_gt_8pct": "2019-09-26",
+          "intraday_low_proxy_gt_5pct": "2021-01-11"
+        },
+        "unrestricted_return_pct": 52.0841,
+        "unrestricted_close_max_drawdown_pct": 22.309
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "challenge_eod_gt_5pct": "2019-07-16",
+          "main_eod_gt_8pct": "2019-09-26",
+          "intraday_low_proxy_gt_5pct": "2021-01-11"
+        },
+        "unrestricted_return_pct": 52.0841,
+        "unrestricted_close_max_drawdown_pct": 22.309
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "inactivity_60_days": "2020-06-29",
+          "intraday_low_proxy_gt_5pct": "2021-01-11",
+          "challenge_eod_gt_5pct": "2021-01-12",
+          "main_eod_gt_8pct": "2021-01-21"
+        },
+        "unrestricted_return_pct": 43.3044,
+        "unrestricted_close_max_drawdown_pct": 22.309
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "inactivity_60_days": "2021-03-02",
+          "challenge_eod_gt_5pct": "2021-05-15",
+          "main_eod_gt_8pct": "2021-05-19"
+        },
+        "unrestricted_return_pct": 13.3051,
+        "unrestricted_close_max_drawdown_pct": 12.2663
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "challenge_eod_gt_5pct": "2024-09-30"
+        },
+        "unrestricted_return_pct": 15.4019,
+        "unrestricted_close_max_drawdown_pct": 5.2613
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2023-03-15",
+          "challenge_eod_gt_5pct": "2024-09-30"
+        },
+        "unrestricted_return_pct": 15.4019,
+        "unrestricted_close_max_drawdown_pct": 5.2613
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "inactivity_60_days": "2024-03-01"
+        },
+        "unrestricted_return_pct": 5.1895,
+        "unrestricted_close_max_drawdown_pct": 4.6017
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -1.5066,
+        "unrestricted_close_max_drawdown_pct": 3.6623
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "zero_cost_0.2": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-06-27",
+          "challenge_eod_gt_5pct": "2019-06-27",
+          "main_eod_gt_8pct": "2019-07-14"
+        },
+        "unrestricted_return_pct": 114.7445,
+        "unrestricted_close_max_drawdown_pct": 33.3716
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-06-27",
+          "challenge_eod_gt_5pct": "2019-06-27",
+          "main_eod_gt_8pct": "2019-07-14"
+        },
+        "unrestricted_return_pct": 114.7445,
+        "unrestricted_close_max_drawdown_pct": 33.3716
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-04-30",
+          "inactivity_60_days": "2020-06-29",
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "main_eod_gt_8pct": "2021-01-12"
+        },
+        "unrestricted_return_pct": 91.4092,
+        "unrestricted_close_max_drawdown_pct": 33.3716
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-11",
+          "challenge_eod_gt_5pct": "2021-01-21",
+          "inactivity_60_days": "2021-03-02",
+          "main_eod_gt_8pct": "2021-04-25"
+        },
+        "unrestricted_return_pct": 26.9737,
+        "unrestricted_close_max_drawdown_pct": 22.2209
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "challenge_eod_gt_5pct": "2024-03-19",
+          "main_eod_gt_8pct": "2024-07-04"
+        },
+        "unrestricted_return_pct": 31.8415,
+        "unrestricted_close_max_drawdown_pct": 9.333
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2023-03-15",
+          "challenge_eod_gt_5pct": "2024-03-19",
+          "main_eod_gt_8pct": "2024-07-04"
+        },
+        "unrestricted_return_pct": 31.8415,
+        "unrestricted_close_max_drawdown_pct": 9.333
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "inactivity_60_days": "2024-03-01",
+          "challenge_eod_gt_5pct": "2024-04-30",
+          "main_eod_gt_8pct": "2025-03-20"
+        },
+        "unrestricted_return_pct": 10.4439,
+        "unrestricted_close_max_drawdown_pct": 8.7374
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "inactivity_60_days": "2025-03-02",
+          "challenge_eod_gt_5pct": "2025-03-09"
+        },
+        "unrestricted_return_pct": -3.0314,
+        "unrestricted_close_max_drawdown_pct": 7.1943
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "zero_cost_1.0": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 981.2422,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 981.2422,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-02-17",
+          "intraday_low_proxy_gt_5pct": "2020-02-19",
+          "main_eod_gt_8pct": "2020-02-25",
+          "inactivity_60_days": "2020-06-29"
+        },
+        "unrestricted_return_pct": 582.268,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "challenge_eod_gt_5pct": "2021-01-10",
+          "main_eod_gt_8pct": "2021-01-11",
+          "inactivity_60_days": "2021-03-02"
+        },
+        "unrestricted_return_pct": 140.914,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09"
+        },
+        "unrestricted_return_pct": 201.0523,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09",
+          "inactivity_60_days": "2023-03-15"
+        },
+        "unrestricted_return_pct": 201.0523,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2024-01-03",
+          "challenge_eod_gt_5pct": "2024-01-12",
+          "main_eod_gt_8pct": "2024-01-12",
+          "inactivity_60_days": "2024-03-01"
+        },
+        "unrestricted_return_pct": 54.1679,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2025-01-07",
+          "challenge_eod_gt_5pct": "2025-01-07",
+          "main_eod_gt_8pct": "2025-01-09",
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -15.7127,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "illustrative_cost_0.1": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "challenge_eod_gt_5pct": "2019-07-16",
+          "main_eod_gt_8pct": "2019-09-24",
+          "intraday_low_proxy_gt_5pct": "2021-01-11"
+        },
+        "unrestricted_return_pct": 40.1625,
+        "unrestricted_close_max_drawdown_pct": 23.484
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "challenge_eod_gt_5pct": "2019-07-16",
+          "main_eod_gt_8pct": "2019-09-24",
+          "intraday_low_proxy_gt_5pct": "2021-01-11"
+        },
+        "unrestricted_return_pct": 40.1625,
+        "unrestricted_close_max_drawdown_pct": 23.484
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "inactivity_60_days": "2020-06-29",
+          "intraday_low_proxy_gt_5pct": "2021-01-11",
+          "challenge_eod_gt_5pct": "2021-01-12",
+          "main_eod_gt_8pct": "2021-01-21"
+        },
+        "unrestricted_return_pct": 33.3863,
+        "unrestricted_close_max_drawdown_pct": 23.484
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "inactivity_60_days": "2021-03-02",
+          "challenge_eod_gt_5pct": "2021-05-15",
+          "main_eod_gt_8pct": "2021-05-19"
+        },
+        "unrestricted_return_pct": 7.673,
+        "unrestricted_close_max_drawdown_pct": 13.001
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "challenge_eod_gt_5pct": "2024-07-04"
+        },
+        "unrestricted_return_pct": 11.0432,
+        "unrestricted_close_max_drawdown_pct": 6.1267
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2023-03-15",
+          "challenge_eod_gt_5pct": "2024-07-04"
+        },
+        "unrestricted_return_pct": 11.0432,
+        "unrestricted_close_max_drawdown_pct": 6.1267
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "inactivity_60_days": "2024-03-01",
+          "challenge_eod_gt_5pct": "2025-03-28"
+        },
+        "unrestricted_return_pct": 2.724,
+        "unrestricted_close_max_drawdown_pct": 5.0378
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -2.5317,
+        "unrestricted_close_max_drawdown_pct": 3.8968
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "illustrative_cost_0.2": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-06-27",
+          "challenge_eod_gt_5pct": "2019-06-27",
+          "main_eod_gt_8pct": "2019-07-14"
+        },
+        "unrestricted_return_pct": 84.9339,
+        "unrestricted_close_max_drawdown_pct": 35.342
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-06-27",
+          "challenge_eod_gt_5pct": "2019-06-27",
+          "main_eod_gt_8pct": "2019-07-14"
+        },
+        "unrestricted_return_pct": 84.9339,
+        "unrestricted_close_max_drawdown_pct": 35.342
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-03-08",
+          "inactivity_60_days": "2020-06-29",
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "main_eod_gt_8pct": "2021-01-12"
+        },
+        "unrestricted_return_pct": 67.9668,
+        "unrestricted_close_max_drawdown_pct": 35.342
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-11",
+          "challenge_eod_gt_5pct": "2021-01-21",
+          "inactivity_60_days": "2021-03-02",
+          "main_eod_gt_8pct": "2021-04-25"
+        },
+        "unrestricted_return_pct": 15.0354,
+        "unrestricted_close_max_drawdown_pct": 23.565
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "challenge_eod_gt_5pct": "2023-06-14",
+          "main_eod_gt_8pct": "2024-05-01"
+        },
+        "unrestricted_return_pct": 22.4336,
+        "unrestricted_close_max_drawdown_pct": 10.9185
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2023-03-15",
+          "challenge_eod_gt_5pct": "2023-06-14",
+          "main_eod_gt_8pct": "2024-05-01"
+        },
+        "unrestricted_return_pct": 22.4336,
+        "unrestricted_close_max_drawdown_pct": 10.9185
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "inactivity_60_days": "2024-03-01",
+          "challenge_eod_gt_5pct": "2024-04-17",
+          "main_eod_gt_8pct": "2024-09-25"
+        },
+        "unrestricted_return_pct": 5.412,
+        "unrestricted_close_max_drawdown_pct": 9.5737
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "inactivity_60_days": "2025-03-02",
+          "challenge_eod_gt_5pct": "2025-03-09"
+        },
+        "unrestricted_return_pct": -5.0339,
+        "unrestricted_close_max_drawdown_pct": 7.6541
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "illustrative_cost_1.0": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 543.4577,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 543.4577,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-02-17",
+          "intraday_low_proxy_gt_5pct": "2020-02-19",
+          "main_eod_gt_8pct": "2020-02-25",
+          "inactivity_60_days": "2020-06-29"
+        },
+        "unrestricted_return_pct": 334.3157,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "challenge_eod_gt_5pct": "2021-01-10",
+          "main_eod_gt_8pct": "2021-01-11",
+          "inactivity_60_days": "2021-03-02"
+        },
+        "unrestricted_return_pct": 59.9757,
+        "unrestricted_close_max_drawdown_pct": 66.8643
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09"
+        },
+        "unrestricted_return_pct": 124.3591,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09",
+          "inactivity_60_days": "2023-03-15"
+        },
+        "unrestricted_return_pct": 124.3591,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2024-01-03",
+          "challenge_eod_gt_5pct": "2024-01-12",
+          "main_eod_gt_8pct": "2024-01-12",
+          "inactivity_60_days": "2024-03-01"
+        },
+        "unrestricted_return_pct": 25.3909,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2025-01-07",
+          "challenge_eod_gt_5pct": "2025-01-07",
+          "main_eod_gt_8pct": "2025-01-09",
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -23.9607,
+        "unrestricted_close_max_drawdown_pct": 33.3099
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ]
+  }
+}

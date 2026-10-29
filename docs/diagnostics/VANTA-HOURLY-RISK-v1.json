@@ -1,0 +1,1593 @@
+{
+  "version": "VANTA-HOURLY-RISK-v1",
+  "asof_ms": 1793303612522,
+  "hashes": {
+    "docs/diagnostics/hyperliquid-snapshot-20261029/btc_1h.json": "71508103fa7bc487d5f67e81ccd3e1ff6bde8b8dd639d74083f1b50a1fd1d1d0",
+    "docs/diagnostics/hyperliquid-snapshot-20261029/btc_funding.json": "755ba9c443bcefb7baa6570fdc34c2221f2022e255e0b268305b004f5f05839d"
+  },
+  "results": {
+    "stop_zero_cost": {
+      "start_utc": "2026-05-25T00:00:00+00:00",
+      "last_hour_open_utc": "2026-10-29T18:00:00+00:00",
+      "hours": 3787,
+      "return_pct": 1.933731,
+      "max_hour_close_drawdown_pct": 0.820052,
+      "max_eod_drawdown_pct": 0.703934,
+      "max_intraday_low_proxy_pct": 0.422463,
+      "fees_pct_initial_equity": 0.0,
+      "net_funding_debit_pct_initial_equity": 0.0,
+      "first_breaches": {},
+      "orders_count": 101,
+      "stop_exits": [],
+      "stop_trigger_hours": [],
+      "unexecuted_stop_at_end": false,
+      "ending_open_position": false,
+      "orders": [
+        {
+          "time": "2026-05-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.298448354216711e-06
+        },
+        {
+          "time": "2026-05-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.0223151356669766e-09
+        },
+        {
+          "time": "2026-05-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.294426039081044e-06
+        },
+        {
+          "time": "2026-07-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5362327888800852e-06
+        },
+        {
+          "time": "2026-07-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.59553417803944e-09
+        },
+        {
+          "time": "2026-07-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5418283230581246e-06
+        },
+        {
+          "time": "2026-07-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5591623449234065e-06
+        },
+        {
+          "time": "2026-07-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.950275722679088e-08
+        },
+        {
+          "time": "2026-07-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.3337907809615505e-09
+        },
+        {
+          "time": "2026-07-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0808397943182235e-08
+        },
+        {
+          "time": "2026-07-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.6908402139655928e-08
+        },
+        {
+          "time": "2026-07-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.013914067189945e-09
+        },
+        {
+          "time": "2026-07-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.1265603600848078e-08
+        },
+        {
+          "time": "2026-07-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.041862794611459e-08
+        },
+        {
+          "time": "2026-07-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.1968593268332824e-09
+        },
+        {
+          "time": "2026-07-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.15710530360735e-08
+        },
+        {
+          "time": "2026-07-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.528180371427987e-08
+        },
+        {
+          "time": "2026-07-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.743154242103733e-09
+        },
+        {
+          "time": "2026-07-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.1851539127020546e-09
+        },
+        {
+          "time": "2026-07-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7199400749425068e-08
+        },
+        {
+          "time": "2026-08-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5413609064560339e-06
+        },
+        {
+          "time": "2026-08-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5658114007507452e-06
+        },
+        {
+          "time": "2026-08-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4427009220675648e-09
+        },
+        {
+          "time": "2026-08-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.268128435891833e-08
+        },
+        {
+          "time": "2026-08-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2058914558134674e-08
+        },
+        {
+          "time": "2026-08-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.147088245107439e-09
+        },
+        {
+          "time": "2026-08-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.272476922610831e-08
+        },
+        {
+          "time": "2026-08-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0012228324746295e-09
+        },
+        {
+          "time": "2026-08-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.3851544280403028e-09
+        },
+        {
+          "time": "2026-08-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.983941334109777e-08
+        },
+        {
+          "time": "2026-08-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.621215411040731e-09
+        },
+        {
+          "time": "2026-08-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.064944797511425e-09
+        },
+        {
+          "time": "2026-08-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.6674544102378416e-10
+        },
+        {
+          "time": "2026-08-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5675789814789507e-06
+        },
+        {
+          "time": "2026-08-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5418148217064495e-06
+        },
+        {
+          "time": "2026-08-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.332600695347976e-09
+        },
+        {
+          "time": "2026-08-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.23580516272598e-08
+        },
+        {
+          "time": "2026-08-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.552855475259796e-08
+        },
+        {
+          "time": "2026-08-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.523951420093445e-08
+        },
+        {
+          "time": "2026-08-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.887868346450377e-08
+        },
+        {
+          "time": "2026-08-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0223331516034661e-08
+        },
+        {
+          "time": "2026-08-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7665994879393363e-08
+        },
+        {
+          "time": "2026-08-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.383523158285654e-09
+        },
+        {
+          "time": "2026-08-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.817718188627733e-09
+        },
+        {
+          "time": "2026-08-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7226652490469062e-08
+        },
+        {
+          "time": "2026-08-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.5004982060925123e-08
+        },
+        {
+          "time": "2026-08-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.9498522445089935e-09
+        },
+        {
+          "time": "2026-08-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.550868152832993e-09
+        },
+        {
+          "time": "2026-09-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.3680010380464843e-08
+        },
+        {
+          "time": "2026-09-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.734214952429956e-08
+        },
+        {
+          "time": "2026-09-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5236128716794914e-09
+        },
+        {
+          "time": "2026-09-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.696517050916412e-08
+        },
+        {
+          "time": "2026-09-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.2953121096957872e-08
+        },
+        {
+          "time": "2026-09-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.5911886410366457e-09
+        },
+        {
+          "time": "2026-09-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.294456188338754e-09
+        },
+        {
+          "time": "2026-09-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.790474160008834e-08
+        },
+        {
+          "time": "2026-09-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.641119289325552e-09
+        },
+        {
+          "time": "2026-09-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.23213291459594e-09
+        },
+        {
+          "time": "2026-09-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.644917192162292e-08
+        },
+        {
+          "time": "2026-09-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.96474877433945e-09
+        },
+        {
+          "time": "2026-09-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0553849400509508e-09
+        },
+        {
+          "time": "2026-09-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 6.732185781286084e-09
+        },
+        {
+          "time": "2026-09-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.070498949539046e-08
+        },
+        {
+          "time": "2026-09-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.965634759617817e-08
+        },
+        {
+          "time": "2026-09-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.038188049139212e-09
+        },
+        {
+          "time": "2026-09-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.3959787002294972e-09
+        },
+        {
+          "time": "2026-09-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.661446524900416e-08
+        },
+        {
+          "time": "2026-09-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.224584900674692e-09
+        },
+        {
+          "time": "2026-09-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.859423791797064e-10
+        },
+        {
+          "time": "2026-09-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.086847377937843e-08
+        },
+        {
+          "time": "2026-09-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.248529183451383e-09
+        },
+        {
+          "time": "2026-09-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.3736019623146877e-08
+        },
+        {
+          "time": "2026-09-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.7151936335547506e-10
+        },
+        {
+          "time": "2026-09-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.152257018944768e-09
+        },
+        {
+          "time": "2026-09-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.512369912887214e-09
+        },
+        {
+          "time": "2026-09-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.0995516773372884e-10
+        },
+        {
+          "time": "2026-09-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.2801845156163578e-08
+        },
+        {
+          "time": "2026-09-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.1344448710672494e-09
+        },
+        {
+          "time": "2026-10-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.7101055059141882e-10
+        },
+        {
+          "time": "2026-10-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.594787317025748e-08
+        },
+        {
+          "time": "2026-10-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.5489659667246074e-09
+        },
+        {
+          "time": "2026-10-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.997118755155007e-09
+        },
+        {
+          "time": "2026-10-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.2418980541278846e-08
+        },
+        {
+          "time": "2026-10-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.469047521568507e-09
+        },
+        {
+          "time": "2026-10-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.413525793454522e-09
+        },
+        {
+          "time": "2026-10-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.9039743878411198e-08
+        },
+        {
+          "time": "2026-10-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.146212649421235e-08
+        },
+        {
+          "time": "2026-10-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.17901487698353e-08
+        },
+        {
+          "time": "2026-10-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.908372752290015e-09
+        },
+        {
+          "time": "2026-10-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.037429852160234e-08
+        },
+        {
+          "time": "2026-10-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.574235164414825e-08
+        },
+        {
+          "time": "2026-10-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.782526025001152e-08
+        },
+        {
+          "time": "2026-10-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.0083328603603203e-08
+        },
+        {
+          "time": "2026-10-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.655188708908785e-09
+        },
+        {
+          "time": "2026-10-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.515024727329697e-09
+        },
+        {
+          "time": "2026-10-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.905370418357972e-09
+        },
+        {
+          "time": "2026-10-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.603977273711006e-09
+        },
+        {
+          "time": "2026-10-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.2258017999220887e-09
+        },
+        {
+          "time": "2026-10-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.4528496334961782e-08
+        },
+        {
+          "time": "2026-10-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.391501345214674e-08
+        },
+        {
+          "time": "2026-10-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2166354238506534e-06
+        }
+      ]
+    },
+    "stop_cost_funding": {
+      "start_utc": "2026-05-25T00:00:00+00:00",
+      "last_hour_open_utc": "2026-10-29T18:00:00+00:00",
+      "hours": 3787,
+      "return_pct": 1.624325,
+      "max_hour_close_drawdown_pct": 0.86965,
+      "max_eod_drawdown_pct": 0.727928,
+      "max_intraday_low_proxy_pct": 0.424398,
+      "fees_pct_initial_equity": 0.087557,
+      "net_funding_debit_pct_initial_equity": 0.218752,
+      "first_breaches": {},
+      "orders_count": 101,
+      "stop_exits": [],
+      "stop_trigger_hours": [],
+      "unexecuted_stop_at_end": false,
+      "ending_open_position": false,
+      "orders": [
+        {
+          "time": "2026-05-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.2983444866577784e-06
+        },
+        {
+          "time": "2026-05-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.001280308051133e-09
+        },
+        {
+          "time": "2026-05-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2943432063497273e-06
+        },
+        {
+          "time": "2026-07-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5359093531610647e-06
+        },
+        {
+          "time": "2026-07-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.548474587919921e-09
+        },
+        {
+          "time": "2026-07-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5414578277489846e-06
+        },
+        {
+          "time": "2026-07-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5584933606044404e-06
+        },
+        {
+          "time": "2026-07-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.9542261779333493e-08
+        },
+        {
+          "time": "2026-07-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.286448969606379e-09
+        },
+        {
+          "time": "2026-07-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0832600185355009e-08
+        },
+        {
+          "time": "2026-07-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.691782116257195e-08
+        },
+        {
+          "time": "2026-07-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.972397377607255e-09
+        },
+        {
+          "time": "2026-07-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.121999635006772e-08
+        },
+        {
+          "time": "2026-07-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.036327593193098e-08
+        },
+        {
+          "time": "2026-07-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.235319756959331e-09
+        },
+        {
+          "time": "2026-07-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.1590047105217938e-08
+        },
+        {
+          "time": "2026-07-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.5236224660506555e-08
+        },
+        {
+          "time": "2026-07-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.781471845751903e-09
+        },
+        {
+          "time": "2026-07-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2190001551891208e-09
+        },
+        {
+          "time": "2026-07-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.721015042437049e-08
+        },
+        {
+          "time": "2026-08-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.54024303147941e-06
+        },
+        {
+          "time": "2026-08-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.564400650155347e-06
+        },
+        {
+          "time": "2026-08-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4063369517732372e-09
+        },
+        {
+          "time": "2026-08-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2688219752295318e-08
+        },
+        {
+          "time": "2026-08-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2057910909991906e-08
+        },
+        {
+          "time": "2026-08-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.124037543977218e-09
+        },
+        {
+          "time": "2026-08-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2720092332250514e-08
+        },
+        {
+          "time": "2026-08-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0166259776887634e-09
+        },
+        {
+          "time": "2026-08-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.3632650621732164e-09
+        },
+        {
+          "time": "2026-08-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.977603930786621e-08
+        },
+        {
+          "time": "2026-08-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.578967238757888e-09
+        },
+        {
+          "time": "2026-08-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.0260022725070445e-09
+        },
+        {
+          "time": "2026-08-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.0659123378649595e-10
+        },
+        {
+          "time": "2026-08-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5658858583263888e-06
+        },
+        {
+          "time": "2026-08-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5398580084139768e-06
+        },
+        {
+          "time": "2026-08-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.322403433358742e-09
+        },
+        {
+          "time": "2026-08-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.227033548135275e-08
+        },
+        {
+          "time": "2026-08-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.549102876909862e-08
+        },
+        {
+          "time": "2026-08-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.517429279988367e-08
+        },
+        {
+          "time": "2026-08-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.8795739376175205e-08
+        },
+        {
+          "time": "2026-08-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0266481876424135e-08
+        },
+        {
+          "time": "2026-08-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7694692642246078e-08
+        },
+        {
+          "time": "2026-08-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.333443588749516e-09
+        },
+        {
+          "time": "2026-08-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.844999287643731e-09
+        },
+        {
+          "time": "2026-08-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7239265189920928e-08
+        },
+        {
+          "time": "2026-08-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.491123912739744e-08
+        },
+        {
+          "time": "2026-08-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.977450725027558e-09
+        },
+        {
+          "time": "2026-08-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.496978982033958e-09
+        },
+        {
+          "time": "2026-09-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.3697269166462002e-08
+        },
+        {
+          "time": "2026-09-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.727234533527023e-08
+        },
+        {
+          "time": "2026-09-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4817236926368279e-09
+        },
+        {
+          "time": "2026-09-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.690218240526028e-08
+        },
+        {
+          "time": "2026-09-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.287668539567836e-08
+        },
+        {
+          "time": "2026-09-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.6138133865464594e-09
+        },
+        {
+          "time": "2026-09-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.319566742552442e-09
+        },
+        {
+          "time": "2026-09-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.785584673689092e-08
+        },
+        {
+          "time": "2026-09-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.609854590187614e-09
+        },
+        {
+          "time": "2026-09-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.19995059900792e-09
+        },
+        {
+          "time": "2026-09-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.6366960509491033e-08
+        },
+        {
+          "time": "2026-09-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.967911992183764e-09
+        },
+        {
+          "time": "2026-09-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0597217415701237e-09
+        },
+        {
+          "time": "2026-09-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 6.704626537785585e-09
+        },
+        {
+          "time": "2026-09-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.0704650379448738e-08
+        },
+        {
+          "time": "2026-09-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.9539049012701775e-08
+        },
+        {
+          "time": "2026-09-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.057645235248403e-09
+        },
+        {
+          "time": "2026-09-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.423422040772658e-09
+        },
+        {
+          "time": "2026-09-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.651710517094059e-08
+        },
+        {
+          "time": "2026-09-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.2521016008730715e-09
+        },
+        {
+          "time": "2026-09-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.464423698158314e-10
+        },
+        {
+          "time": "2026-09-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.078100337880863e-08
+        },
+        {
+          "time": "2026-09-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.197414835183707e-09
+        },
+        {
+          "time": "2026-09-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.364438733882551e-08
+        },
+        {
+          "time": "2026-09-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.9497985679364564e-10
+        },
+        {
+          "time": "2026-09-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.1073199564484985e-09
+        },
+        {
+          "time": "2026-09-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.529069800532757e-09
+        },
+        {
+          "time": "2026-09-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.4381422016433065e-10
+        },
+        {
+          "time": "2026-09-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.2754203295626256e-08
+        },
+        {
+          "time": "2026-09-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.1525583961105283e-09
+        },
+        {
+          "time": "2026-10-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4651299861283948e-10
+        },
+        {
+          "time": "2026-10-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.594023965161979e-08
+        },
+        {
+          "time": "2026-10-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.504550616182702e-09
+        },
+        {
+          "time": "2026-10-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.014979992611475e-09
+        },
+        {
+          "time": "2026-10-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.2398669157584688e-08
+        },
+        {
+          "time": "2026-10-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.408552207263633e-09
+        },
+        {
+          "time": "2026-10-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.3712544721455716e-09
+        },
+        {
+          "time": "2026-10-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.8925486280194865e-08
+        },
+        {
+          "time": "2026-10-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.1371403709710106e-08
+        },
+        {
+          "time": "2026-10-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.1774383914631017e-08
+        },
+        {
+          "time": "2026-10-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.902961581135533e-09
+        },
+        {
+          "time": "2026-10-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0342346437467753e-08
+        },
+        {
+          "time": "2026-10-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.5646541381200157e-08
+        },
+        {
+          "time": "2026-10-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.780121359874633e-08
+        },
+        {
+          "time": "2026-10-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.9992332669680287e-08
+        },
+        {
+          "time": "2026-10-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.661251616268445e-09
+        },
+        {
+          "time": "2026-10-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.453714236540752e-09
+        },
+        {
+          "time": "2026-10-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.869538289779892e-09
+        },
+        {
+          "time": "2026-10-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.595554521228053e-09
+        },
+        {
+          "time": "2026-10-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.1828350011090283e-09
+        },
+        {
+          "time": "2026-10-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.4524729886577583e-08
+        },
+        {
+          "time": "2026-10-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.3900934618778517e-08
+        },
+        {
+          "time": "2026-10-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.213069910860429e-06
+        }
+      ]
+    },
+    "no_stop_cost_funding": {
+      "start_utc": "2026-05-25T00:00:00+00:00",
+      "last_hour_open_utc": "2026-10-29T18:00:00+00:00",
+      "hours": 3787,
+      "return_pct": 1.624325,
+      "max_hour_close_drawdown_pct": 0.86965,
+      "max_eod_drawdown_pct": 0.727928,
+      "max_intraday_low_proxy_pct": 0.424398,
+      "fees_pct_initial_equity": 0.087557,
+      "net_funding_debit_pct_initial_equity": 0.218752,
+      "first_breaches": {},
+      "orders_count": 101,
+      "stop_exits": [],
+      "stop_trigger_hours": [],
+      "unexecuted_stop_at_end": false,
+      "ending_open_position": false,
+      "orders": [
+        {
+          "time": "2026-05-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.2983444866577784e-06
+        },
+        {
+          "time": "2026-05-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.001280308051133e-09
+        },
+        {
+          "time": "2026-05-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2943432063497273e-06
+        },
+        {
+          "time": "2026-07-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5359093531610647e-06
+        },
+        {
+          "time": "2026-07-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.548474587919921e-09
+        },
+        {
+          "time": "2026-07-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5414578277489846e-06
+        },
+        {
+          "time": "2026-07-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5584933606044404e-06
+        },
+        {
+          "time": "2026-07-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.9542261779333493e-08
+        },
+        {
+          "time": "2026-07-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.286448969606379e-09
+        },
+        {
+          "time": "2026-07-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0832600185355009e-08
+        },
+        {
+          "time": "2026-07-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.691782116257195e-08
+        },
+        {
+          "time": "2026-07-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.972397377607255e-09
+        },
+        {
+          "time": "2026-07-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.121999635006772e-08
+        },
+        {
+          "time": "2026-07-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.036327593193098e-08
+        },
+        {
+          "time": "2026-07-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.235319756959331e-09
+        },
+        {
+          "time": "2026-07-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.1590047105217938e-08
+        },
+        {
+          "time": "2026-07-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.5236224660506555e-08
+        },
+        {
+          "time": "2026-07-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.781471845751903e-09
+        },
+        {
+          "time": "2026-07-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2190001551891208e-09
+        },
+        {
+          "time": "2026-07-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.721015042437049e-08
+        },
+        {
+          "time": "2026-08-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.54024303147941e-06
+        },
+        {
+          "time": "2026-08-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.564400650155347e-06
+        },
+        {
+          "time": "2026-08-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4063369517732372e-09
+        },
+        {
+          "time": "2026-08-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2688219752295318e-08
+        },
+        {
+          "time": "2026-08-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2057910909991906e-08
+        },
+        {
+          "time": "2026-08-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.124037543977218e-09
+        },
+        {
+          "time": "2026-08-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.2720092332250514e-08
+        },
+        {
+          "time": "2026-08-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0166259776887634e-09
+        },
+        {
+          "time": "2026-08-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.3632650621732164e-09
+        },
+        {
+          "time": "2026-08-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.977603930786621e-08
+        },
+        {
+          "time": "2026-08-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.578967238757888e-09
+        },
+        {
+          "time": "2026-08-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.0260022725070445e-09
+        },
+        {
+          "time": "2026-08-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.0659123378649595e-10
+        },
+        {
+          "time": "2026-08-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.5658858583263888e-06
+        },
+        {
+          "time": "2026-08-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.5398580084139768e-06
+        },
+        {
+          "time": "2026-08-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.322403433358742e-09
+        },
+        {
+          "time": "2026-08-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.227033548135275e-08
+        },
+        {
+          "time": "2026-08-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.549102876909862e-08
+        },
+        {
+          "time": "2026-08-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.517429279988367e-08
+        },
+        {
+          "time": "2026-08-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.8795739376175205e-08
+        },
+        {
+          "time": "2026-08-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0266481876424135e-08
+        },
+        {
+          "time": "2026-08-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7694692642246078e-08
+        },
+        {
+          "time": "2026-08-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 7.333443588749516e-09
+        },
+        {
+          "time": "2026-08-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.844999287643731e-09
+        },
+        {
+          "time": "2026-08-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.7239265189920928e-08
+        },
+        {
+          "time": "2026-08-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.491123912739744e-08
+        },
+        {
+          "time": "2026-08-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.977450725027558e-09
+        },
+        {
+          "time": "2026-08-31T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.496978982033958e-09
+        },
+        {
+          "time": "2026-09-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.3697269166462002e-08
+        },
+        {
+          "time": "2026-09-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.727234533527023e-08
+        },
+        {
+          "time": "2026-09-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4817236926368279e-09
+        },
+        {
+          "time": "2026-09-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.690218240526028e-08
+        },
+        {
+          "time": "2026-09-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.287668539567836e-08
+        },
+        {
+          "time": "2026-09-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.6138133865464594e-09
+        },
+        {
+          "time": "2026-09-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.319566742552442e-09
+        },
+        {
+          "time": "2026-09-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.785584673689092e-08
+        },
+        {
+          "time": "2026-09-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.609854590187614e-09
+        },
+        {
+          "time": "2026-09-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.19995059900792e-09
+        },
+        {
+          "time": "2026-09-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.6366960509491033e-08
+        },
+        {
+          "time": "2026-09-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.967911992183764e-09
+        },
+        {
+          "time": "2026-09-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0597217415701237e-09
+        },
+        {
+          "time": "2026-09-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 6.704626537785585e-09
+        },
+        {
+          "time": "2026-09-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.0704650379448738e-08
+        },
+        {
+          "time": "2026-09-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 3.9539049012701775e-08
+        },
+        {
+          "time": "2026-09-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -9.057645235248403e-09
+        },
+        {
+          "time": "2026-09-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.423422040772658e-09
+        },
+        {
+          "time": "2026-09-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -6.651710517094059e-08
+        },
+        {
+          "time": "2026-09-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -5.2521016008730715e-09
+        },
+        {
+          "time": "2026-09-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.464423698158314e-10
+        },
+        {
+          "time": "2026-09-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.078100337880863e-08
+        },
+        {
+          "time": "2026-09-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 5.197414835183707e-09
+        },
+        {
+          "time": "2026-09-24T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.364438733882551e-08
+        },
+        {
+          "time": "2026-09-25T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.9497985679364564e-10
+        },
+        {
+          "time": "2026-09-26T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.1073199564484985e-09
+        },
+        {
+          "time": "2026-09-27T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.529069800532757e-09
+        },
+        {
+          "time": "2026-09-28T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.4381422016433065e-10
+        },
+        {
+          "time": "2026-09-29T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.2754203295626256e-08
+        },
+        {
+          "time": "2026-09-30T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.1525583961105283e-09
+        },
+        {
+          "time": "2026-10-01T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.4651299861283948e-10
+        },
+        {
+          "time": "2026-10-02T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.594023965161979e-08
+        },
+        {
+          "time": "2026-10-03T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 4.504550616182702e-09
+        },
+        {
+          "time": "2026-10-04T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -3.014979992611475e-09
+        },
+        {
+          "time": "2026-10-05T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -2.2398669157584688e-08
+        },
+        {
+          "time": "2026-10-06T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 9.408552207263633e-09
+        },
+        {
+          "time": "2026-10-07T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.3712544721455716e-09
+        },
+        {
+          "time": "2026-10-08T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.8925486280194865e-08
+        },
+        {
+          "time": "2026-10-09T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.1371403709710106e-08
+        },
+        {
+          "time": "2026-10-10T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.1774383914631017e-08
+        },
+        {
+          "time": "2026-10-11T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -4.902961581135533e-09
+        },
+        {
+          "time": "2026-10-12T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.0342346437467753e-08
+        },
+        {
+          "time": "2026-10-13T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.5646541381200157e-08
+        },
+        {
+          "time": "2026-10-14T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.780121359874633e-08
+        },
+        {
+          "time": "2026-10-15T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.9992332669680287e-08
+        },
+        {
+          "time": "2026-10-16T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -7.661251616268445e-09
+        },
+        {
+          "time": "2026-10-17T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 8.453714236540752e-09
+        },
+        {
+          "time": "2026-10-18T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 1.869538289779892e-09
+        },
+        {
+          "time": "2026-10-19T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -8.595554521228053e-09
+        },
+        {
+          "time": "2026-10-20T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": 2.1828350011090283e-09
+        },
+        {
+          "time": "2026-10-21T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.4524729886577583e-08
+        },
+        {
+          "time": "2026-10-22T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.3900934618778517e-08
+        },
+        {
+          "time": "2026-10-23T00:00:00+00:00",
+          "reason": "daily_target",
+          "quantity_change": -1.213069910860429e-06
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Historical exploratory diagnostic, not H-025 evidence or Vanta qualification.",
+    "Spot cash/units proxy; validator accounting not replicated.",
+    "10% post-fee target only at daily rebalance; exposure drifts intraday.",
+    "2% global close-equity stop, detected hourly and executed next open; gaps can exceed target.",
+    "Reentry requires a daily flat state followed by long after stop; high-water is never reset.",
+    "Funding bucket start at open-price notional is approximate.",
+    "3bps spread plus assumed 5bps slippage per traded notional; not actual fills.",
+    "Continue after platform breaches for diagnostics; no surviving-account profit claim.",
+    "No ranking, challenge deadline/completion, payout, collateral or prospective verification."
+  ]
+}
