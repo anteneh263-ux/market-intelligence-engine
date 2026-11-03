@@ -1,0 +1,15 @@
+{
+  "source": "https://api.binance.com/api/v3/klines",
+  "prepared_utc": "2026-10-27T18:53:00.172015+00:00",
+  "start_inclusive": "2020-02-20",
+  "end_exclusive": "2025-01-01",
+  "bars_4h": 10662,
+  "bars_1d": 1777,
+  "gaps": 0,
+  "raw_sha256": "6e4aa5444333bb01c4efaf54e173e2c9be38f7ffd58f8933f63c1ec1920f3b6b",
+  "amendment_sha256": "1379a65dee3150d9a06cf1f4ac54b6b9a4ac98cb5716b119a10a137933fb3b92",
+  "hashes": {
+    "BTCUSDT_4h.csv": "0723661a2667e8b08c91fafc6d690bcba8a62c0e688e09c090a7f685751f31a8",
+    "BTCUSDT_1d.csv": "dfcf3f017f33b2492e1e1191b5dbce888c0c2214e226956c50ce4257b1754ac2"
+  }
+}

@@ -1,0 +1,1 @@
+Original v1 output has a failed benchmark accounting check. Do not use its buy-and-hold Sharpe or bankruptcy balance. Original results are preserved; see ../BTC_CHART_PATTERNS_2026-10-27_v1_1/CORRECTION.md and REPORT.md for the corrected replay. Strategy parameters were not changed.

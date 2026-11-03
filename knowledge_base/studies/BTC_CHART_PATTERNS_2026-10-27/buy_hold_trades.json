@@ -1,0 +1,23 @@
+[
+  {
+    "entry_i": 1896,
+    "signal_i": 1895,
+    "side": 1,
+    "quantity": 0.34527210505218553,
+    "entry_price": 28962.664094999996,
+    "entry_fee": 5.0,
+    "funding": -5730.000660220648,
+    "stop": 0.0,
+    "target": 86887.99228499999,
+    "planned_exit": 10662,
+    "pattern": [],
+    "exit_i": 5963,
+    "exit_price": 15897.0475,
+    "exit_reason": "bankrupt",
+    "price_pnl": -4511.192945560417,
+    "fees": 7.7444035272197915,
+    "net_pnl": -10248.938009308284,
+    "duration": 4067,
+    "equity_after": -248.93800930829912
+  }
+]

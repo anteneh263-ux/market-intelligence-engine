@@ -1,0 +1,11 @@
+{
+  "source_hashes": {
+    "app/strategy_research/chart_patterns_run.py": "8a0cd42ab922b37c27367d6697893dec3921d9987891eaebe66914222516b9b9",
+    "app/strategy_research/chart_patterns_v1.py": "19755f0b14b656520d7e8a13db96f647de4133c92f682157fe5f099b9fe57777",
+    "tests/test_chart_patterns_v1.py": "a8ff423be087b5246998e88c7262d44b91ceabafde1bec8bdaf85f72eb6cfa94",
+    "docs/BTC_CHART_PATTERNS_V1_PLAN.md": "ea04e7616af01827ab91ee7b9bbbacad4312329d4ab30108e0c74ae6dc5d1fdb"
+  },
+  "amendment_hash": "87b0d552f26d8813f7636d4391259e433f73f7900ad49dab3077c4ca3625d5f5",
+  "correction_hash": "87beab23c02e85ac5015fd8d146dcf94c86675e6c34a59a210549e1bb02bd9d0",
+  "original_amendment_hash": "e33eaf26a4933b972f89a5a43c74878e8812348646296d4c2718d46f9799abce"
+}

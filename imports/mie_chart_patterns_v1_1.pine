@@ -1,0 +1,221 @@
+//@version=6
+indicator("MIE • Five confirmed chart patterns v1.1", overlay=true, max_bars_back=300, max_lines_count=500, max_labels_count=500)
+// Visual port of app/strategy_research/chart_patterns_v1.py::signals/geometry.
+// INDICATOR ONLY: every detector signal, not filtered by open positions.
+// No funding, orders, trade exits, or performance claims. Rules intentionally fixed.
+// Pattern legs point to past pivots; confirmation labels NEVER move back in time.
+
+startDate = input.time(timestamp("20 Feb 2020 00:00 +0000"), "Detector start (UTC)")
+showLegs = input.bool(true, "Draw historical pattern legs after confirmation")
+showStops = input.bool(true, "Draw stop level known at confirmation")
+showNext = input.bool(true, "Mark next candle (earliest entry opportunity)")
+keepPatterns = input.int(40, "Keep last confirmed drawings", minval=1, maxval=50)
+
+type Swing
+    int x
+    float y
+    int kind
+    float pivotClose
+    float close20Before
+    bool trendReady
+
+var array<Swing> pivots = array.new<Swing>()
+var array<string> lastKeys = array.new_string(5, "")
+var array<int> counts = array.new_int(5, 0)
+var array<line> drawings = array.new<line>()
+var array<label> labels = array.new<label>()
+var array<int> groupSizes = array.new_int()
+
+f_name(int id) =>
+    switch id
+        0 => "Double bottom"
+        1 => "Double top"
+        2 => "Inverse H&S"
+        3 => "Head & shoulders"
+        => "Symmetric triangle"
+
+f_level(Swing a, Swing b, int t) =>
+    a.y + (b.y - a.y) * (t - a.x) / (b.x - a.x)
+
+f_geometry(array<Swing> ps, int id, float atrValue) =>
+    int side = 0
+    float stop = na
+    string key = ""
+    int n = id == 4 ? 6 : id >= 2 ? 5 : 3
+    if array.size(ps) >= n and not na(atrValue) and atrValue > 0
+        int base = array.size(ps) - n
+        Swing first = array.get(ps, base)
+        Swing last = array.get(ps, base + n - 1)
+        int span = last.x - first.x
+        if span >= 12 and span <= 120 and bar_index - last.x <= 30
+            for j = 0 to n - 1
+                key += str.tostring(array.get(ps, base + j).x) + ":"
+            if id == 4
+                array<Swing> highs = array.new<Swing>()
+                array<Swing> lows = array.new<Swing>()
+                for j = 0 to 5
+                    Swing p = array.get(ps, base + j)
+                    if p.kind == 1
+                        array.push(highs, p)
+                    else
+                        array.push(lows, p)
+                if array.size(highs) == 3 and array.size(lows) == 3
+                    Swing h0 = array.get(highs, 0)
+                    Swing h1 = array.get(highs, 1)
+                    Swing h2 = array.get(highs, 2)
+                    Swing l0 = array.get(lows, 0)
+                    Swing l1 = array.get(lows, 1)
+                    Swing l2 = array.get(lows, 2)
+                    bool converges = h0.y > h1.y and h1.y > h2.y and l0.y < l1.y and l1.y < l2.y
+                    bool straight = math.abs(h1.y - f_level(h0, h2, h1.x)) <= 0.5 * atrValue and math.abs(l1.y - f_level(l0, l2, l1.x)) <= 0.5 * atrValue
+                    float upper = f_level(h0, h2, bar_index)
+                    float lower = f_level(l0, l2, bar_index)
+                    float initial = f_level(h0, h2, first.x) - f_level(l0, l2, first.x)
+                    bool widthOk = initial >= 2 * atrValue and upper - lower > 0 and upper - lower <= 0.75 * initial
+                    if converges and straight and widthOk
+                        if close[1] <= f_level(h0, h2, bar_index - 1) and close > upper
+                            side := 1
+                            stop := lower - 0.1 * atrValue
+                        else if close[1] >= f_level(l0, l2, bar_index - 1) and close < lower
+                            side := -1
+                            stop := upper + 0.1 * atrValue
+            else
+                bool bull = id == 0 or id == 2
+                int direction = bull ? 1 : -1
+                bool kindsOk = true
+                for j = 0 to n - 1
+                    int expected = j % 2 == 0 ? -direction : direction
+                    kindsOk := kindsOk and array.get(ps, base + j).kind == expected
+                bool trendOk = first.trendReady and direction * (first.pivotClose - first.close20Before) < 0
+                bool shouldersOk = math.abs(first.y - last.y) <= 0.5 * atrValue
+                if kindsOk and trendOk and shouldersOk
+                    Swing p1 = array.get(ps, base + 1)
+                    float neck = p1.y
+                    float previousNeck = p1.y
+                    float extreme = bull ? math.min(first.y, last.y) : math.max(first.y, last.y)
+                    float height = direction * (neck - extreme)
+                    bool headOk = true
+                    if n == 5
+                        Swing head = array.get(ps, base + 2)
+                        Swing p3 = array.get(ps, base + 3)
+                        headOk := math.min(direction * (first.y - head.y), direction * (last.y - head.y)) >= atrValue
+                        neck := f_level(p1, p3, bar_index)
+                        previousNeck := f_level(p1, p3, bar_index - 1)
+                        extreme := head.y
+                        height := direction * (f_level(p1, p3, head.x) - extreme)
+                    bool crosses = direction * (close[1] - previousNeck) <= 0 and direction * (close - neck) > 0
+                    if headOk and height >= 2 * atrValue and crosses
+                        side := direction
+                        stop := extreme - direction * 0.1 * atrValue
+    [side, stop, key]
+
+f_draw(array<Swing> ps, int id, int side, float stop) =>
+    int n = id == 4 ? 6 : id >= 2 ? 5 : 3
+    int base = array.size(ps) - n
+    color col = side == 1 ? color.lime : color.orange
+    int made = 0
+    if showLegs
+        for j = 0 to n - 2
+            Swing a = array.get(ps, base + j)
+            Swing b = array.get(ps, base + j + 1)
+            array.push(drawings, line.new(a.x, a.y, b.x, b.y, color=col, width=2))
+            made += 1
+        if id == 4
+            // With six alternating pivots, each parity identifies one boundary.
+            for parity = 0 to 1
+                Swing a = array.get(ps, base + parity)
+                Swing b = array.get(ps, base + parity + 4)
+                array.push(drawings, line.new(a.x, a.y, bar_index, f_level(a, b, bar_index), color=col, style=line.style_dashed))
+                made += 1
+        else
+            Swing a = array.get(ps, base + 1)
+            float atSignal = a.y
+            if n == 5
+                Swing b = array.get(ps, base + 3)
+                atSignal := f_level(a, b, bar_index)
+            array.push(drawings, line.new(a.x, a.y, bar_index, atSignal, color=col, style=line.style_dashed))
+            made += 1
+    if showStops
+        array.push(drawings, line.new(bar_index, stop, bar_index + 1, stop, color=color.red, style=line.style_dotted))
+        made += 1
+    string labelText = f_name(id) + "\nCONFIRMED CLOSE"
+    string tip = "Detected at this candle's CLOSE. Earlier pivot legs were only known later.\nEarliest entry: next candle OPEN.\nStop at signal: " + str.tostring(stop, format.mintick) + "\nDetector signal, not necessarily an executed MIE trade."
+    array.push(labels, label.new(bar_index, side == 1 ? low : high, labelText, style=side == 1 ? label.style_label_up : label.style_label_down, color=col, textcolor=color.black, size=size.small, tooltip=tip))
+    array.push(groupSizes, made)
+    while array.size(groupSizes) > keepPatterns
+        int oldSize = array.shift(groupSizes)
+        if oldSize > 0
+            for j = 1 to oldSize
+                line.delete(array.shift(drawings))
+        label.delete(array.shift(labels))
+
+// Python uses SMA of true range, NOT Wilder's ta.atr().
+float atrValue = ta.sma(ta.tr(true), 14)
+float leftHigh = ta.highest(high[6], 5)
+float rightHigh = ta.highest(high, 5)
+float leftLow = ta.lowest(low[6], 5)
+float rightLow = ta.lowest(low, 5)
+bool pivotHigh = high[5] > math.max(leftHigh, rightHigh)
+bool pivotLow = low[5] < math.min(leftLow, rightLow)
+
+int db = 0
+int dt = 0
+int ihs = 0
+int hs = 0
+int triangle = 0
+if barstate.isconfirmed and bar_index >= 10 and time[10] >= startDate
+    if pivotHigh != pivotLow
+        int kind = pivotHigh ? 1 : -1
+        Swing p = Swing.new(bar_index - 5, pivotHigh ? high[5] : low[5], kind, close[5], close[25], not na(time[25]) and time[25] >= startDate)
+        int size = array.size(pivots)
+        if size > 0 and array.get(pivots, size - 1).kind == kind
+            if (p.y - array.get(pivots, size - 1).y) * kind > 0
+                array.set(pivots, size - 1, p)
+        else
+            array.push(pivots, p)
+        if array.size(pivots) > 6
+            array.shift(pivots)
+    for id = 0 to 4
+        [side, stop, key] = f_geometry(pivots, id, atrValue)
+        // Pivot indices only move forward; an emitted tuple cannot recur after a newer one.
+        if side != 0 and key != array.get(lastKeys, id)
+            array.set(lastKeys, id, key)
+            array.set(counts, id, array.get(counts, id) + 1)
+            f_draw(pivots, id, side, stop)
+            if id == 0
+                db := side
+            else if id == 1
+                dt := side
+            else if id == 2
+                ihs := side
+            else if id == 3
+                hs := side
+            else
+                triangle := side
+
+// Export these five plots for timestamp-by-timestamp comparisons against MIE.
+plot(db, "MIE double_bottom", display=display.data_window)
+plot(dt, "MIE double_top", display=display.data_window)
+plot(ihs, "MIE inverse_head_shoulders", display=display.data_window)
+plot(hs, "MIE head_shoulders", display=display.data_window)
+plot(triangle, "MIE symmetric_triangle", display=display.data_window)
+bool anyLong = db == 1 or ihs == 1 or triangle == 1
+bool anyShort = dt == -1 or hs == -1 or triangle == -1
+plotshape(showNext and anyLong[1], title="Next candle after long confirmation", style=shape.circle, location=location.belowbar, color=color.aqua, size=size.tiny, text="NEXT")
+plotshape(showNext and anyShort[1], title="Next candle after short confirmation", style=shape.circle, location=location.abovebar, color=color.fuchsia, size=size.tiny, text="NEXT")
+alertcondition(db == 1, "MIE Double bottom confirmed", "MIE double bottom confirmed at candle close.")
+alertcondition(dt == -1, "MIE Double top confirmed", "MIE double top confirmed at candle close.")
+alertcondition(ihs == 1, "MIE Inverse H&S confirmed", "MIE inverse head-and-shoulders confirmed at candle close.")
+alertcondition(hs == -1, "MIE H&S confirmed", "MIE head-and-shoulders confirmed at candle close.")
+alertcondition(triangle != 0, "MIE Triangle confirmed", "MIE symmetric triangle breakout confirmed at candle close.")
+
+var table info = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 15))
+if barstate.islast
+    bool fourHour = timeframe.isintraday and timeframe.multiplier == 240
+    table.cell(info, 0, 0, "MIE v1.1 • detector", text_color=color.white)
+    table.cell(info, 1, 0, fourHour ? "4H" : "Use 4H for MIE", text_color=fourHour ? color.lime : color.orange)
+    for id = 0 to 4
+        table.cell(info, 0, id + 1, f_name(id), text_color=color.white)
+        table.cell(info, 1, id + 1, str.tostring(array.get(counts, id)), text_color=color.white)
+    table.cell(info, 0, 6, "Counts = loaded history", text_color=color.silver)
+    table.cell(info, 1, 6, "Not trade counts", text_color=color.silver)

@@ -1,0 +1,573 @@
+{
+  "assets": [
+    "BTC/USD",
+    "ETH/USD",
+    "SPY",
+    "XAU/USD"
+  ],
+  "control_id": "CTRL-TARGET-ONLY",
+  "cost_bps": 5.0,
+  "generated_at": "2026-07-22T12:59:06Z",
+  "kind": "research_safety_batch",
+  "ledger": {
+    "by_status": {
+      "valid": 27
+    },
+    "by_type": {
+      "candidate": 27
+    },
+    "dsr_trials": 27,
+    "excluded_trials": 0,
+    "total_trials": 27
+  },
+  "matrix": "srp-matrix-v2",
+  "note": "Research only \u2014 no forward test was started, no broker, no orders, no private keys. A verdict/decision is a statement about evidence, not advice.",
+  "provider": "csv",
+  "slippage_bps": 5.0,
+  "strategies": [
+    {
+      "control_verdict": "control_wins",
+      "dsr": 0.004118,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.963981,
+      "num_trades": 4364,
+      "oos_sharpe": -0.081688,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-002",
+      "total_return": -0.958462,
+      "trial_id": "TC-f97b3ff3ab44"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.283722,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.689873,
+      "num_trades": 113,
+      "oos_sharpe": -0.011418,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-003",
+      "total_return": -0.370116,
+      "trial_id": "TC-280102dac941"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.506461,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.681829,
+      "num_trades": 138,
+      "oos_sharpe": 0.001792,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-004",
+      "total_return": 0.101096,
+      "trial_id": "TC-647458c395cb"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.470425,
+      "failure_reasons": [
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.587509,
+      "num_trades": 292,
+      "oos_sharpe": 0.011539,
+      "promotion_decision": "REJECT",
+      "status": "Not Supported",
+      "strategy_id": "H-005",
+      "total_return": 0.18451,
+      "trial_id": "TC-9b8a8d7c4637"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.404015,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.716329,
+      "num_trades": 1139,
+      "oos_sharpe": -0.005178,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-006",
+      "total_return": -0.38781,
+      "trial_id": "TC-642dae32f568"
+    },
+    {
+      "control_verdict": "control_wins",
+      "dsr": 0.004819,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.954078,
+      "num_trades": 4312,
+      "oos_sharpe": -0.072586,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-007",
+      "total_return": -0.937912,
+      "trial_id": "TC-a053fb6aa9a6"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.477301,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.707932,
+      "num_trades": 718,
+      "oos_sharpe": -0.002754,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-008",
+      "total_return": -0.405912,
+      "trial_id": "TC-9572cf2e16be"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.732523,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.613673,
+      "num_trades": 160,
+      "oos_sharpe": 0.019462,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-009",
+      "total_return": 1.164488,
+      "trial_id": "TC-45891b29dae3"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.371104,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.734783,
+      "num_trades": 755,
+      "oos_sharpe": -0.010152,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-010",
+      "total_return": -0.470297,
+      "trial_id": "TC-b145a1d8cef2"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.599694,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.629371,
+      "num_trades": 1016,
+      "oos_sharpe": 0.008273,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-011",
+      "total_return": 0.61465,
+      "trial_id": "TC-8d203e031bc5"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.578944,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.65002,
+      "num_trades": 378,
+      "oos_sharpe": 0.011488,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-012",
+      "total_return": 0.131597,
+      "trial_id": "TC-9ce0c77c55da"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.449886,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.655202,
+      "num_trades": 754,
+      "oos_sharpe": 0.012844,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-013",
+      "total_return": 0.693925,
+      "trial_id": "TC-d723be779aee"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.453733,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.767333,
+      "num_trades": 464,
+      "oos_sharpe": -0.0086,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-014",
+      "total_return": -0.216356,
+      "trial_id": "TC-804bb4a58fff"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.345966,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.726096,
+      "num_trades": 700,
+      "oos_sharpe": -0.010377,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-015",
+      "total_return": -0.605057,
+      "trial_id": "TC-670f5cfe39d4"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.63303,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.679267,
+      "num_trades": 290,
+      "oos_sharpe": 0.008319,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-016",
+      "total_return": 0.208546,
+      "trial_id": "TC-89e4d47d59de"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.338868,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.725679,
+      "num_trades": 1154,
+      "oos_sharpe": -0.009734,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-017",
+      "total_return": -0.556413,
+      "trial_id": "TC-0f3eb58cb6af"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.755786,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.605854,
+      "num_trades": 147,
+      "oos_sharpe": 0.024731,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-018",
+      "total_return": 2.223783,
+      "trial_id": "TC-017dd5dba857"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.515483,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.701556,
+      "num_trades": 265,
+      "oos_sharpe": 0.004052,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-019",
+      "total_return": -0.007593,
+      "trial_id": "TC-89d961b9cc89"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.111115,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.829118,
+      "num_trades": 70,
+      "oos_sharpe": -0.026098,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-020",
+      "total_return": -0.746549,
+      "trial_id": "TC-1ef5bb55d3f1"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.097549,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.806994,
+      "num_trades": 461,
+      "oos_sharpe": -0.032684,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-021",
+      "total_return": -0.736779,
+      "trial_id": "TC-24bbcce9a4b0"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.329125,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.719334,
+      "num_trades": 354,
+      "oos_sharpe": -0.009399,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-022",
+      "total_return": -0.532689,
+      "trial_id": "TC-6613adc91e5b"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.594608,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.649932,
+      "num_trades": 920,
+      "oos_sharpe": 0.005542,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-023",
+      "total_return": 0.662125,
+      "trial_id": "TC-d60c62dff65f"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.308221,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.753018,
+      "num_trades": 950,
+      "oos_sharpe": -0.009441,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-024",
+      "total_return": -0.024506,
+      "trial_id": "TC-ec0354184839"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.972413,
+      "failure_reasons": [
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.38986,
+      "num_trades": 99,
+      "oos_sharpe": 0.04722,
+      "promotion_decision": "REJECT",
+      "status": "Not Supported",
+      "strategy_id": "H-025",
+      "total_return": 4.897633,
+      "trial_id": "TC-dac9a7a5cffd"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.961871,
+      "failure_reasons": [
+        "min_trades",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.475993,
+      "num_trades": 27,
+      "oos_sharpe": 0.04213,
+      "promotion_decision": "REJECT",
+      "status": "Inconclusive",
+      "strategy_id": "H-026",
+      "total_return": 4.074204,
+      "trial_id": "TC-485279492ccb"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.555126,
+      "failure_reasons": [
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.371689,
+      "num_trades": 336,
+      "oos_sharpe": 0.01248,
+      "promotion_decision": "REJECT",
+      "status": "Not Supported",
+      "strategy_id": "H-027",
+      "total_return": 0.061606,
+      "trial_id": "TC-10887b490725"
+    },
+    {
+      "control_verdict": "inconclusive",
+      "dsr": 0.657462,
+      "failure_reasons": [
+        "max_drawdown",
+        "dsr_overfitting",
+        "input_audit",
+        "target_control"
+      ],
+      "in_dsr": true,
+      "input_audit_promotable": null,
+      "max_drawdown": 0.636758,
+      "num_trades": 391,
+      "oos_sharpe": 0.01029,
+      "promotion_decision": "REJECT",
+      "status": "Graveyard",
+      "strategy_id": "H-028",
+      "total_return": 0.46942,
+      "trial_id": "TC-3dd3e0335933"
+    }
+  ],
+  "summary": {
+    "n_hold": 0,
+    "n_promote": 0,
+    "n_reject": 27,
+    "n_strategies": 27,
+    "n_technical_failures": 0,
+    "n_valid": 27
+  },
+  "timeframe": "1d"
+}

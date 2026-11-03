@@ -1,0 +1,15 @@
+{
+  "version": "mie-chart-patterns-v1.1",
+  "time": "2026-10-27T19:51:57.553646+00:00",
+  "original_registration_path": "knowledge_base/studies/BTC_CHART_PATTERNS_2026-10-27/REGISTRATION.json",
+  "original_registration_hash": "ff1687aa82be11848980f6b937d7e8c83dc715956b50195f6977d3597f9c099e",
+  "correction_hash": "87beab23c02e85ac5015fd8d146dcf94c86675e6c34a59a210549e1bb02bd9d0",
+  "original_results_hash": "8ecdb3923caae2c961bea15890ad982a04ec494d2a97b7f8e9e5e4c8e27801a0",
+  "source_hashes": {
+    "app/strategy_research/chart_patterns_run.py": "8a0cd42ab922b37c27367d6697893dec3921d9987891eaebe66914222516b9b9",
+    "app/strategy_research/chart_patterns_v1.py": "19755f0b14b656520d7e8a13db96f647de4133c92f682157fe5f099b9fe57777",
+    "tests/test_chart_patterns_v1.py": "a8ff423be087b5246998e88c7262d44b91ceabafde1bec8bdaf85f72eb6cfa94",
+    "docs/BTC_CHART_PATTERNS_V1_PLAN.md": "ea04e7616af01827ab91ee7b9bbbacad4312329d4ab30108e0c74ae6dc5d1fdb"
+  },
+  "additional_test_hash": "62da93ccd9c88d52623419f5ad2b461ba70a54629ada5c1c95d4570161d093a9"
+}

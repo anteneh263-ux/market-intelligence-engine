@@ -1,0 +1,56 @@
+{
+  "double_bottom": {
+    "completed_trades": 10,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": true
+  },
+  "double_top": {
+    "completed_trades": 7,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": true
+  },
+  "inverse_head_shoulders": {
+    "completed_trades": 4,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": true
+  },
+  "head_shoulders": {
+    "completed_trades": 0,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": true
+  },
+  "symmetric_triangle": {
+    "completed_trades": 0,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": true
+  },
+  "buy_hold": {
+    "completed_trades": 1,
+    "price_pnl_verified": true,
+    "both_side_fees_verified": true,
+    "funding_ownership_verified": true,
+    "next_open_verified": true,
+    "equity_including_debt_reconciled": true,
+    "original_strategy_results_unchanged": false
+  }
+}

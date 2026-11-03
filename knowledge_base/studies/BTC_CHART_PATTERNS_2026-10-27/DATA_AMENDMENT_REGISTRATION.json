@@ -1,0 +1,12 @@
+{
+  "source_hashes": {
+    "app/strategy_research/chart_patterns_run.py": "62e1a08fef77b3a2b8f4bb6dd35e5b63f35f2c50f918871cb606229a1c294df8",
+    "app/strategy_research/chart_patterns_v1.py": "3cba5db0ed22f3fb0c242075e882eeb44f6d98f88a404d3d319d90229fca0ab5",
+    "tests/test_chart_patterns_v1.py": "a8ff423be087b5246998e88c7262d44b91ceabafde1bec8bdaf85f72eb6cfa94",
+    "docs/BTC_CHART_PATTERNS_V1_PLAN.md": "ea04e7616af01827ab91ee7b9bbbacad4312329d4ab30108e0c74ae6dc5d1fdb"
+  },
+  "amendment_hash": "87b0d552f26d8813f7636d4391259e433f73f7900ad49dab3077c4ca3625d5f5",
+  "time": "2026-10-27T19:48:23.832548+00:00",
+  "original_registration_hash": "ff1687aa82be11848980f6b937d7e8c83dc715956b50195f6977d3597f9c099e",
+  "reason": "Missing funding marks and timestamp reporting jitter; no results viewed"
+}

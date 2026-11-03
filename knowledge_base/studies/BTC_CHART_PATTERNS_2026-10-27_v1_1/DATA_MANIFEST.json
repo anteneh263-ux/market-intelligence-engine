@@ -1,0 +1,17 @@
+{
+  "source": "https://fapi.binance.com",
+  "bars": 10662,
+  "funding_events": 5331,
+  "proxy_mark_events": 4048,
+  "normalized_timestamp_events": 2382,
+  "max_reported_offset_ms": 47,
+  "hashes": {
+    "funding.csv": "a41510cf9ff2a0a6e11036c0b7f9bdb2137417e91a58f8a2228722a148426e7f",
+    "BTCUSDT_PERP_4h.csv": "edcf98f7a20e66946f902d82adc75f8f8d205ff4f479847d3c42ab628df5f53c"
+  },
+  "raw_hashes": {
+    "raw_klines.json": "0f244848edb4a89c57ba2c2ab6cae1fd9d6215ce942f07d560ba01bfcc654c1c",
+    "raw_mark_klines.json": "1cd360d61944b56f18a0ae1a435a053a6c5ec278062562a520ba036b7d6665ad",
+    "raw_funding.json": "ed23d4a45441c71f49f3cfb6173f9942ab8725c8d8c264becb0c42ca66f9a7b8"
+  }
+}

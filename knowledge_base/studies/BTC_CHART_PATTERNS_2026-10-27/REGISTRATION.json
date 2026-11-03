@@ -1,0 +1,22 @@
+{
+  "version": "mie-chart-patterns-v1",
+  "created_utc": "2026-10-27T19:46:39.392168+00:00",
+  "source_hashes": {
+    "app/strategy_research/chart_patterns_run.py": "aa6c46684ecb12c03fa6cb9ad70b25242ba995fe740d5e96b99edfe1579a50cc",
+    "app/strategy_research/chart_patterns_v1.py": "3cba5db0ed22f3fb0c242075e882eeb44f6d98f88a404d3d319d90229fca0ab5",
+    "tests/test_chart_patterns_v1.py": "a8ff423be087b5246998e88c7262d44b91ceabafde1bec8bdaf85f72eb6cfa94",
+    "docs/BTC_CHART_PATTERNS_V1_PLAN.md": "ea04e7616af01827ab91ee7b9bbbacad4312329d4ab30108e0c74ae6dc5d1fdb"
+  },
+  "start": 1582156800000,
+  "end_exclusive": 1735689600000,
+  "test_start": 1609459200000,
+  "rules": [
+    "double_bottom",
+    "double_top",
+    "inverse_head_shoulders",
+    "head_shoulders",
+    "symmetric_triangle"
+  ],
+  "trials": 5,
+  "status": "registered_before_data_and_returns"
+}

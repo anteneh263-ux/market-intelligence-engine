@@ -1,0 +1,16 @@
+{
+  "by_status": {
+    "valid": 182
+  },
+  "by_type": {
+    "candidate": 78,
+    "control": 1,
+    "param_combo": 103
+  },
+  "dsr_trials": 182,
+  "duplicate_dsr_records": 122,
+  "effective_dsr_trials": 60,
+  "excluded_trials": 0,
+  "raw_dsr_trials": 182,
+  "total_trials": 182
+}

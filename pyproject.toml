@@ -31,6 +31,9 @@ mie = "app.cli:main"
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+[tool.setuptools.package-data]
+app = ["workspace_ui/*.html", "workspace_ui/*.css", "workspace_ui/*.js"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

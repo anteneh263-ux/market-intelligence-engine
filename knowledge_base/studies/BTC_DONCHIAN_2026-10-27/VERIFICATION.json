@@ -1,0 +1,14 @@
+{
+  "4h": {
+    "independent_net_return_check": true,
+    "equity_and_drawdown_check": true,
+    "actual_data_prefix_checks": 3,
+    "rows": 10662
+  },
+  "1d": {
+    "independent_net_return_check": true,
+    "equity_and_drawdown_check": true,
+    "actual_data_prefix_checks": 3,
+    "rows": 1777
+  }
+}
