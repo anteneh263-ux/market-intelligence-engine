@@ -251,3 +251,31 @@ Prosjektet deles i to med hvert sitt mål (bestemt av Anteneh 30.10.2026):
      kalibrert statistisk test (se seksjonen «Kalibrering av kontrollgrensen»).
   4. **Velge én begrunnet kandidat:** litteraturgjennomgang først, deretter én forhåndsregistrert test med låst
      referanse, kostnader og hovedmål. H-025-statusen avklares i samme runde.
+
+## Fremdrift i runden «pålitelig evaluering» — 03.11.2026
+
+Fra nå er det denne kopien av statusfilen (på grenen `workspace/secure-2026-11-03`) som oppdateres. Kopien i den gamle
+arbeidsmappen på skrivebordet er historikk.
+
+- **Steg 1 ferdig (20:15).** Grenen `workspace/secure-2026-11-03` er laget fra GitHub-main `aa4376d` i en egen git worktree
+  (`~/MIE_SECURE_WORKTREE_2026-11-03`, utenfor iCloud) og pushet. Commits: `63dc64e` (95 filer: arbeidsflate,
+  chartmønster-motor og BTC-studier, research-safety-logger, statusfil, README/pyproject-tillegg) og `d9edcc3`
+  (RED-testene for Bitstamp-innsamleren, som skal feile til innsamleren finnes). Alle 96 filer kontrollert byte for byte
+  mot sikkerhetskopien. Ikke med: `discovery_lab/` (eget repo), `.claude/`, `.agents/`, lokal P1B-testkladd (main har
+  den committede versjonen). Alt ligger fortsatt i `~/Desktop/MIE_BACKUP_2026-11-03/`.
+- **Funn: iCloud.** Skrivebordet synkroniseres med iCloud; nylig hentede git-objekter lå bare i skyen og kunne ikke leses
+  fra Claudes miljø («Resource deadlock avoided»). Sannsynlig medvirkende årsak til låsproblemene. Repoene bør flyttes ut
+  av iCloud når runden er ferdig. Låsen i den gamle mappen er ikke rørt.
+- **Steg 2 (arbeidsflate mot main-motoren):**
+  - På main er aktiv motor `srp-matrix-v4`. Det finnes ingen lagrede v4-resultater for H-002–H-028; arkivet viser
+    derfor fortsatt de lagrede v2-dommene, merket som historiske. Ingen dommer er endret, ingen strategier kjørt.
+  - Rettet: motorstatus sa «Denne arbeidsmappen tilbyr v2», som ikke lenger stemmer. Teksten bygger nå på aktiv motor
+    fra `app.research_core.versioning` og skiller lagrede v2-dommer fra aktiv motor. Arkivet utvidet med H-026–H-028
+    (lagrede v2-resultater som allerede lå på main); H-025 er fortsatt sperret. Dokumentasjon oppdatert.
+  - Verifisert i Claudes skymiljø med fastapi 0.139.2 / starlette 1.3.1 fra MIE-miljøet på Mac-en: 9/9 tester for
+    arbeidsflaten består (én ny), appen svarer over HTTP (28 rapporter, 0 feil, H-025 gir 404).
+  - Kjent avvik i main sin egen test: `test_p1b_29b_legacy_rendering_carries_no_sequence_token` feiler i Claudes miljø
+    på forskjell i midlertidige stier (`/pytest-of…`). Testen og koden den tester er uendret på grenen. Må kjøres på
+    Mac-en for å avgjøre om det bare gjelder dette miljøet.
+  - Mangler i arkivet: H-030 ble evaluert 23.10 (Not Supported), men resultatfilen ligger ikke på main, bare
+    forhåndsregistreringen. Hentes inn som en egen, dokumentert endring.

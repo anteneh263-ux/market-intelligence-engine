@@ -19,8 +19,9 @@ def request(body=b'',host='127.0.0.1:8765',origin=None,method='POST'):
 
 class WorkspaceTests(unittest.TestCase):
     def test_catalogue_is_explicit_and_excludes_protected_data(self):
-        self.assertEqual(len(W.catalogue()),25)
+        self.assertEqual(len(W.catalogue()),28)
         self.assertNotIn('H-025',W.catalogue())
+        for key in ('H-002','H-024','H-026','H-028'): self.assertIn(key,W.catalogue())
         with self.assertRaises(HTTPException): W.load_item('../../.env')
         with self.assertRaises(HTTPException): W.load_item('H-025')
 
@@ -39,6 +40,19 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(result['sha256'],hashlib.sha256((W.ROOT/result['source']).read_bytes()).hexdigest())
         self.assertFalse(W.status()['can_run_research'])
         self.assertFalse(W.status()['can_trade'])
+
+    def test_status_reports_active_engine_and_stored_v2_archive(self):
+        from app.research_core import versioning
+        status=W.status()
+        self.assertEqual(status['active_engine'],versioning.ACTIVE_VERSION)
+        self.assertIn(versioning.ACTIVE_VERSION,status['version_notice'])
+        self.assertIn('srp-matrix-v2',status['version_notice'])
+        self.assertNotIn('tilbyr v2',status['version_notice'])
+        for key in ('H-026','H-027','H-028'):
+            with self.subTest(key=key):
+                item=W.load_item(key)
+                self.assertEqual(item['engine'],'srp-matrix-v2')
+                self.assertTrue(item['historical'])
 
     def test_missing_report_is_visible_not_silently_counted(self):
         with patch.object(W,'catalogue',return_value={'missing':('absent.json',None,'strategy','v2')}):

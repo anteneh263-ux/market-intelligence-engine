@@ -41,7 +41,7 @@ Ved opptatt port: stopp programmet som bruker 8765; ikke bytt tilfeldig motor.
 ## Eksplisitt omfang
 
 Dette er en lokal applikasjon for arkiv, rapporter og strategibeskrivelse.
-Den viser H-002 til H-024 fra navngitte v2-resultatfiler samt de to eksplisitt
+Den viser H-002 til H-028 (unntatt H-025) fra navngitte v2-resultatfiler samt de to eksplisitt
 utvalgte BTC-studiene fra 27. oktober. Manglende eller skadede kilder vises som
 feil; de telles ikke som tilgjengelige rapporter. Ingen generelle filstier
 aksepteres fra nettleseren. H-025, holdout og paper/forward-state åpnes ikke.
@@ -51,13 +51,15 @@ Dermed eksponeres ingen gamle endepunkter for innhenting, evaluering eller hande
 Rapporttekst vises som tekst, ikke kjørbar HTML. Opplastet Pine-tekst behandles
 kun i minnet; maksimalt 64 KB per forespørsel. Arkivet er skrivebeskyttet.
 
-Motoren i denne arbeidsmappen er fortsatt v2. Den arkiverte Donchian-studien
-brukte v4 fra en annen kodeversjon; denne leveransen er ikke en oppgradering til
-v4 og erstatter ingen historiske dommer. Nye forskningskjøringer, full Pine-
-kompilering, handelsintegrasjon og dokumentert inntjening er utenfor leveransen.
-Discovery Lab er ikke koblet inn.
+Fra 03.11.2026 ligger arbeidsflaten på grenen `workspace/secure-2026-11-03`, bygget på GitHub-main
+(`aa4376d`), der aktiv motor er `srp-matrix-v4`. Motorstatus viser den aktive versjonen fra
+`app.research_core.versioning`. Strategiarkivet viser fortsatt lagrede dommer fra `srp-matrix-v2`:
+det finnes ingen lagrede v4-resultater for H-002–H-028, og arbeidsflaten kjører dem ikke på nytt.
+Donchian-studien brukte v4, chartmønstrene en egen eksperimentell motor. Ingen historiske dommer er
+endret. Nye forskningskjøringer, full Pine-kompilering, handelsintegrasjon og dokumentert inntjening
+er utenfor leveransen. Discovery Lab er ikke koblet inn.
 
-## Verifikasjon 2026-11-03
+## Verifikasjon 2026-11-03 (på grenen mot main)
 
 - Åtte målrettede enhetstester: grenser for filtilgang, ugyldige/svært store
   importer, manglende rapporter, kildehash, opprinnelsesvern og tillatte ruter.

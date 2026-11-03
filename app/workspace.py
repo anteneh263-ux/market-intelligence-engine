@@ -17,7 +17,10 @@ app = FastAPI(title='MIE Arbeidsflate', docs_url=None, redoc_url=None, openapi_u
 
 def catalogue():
     items = {}
-    for n in range(2, 25):
+    # Stored archive verdicts: srp-matrix-v2 result files for H-002..H-028. H-025 is deliberately excluded
+    # (protected forward-test candidate). No stored v4 results exist for these strategies; they are shown as
+    # historical v2 verdicts and are never re-run from the workspace.
+    for n in [*range(2, 25), *range(26, 29)]:
         key = f'H-{n:03d}'
         items[key] = (f'knowledge_base/results/{key}.srp-matrix-v2.json', None, 'strategy', 'srp-matrix-v2')
     items['btc-donchian'] = ('knowledge_base/studies/BTC_DONCHIAN_2026-10-27/SUMMARY.json',
@@ -89,8 +92,12 @@ def status():
     return {'app_id': 'mie-local-workspace', 'mode': 'Les eksisterende forskning og beskriv strategier',
             'active_engine': versioning.ACTIVE_VERSION, 'versions': versioning.list_versions(),
             'can_run_research': False, 'can_trade': False,
-            'scope': 'Arkiv H-002–H-024 (v2) og to eksplisitt valgte BTC-studier. Ikke hele forskningsarkivet.',
-            'version_notice': 'Denne arbeidsmappen tilbyr v2. Den lagrede Donchian-studien brukte v4 fra en annen kodeversjon. Den kjøres ikke på nytt her.'}
+            'scope': 'Arkiv H-002–H-028 unntatt H-025 (lagrede v2-dommer) og to eksplisitt valgte BTC-studier. '
+                     'Ikke hele forskningsarkivet.',
+            'version_notice': (f'Aktiv motor i denne kodeversjonen er {versioning.ACTIVE_VERSION}. '
+                               'Strategiarkivet viser lagrede dommer fra srp-matrix-v2; de er ikke kjørt på nytt med '
+                               f'{versioning.ACTIVE_VERSION}, og arbeidsflaten kjører ingen ny forskning. '
+                               'Donchian-studien ble kjørt med srp-matrix-v4, chartmønstrene med en egen eksperimentell motor.')}
 
 
 @app.get('/api/catalogue')
