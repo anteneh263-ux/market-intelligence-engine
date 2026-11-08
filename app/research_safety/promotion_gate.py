@@ -26,6 +26,7 @@ from app.strategy_research.providers import DataRequest
 
 from .input_audit import run_audit
 from .target_control import compare
+from .control_test import VERSION as CONTROL_TEST_VERSION, compare_calibrated
 from .trial_ledger import _atomic_write
 
 
@@ -73,7 +74,10 @@ def evaluate_promotion(strategy_id: str, assets: Sequence[str], *,
                        declared: Optional[Set[str]] = None,
                        central: Optional[Set[str]] = None,
                        thresholds: Optional[Dict] = None, root: Optional[str] = None,
-                       write: bool = True, dsr_override: Optional[float] = None) -> Dict:
+                       write: bool = True, dsr_override: Optional[float] = None,
+                       control_test: str = "legacy") -> Dict:
+    """``control_test``: "legacy" (default, unchanged 0.05 per-bar rule) or "target-control-test-v1"
+    (opt-in calibrated test, docs/specs/SPEC-target-control-calibrated-v1.md)."""
     th = {**DEFAULT_THRESHOLDS, **(thresholds or {})}
     m = MATRICES.get(matrix, MATRICES["v2"])
     pk = provider_kwargs or {}
@@ -138,8 +142,16 @@ def evaluate_promotion(strategy_id: str, assets: Sequence[str], *,
                            "No control provided; supply control_id to enable this gate."))
         tc: Optional[Dict] = None
     else:
-        tc = compare(strategy_id, control_id, assets, timeframe=timeframe, matrix=matrix,
-                     provider=provider, provider_kwargs=pk)
+        if control_test == "legacy":
+            tc = compare(strategy_id, control_id, assets, timeframe=timeframe, matrix=matrix,
+                         provider=provider, provider_kwargs=pk)
+        elif control_test == CONTROL_TEST_VERSION:
+            tc = compare_calibrated(strategy_id, control_id, assets, timeframe=timeframe, matrix=matrix,
+                                    provider=provider, provider_kwargs=pk)
+            tc["sharpe_tolerance"], tc["sharpe_unit"] = None, "annual_net_delta_test"
+            tc["delta"] = {"sharpe_annual": tc["delta_sharpe_annual"], "interval": tc["interval"]}
+        else:
+            raise ValueError(f"unknown control_test: {control_test}")
         tc_status = (GateStatus.PASS if tc["verdict"] == "candidate_wins" else
                      GateStatus.NOT_AVAILABLE if tc["verdict"] == "inconclusive" else
                      GateStatus.FAIL)

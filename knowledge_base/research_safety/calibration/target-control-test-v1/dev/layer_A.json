@@ -1,0 +1,207 @@
+{
+ "layer": "A",
+ "stage": "dev",
+ "reps_per_scenario": 200,
+ "bars": 1710,
+ "scenarios": [
+  {
+   "delta": 0.0,
+   "rho": 0.3,
+   "n": 200,
+   "approved": 11,
+   "approval_rate": 0.055,
+   "wilson95": [
+    0.031,
+    0.0958
+   ],
+   "control_wins": 9,
+   "inconclusive": 180,
+   "mean_point_delta": -0.0234,
+   "sd_point_delta": 0.2895
+  },
+  {
+   "delta": 0.0,
+   "rho": 0.5,
+   "n": 200,
+   "approved": 7,
+   "approval_rate": 0.035,
+   "wilson95": [
+    0.0171,
+    0.0705
+   ],
+   "control_wins": 9,
+   "inconclusive": 184,
+   "mean_point_delta": -0.0118,
+   "sd_point_delta": 0.2391
+  },
+  {
+   "delta": 0.0,
+   "rho": 0.8,
+   "n": 200,
+   "approved": 9,
+   "approval_rate": 0.045,
+   "wilson95": [
+    0.0239,
+    0.0833
+   ],
+   "control_wins": 13,
+   "inconclusive": 178,
+   "mean_point_delta": -0.0093,
+   "sd_point_delta": 0.1566
+  },
+  {
+   "delta": 0.25,
+   "rho": 0.3,
+   "n": 200,
+   "approved": 47,
+   "approval_rate": 0.235,
+   "wilson95": [
+    0.1816,
+    0.2984
+   ],
+   "control_wins": 2,
+   "inconclusive": 151,
+   "mean_point_delta": 0.2457,
+   "sd_point_delta": 0.3031
+  },
+  {
+   "delta": 0.25,
+   "rho": 0.5,
+   "n": 200,
+   "approved": 69,
+   "approval_rate": 0.345,
+   "wilson95": [
+    0.2826,
+    0.4132
+   ],
+   "control_wins": 0,
+   "inconclusive": 131,
+   "mean_point_delta": 0.3072,
+   "sd_point_delta": 0.2247
+  },
+  {
+   "delta": 0.25,
+   "rho": 0.8,
+   "n": 200,
+   "approved": 95,
+   "approval_rate": 0.475,
+   "wilson95": [
+    0.4069,
+    0.544
+   ],
+   "control_wins": 0,
+   "inconclusive": 105,
+   "mean_point_delta": 0.2564,
+   "sd_point_delta": 0.1629
+  },
+  {
+   "delta": 0.5,
+   "rho": 0.3,
+   "n": 200,
+   "approved": 115,
+   "approval_rate": 0.575,
+   "wilson95": [
+    0.5057,
+    0.6415
+   ],
+   "control_wins": 0,
+   "inconclusive": 85,
+   "mean_point_delta": 0.5407,
+   "sd_point_delta": 0.304
+  },
+  {
+   "delta": 0.5,
+   "rho": 0.5,
+   "n": 200,
+   "approved": 139,
+   "approval_rate": 0.695,
+   "wilson95": [
+    0.628,
+    0.7546
+   ],
+   "control_wins": 0,
+   "inconclusive": 61,
+   "mean_point_delta": 0.5489,
+   "sd_point_delta": 0.272
+  },
+  {
+   "delta": 0.5,
+   "rho": 0.8,
+   "n": 200,
+   "approved": 188,
+   "approval_rate": 0.94,
+   "wilson95": [
+    0.8981,
+    0.9653
+   ],
+   "control_wins": 0,
+   "inconclusive": 12,
+   "mean_point_delta": 0.5174,
+   "sd_point_delta": 0.1574
+  },
+  {
+   "delta": 1.0,
+   "rho": 0.3,
+   "n": 200,
+   "approved": 194,
+   "approval_rate": 0.97,
+   "wilson95": [
+    0.9361,
+    0.9862
+   ],
+   "control_wins": 0,
+   "inconclusive": 6,
+   "mean_point_delta": 1.0665,
+   "sd_point_delta": 0.305
+  },
+  {
+   "delta": 1.0,
+   "rho": 0.5,
+   "n": 200,
+   "approved": 196,
+   "approval_rate": 0.98,
+   "wilson95": [
+    0.9497,
+    0.9922
+   ],
+   "control_wins": 0,
+   "inconclusive": 4,
+   "mean_point_delta": 0.9822,
+   "sd_point_delta": 0.2599
+  },
+  {
+   "delta": 1.0,
+   "rho": 0.8,
+   "n": 200,
+   "approved": 200,
+   "approval_rate": 1.0,
+   "wilson95": [
+    0.9812,
+    1.0
+   ],
+   "control_wins": 0,
+   "inconclusive": 0,
+   "mean_point_delta": 1.02,
+   "sd_point_delta": 0.1885
+  }
+ ],
+ "version": "target-control-test-v1",
+ "spec": "docs/specs/SPEC-target-control-calibrated-v1.md",
+ "started_utc": "2026-11-04T12:20:59.203086+00:00",
+ "finished_utc": "2026-11-04T12:46:00.955605+00:00",
+ "commit": null,
+ "code_sha256": {
+  "app/research_safety/control_test.py": "1f657a3d961d147eae19bf488bf63469f52535f52e0cedc94ddeb81f728f041e",
+  "app/research_safety/control_test_calibration.py": "471ca268d843963c68e5abfdb86b90b7af30c4273c6ee532af0510beed78267c",
+  "app/research_safety/target_control.py": "bdc637f48b4499e73c47b59b17da26aa09e806ba84d815ee4907136f54a67d02",
+  "app/strategy_research/evaluation/walkforward.py": "c54a40f1f1eb47be9e677375a07d76357911463478c91d6d650099fe41cf3dae",
+  "app/strategy_research/evaluation/backtest.py": "85d0567e3457498522c9e7a9b44d0569197c165a2ad0b6e31939abbbd9c6c989"
+ },
+ "test_parameters": {
+  "block_length": 10,
+  "n_boot": 2000,
+  "alpha": 0.05
+ },
+ "seed_base": 10000,
+ "synthetic_only": true
+}

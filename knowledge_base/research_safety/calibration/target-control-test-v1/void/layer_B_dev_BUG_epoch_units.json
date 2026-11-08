@@ -1,0 +1,70 @@
+{
+ "layer": "B",
+ "stage": "dev",
+ "reps_per_scenario": 100,
+ "price_bars": 2140,
+ "truth": {
+  "q": 0.053125000000000006,
+  "edge_true_delta": 0.5014824243535323,
+  "null_true_delta": -0.03862641652902684,
+  "bars_per_asset": 100800,
+  "seed": 4242
+ },
+ "truth_log": [
+  "q=0.100000 long-run dSR=0.9474",
+  "q=0.050000 long-run dSR=0.4735",
+  "q=0.075000 long-run dSR=0.7145",
+  "q=0.062500 long-run dSR=0.5930",
+  "q=0.056250 long-run dSR=0.5317",
+  "q=0.053125 long-run dSR=0.5015"
+ ],
+ "scenarios": [
+  {
+   "candidate": "null",
+   "n": 100,
+   "approved": 51,
+   "approval_rate": 0.51,
+   "wilson95": [
+    0.4135,
+    0.6058
+   ],
+   "control_wins": 49,
+   "inconclusive": 0,
+   "mean_point_delta": -4.1924,
+   "sd_point_delta": 44.4873
+  },
+  {
+   "candidate": "edge",
+   "n": 100,
+   "approved": 100,
+   "approval_rate": 1.0,
+   "wilson95": [
+    0.963,
+    1.0
+   ],
+   "control_wins": 0,
+   "inconclusive": 0,
+   "mean_point_delta": 23.8424,
+   "sd_point_delta": 16.8396
+  }
+ ],
+ "version": "target-control-test-v1",
+ "spec": "docs/specs/SPEC-target-control-calibrated-v1.md",
+ "started_utc": "2026-11-04T12:24:57.455468+00:00",
+ "finished_utc": "2026-11-04T12:25:16.673457+00:00",
+ "commit": null,
+ "code_sha256": {
+  "app/research_safety/control_test.py": "b8164a885b64210e12bf7a2be4214fa2a4efcd3933560dcd24d53efc617cfbfe",
+  "app/research_safety/control_test_calibration.py": "75b8ab5292ded2e4cc5600c8ff7de280107a3bf0b24997d132c47aaf25692e95",
+  "app/research_safety/target_control.py": "bdc637f48b4499e73c47b59b17da26aa09e806ba84d815ee4907136f54a67d02",
+  "app/strategy_research/evaluation/walkforward.py": "c54a40f1f1eb47be9e677375a07d76357911463478c91d6d650099fe41cf3dae",
+  "app/strategy_research/evaluation/backtest.py": "85d0567e3457498522c9e7a9b44d0569197c165a2ad0b6e31939abbbd9c6c989"
+ },
+ "test_parameters": {
+  "block_length": 10,
+  "n_boot": 2000,
+  "alpha": 0.05
+ },
+ "seed_base": 10000,
+ "synthetic_only": true
+}

@@ -279,3 +279,51 @@ arbeidsmappen på skrivebordet er historikk.
     Mac-en for å avgjøre om det bare gjelder dette miljøet.
   - Mangler i arkivet: H-030 ble evaluert 23.10 (Not Supported), men resultatfilen ligger ikke på main, bare
     forhåndsregistreringen. Hentes inn som en egen, dokumentert endring.
+
+- *P1B-testen (07.11):* `test_p1b_29b_legacy_rendering_carries_no_sequence_token` består på Mac-en (kjørt av
+  `apply_step2.sh` 03.11). Feilen i Claudes miljø gjaldt bare det miljøet. Steg 2 committet som `7d134bd`.
+  *Rettelse 08.11:* push av `7d134bd` er ikke bekreftet; lokal `origin/workspace/secure-2026-11-03` sto på
+  `d9edcc3` per 08.11. Grenen pushes sammen med steg 3.
+
+## Steg 3 — kalibrert kontrollport (`target-control-test-v1`), 04.–07.11.2026
+
+- Spesifikasjon `docs/specs/SPEC-target-control-calibrated-v1.md`, godkjent 04.11. To daterte rettelser før/under
+  utvikling: lag A bruker 1 710 dager (testens faktiske lengde utenfor utvalget, ikke 2 140); lag B begrenser
+  syntetisk døgnavkastning til ±0,5 i log (binder på 0,007 % av dagene).
+- Kode: `app/research_safety/control_test.py` (testen), `control_test_calibration.py` (simulering, frø, sperre mot
+  gjentatt sluttkjøring), opt-in i `promotion_gate.py` (`control_test="target-control-test-v1"`, standard uendret).
+  Tester: 14 nye i `tests/test_control_test.py`; 186 eksisterende port-/sikkerhetstester og 9 arbeidsflatetester består.
+- Feil funnet og rettet i utvikling: syntetiske tidsstempler i feil enhet (lag B ugyldig, beholdt i `void/`);
+  urealistiske døgnbevegelser over +100 %. Testen har fått sperrer mot begge.
+- **Utviklingsresultat** (200 gjentak per scenario i lag A, 100 i lag B; andel godkjent):
+
+  | Sann fordel | ρ 0,3 | ρ 0,5 | ρ 0,8 |
+  | --- | --- | --- | --- |
+  | 0.0 | 5.5% | 3.5% | 4.5% |
+  | 0.25 | 23.5% | 34.5% | 47.5% |
+  | 0.5 | 57.5% | 69.5% | 94.0% |
+  | 1.0 | 97.0% | 98.0% | 100.0% |
+
+  Lag B: nullkandidat (sann fordel -0.036) godkjent 7%;
+  fordelkandidat (sann 0,50, q = 0.0531) godkjent 100%.
+- Vurdering: falske godkjenninger rundt 5 % (samlet 4,5 % i lag A). Treffraten ved 0,5 i hovedscenariet (69,5 %)
+  er under målet på 80 % og er begrenset av datamengden (målt forskjell svinger ±0,27 av tilfeldigheter), ikke av
+  testvarianten. Akseptkravet ≤ 5,0 % med øvre grense ≤ 6,0 % er strengt for en test som ligger på 5 %.
+- **Beslutning 07.11 (Anteneh):** sluttvalideringen kjøres **som låst**, uten endringer i krav eller parametre.
+  Utfallet registreres ærlig; om testen tas i bruk avgjøres etterpå.
+
+## Avvik: H-032 låst 04.11.2026 utenfor rekkefølgen
+
+`~/Desktop/h032` inneholder en ny fremadrettet test, H-032 (lang/kontant trend med volatilitetsstyring på BTC og
+ETH, vindu 01.12.2026–30.11.2027), låst 04.11 kl. 13.59 med sjekksummer (uendret ved kontroll 07.11). Gode trekk:
+bare fremadrettet dom, forhåndsregistrerte kriterier, nøkternt mål (mindre fall, ikke høyere avkastning).
+
+- Avvik fra rekkefølgen: steg 4 (én begrunnet kandidat) skulle vente til steg 1–3 var ferdige. Fordi H-032 kun
+  måles fremover, brukes ingen historiske data, men avviket registreres her.
+- Spesifikasjonens eget åpne spørsmål — overlapp med H-025 — ble ikke avklart før låsing. Ifølge kunnskapsbasen er
+  H-025 en 200-dagers SMA-trendregel (lang/kontant) som blant annet omfatter BTC og ETH; overlappet er trolig stort.
+  H-025 er ikke rørt.
+- H-032 viser til forsøk 29–31 (H-FUND-R1, H-FUNDSIG-R1, H-TSMOM-R1) som ikke står i denne statusfilen. De må inn i
+  forsøksregnskapet (DSR).
+- Driftsrisiko: mappen ligger i iCloud-synkronisert skrivebord, og manuelle endringer av pris-/tilstandsfiler regnes
+  som operasjonell feil. Bør flyttes ut av iCloud før første beslutning 30.11 (plassering er ikke låst).
