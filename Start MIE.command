@@ -1,14 +1,8 @@
 #!/bin/zsh
-cd -- "${0:A:h}" || exit 1
-if [[ ! -x .venv/bin/python ]]; then
-  print 'MIE mangler Python-miljøet .venv. Se docs/WORKSPACE_APP.md.'
-  read 'reply?Trykk Enter for å lukke.'
+# The Desktop checkout is preserved history. Start the main-based workspace.
+mie_workspace="$HOME/MIE_SECURE_WORKTREE_2026-11-03"
+if [[ ! -f "$mie_workspace/AGENTS.md" || ! -f "$mie_workspace/app/workspace.py" || ! -f "$mie_workspace/Start MIE.command" ]]; then
+  print -u2 'Den samlede MIE-arbeidsflaten mangler. Se docs/MIE_CONSOLIDATION_2026-11-10.md.'
   exit 1
 fi
-.venv/bin/python -m app.workspace_launcher
-result=$?
-if (( result != 0 )); then
-  print 'MIE kunne ikke starte. Se feilmeldingen over.'
-  read 'reply?Trykk Enter for å lukke.'
-fi
-exit $result
+exec /bin/zsh "$mie_workspace/Start MIE.command" "$@"

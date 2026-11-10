@@ -278,3 +278,7 @@ resultatet vurderes før noe utvides. Punkt 4 (én begrunnet kandidat), Fase 6 o
      kontrollstrategi og datagenerator. Treffraten gjelder bare for dette oppsettet.
    - Langt flere enn 20 gjentak, egne frø til sluttvalidering (skilt fra utviklingsfrø), og usikkerhet
      (konfidensintervall) rapportert for begge rater.
+
+## Oppdatert samling — 10. november 2026
+
+Se `docs/MIE_CONSOLIDATION_2026-11-10.md` for gjeldende app, Git-bevaring og kontrollstatus. Appen starter fra `~/MIE_SECURE_WORKTREE_2026-11-03` med v4-motor. Lokal kildekode er bevart i commit `614be3b`; den foreldede index-låsen er fjernet fra Git-mappen. Kontrollport-v1 er rapportert NOT ACCEPTED, og TradingView-kontinuiteten venter fortsatt på endringshistorikk. Tidligere daterte beskrivelser over er historiske, ikke dagens status.
