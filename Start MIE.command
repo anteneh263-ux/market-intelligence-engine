@@ -1,14 +1,11 @@
 #!/bin/zsh
 cd -- "${0:A:h}" || exit 1
-if [[ ! -x .venv/bin/python ]]; then
-  print 'MIE mangler Python-miljøet .venv. Se docs/WORKSPACE_APP.md.'
-  read 'reply?Trykk Enter for å lukke.'
+mie_python="$PWD/.venv/bin/python"
+if [[ ! -x "$mie_python" ]]; then
+  mie_python="$HOME/Desktop/market-intelligence-engine/.venv/bin/python"
+fi
+if [[ ! -x "$mie_python" ]]; then
+  print -u2 'MIE mangler Python-miljøet. Se docs/WORKSPACE_APP.md.'
   exit 1
 fi
-.venv/bin/python -m app.workspace_launcher
-result=$?
-if (( result != 0 )); then
-  print 'MIE kunne ikke starte. Se feilmeldingen over.'
-  read 'reply?Trykk Enter for å lukke.'
-fi
-exit $result
+exec "$mie_python" -B -m app.workspace_launcher "$@"

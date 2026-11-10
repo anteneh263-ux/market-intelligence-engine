@@ -12,6 +12,21 @@ from app.research_core import versioning
 
 ROOT = Path(__file__).resolve().parent.parent
 UI = Path(__file__).with_name('workspace_ui')
+# Capture at process start: a running old process must not claim a newer checkout's identity.
+_IDENTITY_PATHS = (
+    'app/workspace.py', 'app/workspace_launcher.py',
+    'app/research_core/versioning.py', 'app/strategy_research/evaluation/frozen.py',
+    'app/strategy_research/evaluation/pipeline.py',
+)
+WORKSPACE_IDENTITY = {
+    'root': str(ROOT.resolve()),
+    'engine': versioning.ACTIVE_VERSION,
+    'source_sha256': hashlib.sha256(b''.join(
+        path.encode() + b'\0' + (ROOT / path).read_bytes() + b'\0'
+        for path in _IDENTITY_PATHS
+    )).hexdigest(),
+}
+
 app = FastAPI(title='MIE Arbeidsflate', docs_url=None, redoc_url=None, openapi_url=None)
 
 
@@ -91,13 +106,23 @@ async def local_security(request: Request, call_next):
 def status():
     return {'app_id': 'mie-local-workspace', 'mode': 'Les eksisterende forskning og beskriv strategier',
             'active_engine': versioning.ACTIVE_VERSION, 'versions': versioning.list_versions(),
+            'workspace_identity': dict(WORKSPACE_IDENTITY),
+            'control_gate': {
+                'default': 'legacy', 'qualification': 'NOT_QUALIFIED',
+                'candidate_method': 'target-control-test-v1',
+                'candidate_status': 'NOT_ACCEPTED_REPORTED',
+                'raw_final_results_located': False,
+                'report': 'docs/TARGET_CONTROL_V1_FINAL_REPORT_2026-11-08.md',
+            },
             'can_run_research': False, 'can_trade': False,
             'scope': 'Arkiv H-002–H-028 unntatt H-025 (lagrede v2-dommer) og to eksplisitt valgte BTC-studier. '
                      'Ikke hele forskningsarkivet.',
             'version_notice': (f'Aktiv motor i denne kodeversjonen er {versioning.ACTIVE_VERSION}. '
                                'Strategiarkivet viser lagrede dommer fra srp-matrix-v2; de er ikke kjørt på nytt med '
                                f'{versioning.ACTIVE_VERSION}, og arbeidsflaten kjører ingen ny forskning. '
-                               'Donchian-studien ble kjørt med srp-matrix-v4, chartmønstrene med en egen eksperimentell motor.')}
+                               'Donchian-studien ble kjørt med srp-matrix-v4, chartmønstrene med en egen eksperimentell motor. '
+                               'Kontrollporten er ikke kvalifisert. Sluttrapporten for target-control-test-v1 '
+                               'sier NOT ACCEPTED; de opprinnelige sluttresultatfilene er ikke verifisert her.')}
 
 
 @app.get('/api/catalogue')

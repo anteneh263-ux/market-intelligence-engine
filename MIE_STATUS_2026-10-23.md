@@ -327,3 +327,7 @@ bare fremadrettet dom, forhåndsregistrerte kriterier, nøkternt mål (mindre fa
   forsøksregnskapet (DSR).
 - Driftsrisiko: mappen ligger i iCloud-synkronisert skrivebord, og manuelle endringer av pris-/tilstandsfiler regnes
   som operasjonell feil. Bør flyttes ut av iCloud før første beslutning 30.11 (plassering er ikke låst).
+
+## Oppdatert samling — 10. november 2026
+
+Se `docs/MIE_CONSOLIDATION_2026-11-10.md` for gjeldende app, Git-bevaring og kontrollstatus. Appen starter fra `~/MIE_SECURE_WORKTREE_2026-11-03` med v4-motor. Lokal kildekode er bevart i commit `614be3b`; den foreldede index-låsen er fjernet fra Git-mappen. Kontrollport-v1 er rapportert NOT ACCEPTED, og TradingView-kontinuiteten venter fortsatt på endringshistorikk. Tidligere daterte beskrivelser over er historiske, ikke dagens status.

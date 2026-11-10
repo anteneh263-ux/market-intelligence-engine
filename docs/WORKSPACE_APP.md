@@ -4,8 +4,8 @@
 
 Dobbeltklikk `Start MIE.command` i prosjektmappen. Et terminalvindu starter den
 lokale serveren og åpner nettleseren på http://127.0.0.1:8765. Hold terminalvinduet
-åpent mens du bruker MIE. Stopp med Ctrl+C. En ny start gjenbruker en allerede
-kjørende MIE-arbeidsflate på denne porten.
+åpent mens du bruker MIE. Stopp med Ctrl+C. En ny start gjenbruker bare en instans med samme arbeidsmappe, motor og kildefingeravtrykk.
+En eldre eller annen arbeidsflate på porten gir tydelig stopp.
 
 Alternativt, fra prosjektmappen:
 
@@ -15,7 +15,9 @@ Alternativt, fra prosjektmappen:
 
 Serveren kjører kun på maskinens loopback-adresse. Den bruker ingen VM,
 modellabonnement, nettbaserte data eller nye pakker utover eksisterende MIE-miljø.
-Hvis `.venv` mangler, følg installasjonsdelen i prosjektets README først.
+Hvis lokal `.venv` mangler, bruker startfilen det eksisterende miljøet i
+`~/Desktop/market-intelligence-engine/.venv`. Python kjøres med arbeidsmappen her
+som kilde; ingen pakker installeres. `Start MIE.command --check` viser faktisk mappe og motor.
 Ved opptatt port: stopp programmet som bruker 8765; ikke bytt tilfeldig motor.
 
 ## Daglig bruk
@@ -70,3 +72,11 @@ er utenfor leveransen. Discovery Lab er ikke koblet inn.
 ```sh
 .venv/bin/python -m unittest tests.test_workspace_app -v
 ```
+
+## Samling 10. november 2026
+
+Gjeldende appgren er `codex/mie-consolidation-20261110` i den samme main-baserte
+arbeidsmappen. Startfilen i den gamle Desktop-mappen peker hit.
+`docs/MIE_CONSOLIDATION_2026-11-10.md` dokumenterer bevaring og kontroll.
+Appen viser at kontrollporten ikke er kvalifisert; v1-sluttrapporten sier NOT ACCEPTED.
+Dette er en statusopplysning, ikke en endring av evaluator eller historiske dommer.
