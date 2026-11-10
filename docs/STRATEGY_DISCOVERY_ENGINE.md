@@ -1,5 +1,35 @@
 # Strategy Discovery Engine — Design
 
+## Default learning policy: discovery-v2 (2026-11-08)
+
+New engine instances, CLI discovery runs, and research-workflow proposals use
+`discovery-v2` by default. Explicit legacy replay remains available through
+`StrategyDiscoveryEngine(kb, ledger, learning_version="discovery-v1")`.
+The CLI reports the selected engine policy and its hash. The exports in
+`discovery.policy` retain the immutable v1 descriptor and hash for compatibility;
+the active engine exposes `learning_version` and `learning_hash()`.
+Constructors can create ledger directories; tests use temporary roots.
+Preview proposals with `propose(k, round_no, persist=False)`.
+
+V2 uses the existing candidate space and scoring weights, but learns only from
+`Supported`, `Not Supported`, and `Graveyard` outcomes whose `is_real` field is
+the boolean `true`. This applies to both H-corpus and generated G evidence.
+`Supported` contributes success; the other two contribute failure.
+`Inconclusive` contributes neither success nor failure and is excluded from
+DSR averages and avoidance counts. With no eligible evidence the existing
+neutral prior applies. All attempts remain in the ledger and count for
+deduplication and the trial budget.
+
+V2 proposal rationales carry a separate version and policy hash. Historical
+records and verdicts are not migrated. Ledger `survived` and survival summaries
+retain their legacy meaning (which includes inconclusive outcomes); they are
+not the V2 success rate. V2 does not establish an
+improvement in proposal quality: that requires a separately specified comparison
+against the generator without learning on independent validation data.
+
+Validation scope: fixture-based unit and proposal-persistence tests; no new
+scientific evaluation or profitability claim.
+
 **status:** design + implementation · **date:** 2026-07-08 · **id namespace:** `G-####` (generated),
 kept separate from the pre-registered `H-###` TradingView universe.
 

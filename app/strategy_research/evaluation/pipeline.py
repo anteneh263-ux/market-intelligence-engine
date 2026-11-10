@@ -103,15 +103,20 @@ class EvaluationReport:
     cause_of_death: str | None = None
     notes: List[str] = field(default_factory=list)
     family_dsr_inputs: List[Dict] = field(default_factory=list, repr=False)
+    risk_inputs: List[Dict] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> Dict:
         out = asdict(self)
         out.pop("family_dsr_inputs", None)
+        out.pop("risk_inputs", None)
         return out
 
 
 def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
-             provider_kwargs: Dict | None = None) -> EvaluationReport:
+             provider_kwargs: Dict | None = None, *,
+             capture_risk_inputs: bool = False) -> EvaluationReport:
+    if capture_risk_inputs and request.strategy_id.upper() == "H-025":
+        raise ValueError("H-025 is excluded from risk-input capture")
     strategy = get_strategy(request.strategy_id)
     source = get_provider(request.provider, **(provider_kwargs or {}))
     tf = request.timeframe
@@ -126,6 +131,7 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
     assets_done: List[str] = []
     notes: List[str] = []
     family_dsr_inputs: List[Dict] = []
+    risk_inputs: List[Dict] = []
 
     for asset in request.assets:
         frame = source.get(DataRequest(asset, tf, request.start, request.end, request.limit))
@@ -180,6 +186,13 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
                         "returns": wf.oos_net.tolist(),
                         "sr_trials": list(wf.sr_trials),
                     })
+                    if capture_risk_inputs:
+                        risk_inputs.append({
+                            "asset": asset, "returns": wf.oos_net.tolist(),
+                            "times": wf.oos_open_time.tolist(), "timeframe": tf,
+                            "cost_bps": cost, "slippage_bps": slip,
+                            "request_hash": request.hash(), "matrix_hash": matrix.hash(),
+                        })
 
     # ----- headline aggregate at the frozen headline cost/slippage ----- #
     # Two pooling methods, selected by the matrix version (see FrozenMatrix.pooling):
@@ -268,4 +281,5 @@ def evaluate(request: EvalRequest, matrix: FrozenMatrix = DEFAULT_MATRIX,
         verdict=v.label, verdict_reasons=list(v.reasons),
         cause_of_death=getattr(v, "cause_of_death", None), notes=notes,
         family_dsr_inputs=family_dsr_inputs,
+        risk_inputs=risk_inputs,
     )

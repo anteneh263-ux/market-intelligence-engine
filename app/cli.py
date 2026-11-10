@@ -101,9 +101,9 @@ def main(argv=None) -> int:
         print("wrote", path); return 0
 
     if args.cmd == "discover":
-        from app.discovery import StrategyDiscoveryEngine, DISCOVERY_POLICY_VERSION, policy_hash
+        from app.discovery import StrategyDiscoveryEngine
         eng = StrategyDiscoveryEngine(kb)
-        print(f"discovery policy {DISCOVERY_POLICY_VERSION} ({policy_hash()})")
+        print(f"discovery policy {eng.learning_version} ({eng.learning_hash()})")
         pk = {"root": args.csv_root} if args.provider == "csv" else {}
         if args.propose_only:
             for p in eng.propose(args.k, round_no=0, persist=False):

@@ -34,7 +34,17 @@ class Proposal:
 class StrategyDiscoveryEngine:
     def __init__(self, kb: Optional[KnowledgeBase] = None,
                  ledger: Optional[DiscoveryLedger] = None,
-                 orchestrator: Optional[Orchestrator] = None):
+                 orchestrator: Optional[Orchestrator] = None,
+                 *, learning_version: str = "discovery-v2"):
+        if learning_version not in (DISCOVERY_POLICY_VERSION, "discovery-v2"):
+            raise ValueError(f"Unknown discovery learning version: {learning_version}")
+        self.learning_version = learning_version
+        self.stats_type = TraitStats
+        self.learning_hash = policy_hash
+        if learning_version == "discovery-v2":
+            from .learning_v2 import LearningStatsV2, policy_hash as v2_hash
+            self.stats_type = LearningStatsV2
+            self.learning_hash = v2_hash
         self.kb = kb or KnowledgeBase()
         self.ledger = ledger or DiscoveryLedger(self.kb.root)
         self.orch = orchestrator or Orchestrator(self.kb)
@@ -45,13 +55,13 @@ class StrategyDiscoveryEngine:
         """Generate & prioritise the top-k candidate recipes with full rationale.
         persist=True freezes them into the ledger (pre-registration) and registers
         them so they can be tested; persist=False is a dry-run preview."""
-        stats = TraitStats.from_corpus(self.kb, self.ledger.entries())
+        stats = self.stats_type.from_corpus(self.kb, self.ledger.entries())
         picks = generator.prioritize(stats, self.ledger, k, max_vote)
         proposals: List[Proposal] = []
         for recipe, _score in picks:
             bd = score_breakdown(recipe, stats)
             rationale = {
-                "policy_version": DISCOVERY_POLICY_VERSION, "policy_hash": policy_hash(),
+                "policy_version": self.learning_version, "policy_hash": self.learning_hash(),
                 "recipe_hash": recipe.hash(), "score": bd["score"],
                 "components": bd["components"], "traits": bd["traits"],
                 "corpus_n_at_proposal": bd["corpus_n"], "round": round_no,
@@ -72,7 +82,7 @@ class StrategyDiscoveryEngine:
         with a complementary block), scored by learned priors. Frozen + recorded
         with a rationale that names the base it improves on."""
         from .genome import Recipe
-        stats = TraitStats.from_corpus(self.kb, self.ledger.entries())
+        stats = self.stats_type.from_corpus(self.kb, self.ledger.entries())
         primary = base.blocks[0]
         candidates = [
             Recipe("FILTER", (primary,), gate="adx_gate"),          # + regime gate
@@ -88,7 +98,7 @@ class StrategyDiscoveryEngine:
         picks.sort(key=lambda rs: (-rs[1]["score"], rs[0].hash()))
         for recipe, bd in picks[:k]:
             rationale = {
-                "policy_version": DISCOVERY_POLICY_VERSION, "policy_hash": policy_hash(),
+                "policy_version": self.learning_version, "policy_hash": self.learning_hash(),
                 "recipe_hash": recipe.hash(), "score": bd["score"], "components": bd["components"],
                 "traits": bd["traits"], "corpus_n_at_proposal": bd["corpus_n"],
                 "variant_of": tag or base.label(), "why": _explain(bd) + f" (variant of {tag or base.label()})",
@@ -111,7 +121,7 @@ class StrategyDiscoveryEngine:
             self.ledger.record_result(pr.gid, out.report)
         summary = self.ledger.close_round(rn, [p.gid for p in proposals])
         summary["budget"] = self.ledger.budget()
-        summary["policy_version"] = DISCOVERY_POLICY_VERSION
+        summary["policy_version"] = self.learning_version
         return summary
 
     def survival_history(self) -> List[Dict]:
@@ -122,7 +132,7 @@ class StrategyDiscoveryEngine:
         tested = self.ledger.tested()
         by_dsr = sorted(tested, key=lambda e: (e["result"] or {}).get("dsr") or 0, reverse=True)
         L = ["# Discovery Report — Generated Hypotheses", "",
-             f"**policy:** {DISCOVERY_POLICY_VERSION} (`{policy_hash()}`) · "
+             f"**proposal policy:** {self.learning_version} (`{self.learning_hash()}`) · "
              f"**budget:** {self.ledger.budget()} (generated / tested) · "
              f"**survivors:** {sum(1 for e in tested if e['survived'])}", "",
              "> ⚠️ Research only. Auto-generated hypotheses, recorded separately from the "
@@ -141,7 +151,8 @@ class StrategyDiscoveryEngine:
             L.append(f"| {e['id']} | `{e['recipe']['label']}` | {e['verdict']} | "
                      f"{('%.3f' % dsr) if dsr is not None else '—'} | {e['priority']:.3f} | "
                      f"{e['rationale']['why']} |")
-        L += ["", f"_Every hypothesis traces to its recipe hash and the `{DISCOVERY_POLICY_VERSION}` "
+        L += ["", "_Survival uses the legacy ledger definition, not the v2 learning success rate._", "",
+              "_Every hypothesis traces to its recipe hash and its recorded "
               "policy that proposed it; see `discovery/ledger.json` and `discovery/results/`._"]
         return "\n".join(L)
 

@@ -1,0 +1,14 @@
+{
+  "assets": ["BTC/USD", "ETH/USD", "SPY", "XAU/USD"],
+  "csv_root": "data_csv",
+  "timeframe": "1d",
+  "development": ["2018-01-01", "2022-12-31"],
+  "holdout": ["2023-01-01", "2026-07-08"],
+  "matrix_version": "v2",
+  "rounds": 25,
+  "per_round": 4,
+  "max_vote": 3,
+  "control_seeds": [7, 19, 43],
+  "min_bars": 500,
+  "holdout_provenance_confirmed": false
+}

@@ -85,7 +85,7 @@ def test_full_loop_records_separately_and_tracks_survival(tmp_path):
     assert summary["budget"]["tested"] == 3
     # every generated entry carries its full 'why' rationale + policy version
     for e in ledger.entries():
-        assert e["rationale"]["policy_version"] == "discovery-v1"
+        assert e["rationale"]["policy_version"] == "discovery-v2"
         assert "why" in e["rationale"] and e["recipe"]["hash"]
         assert e["verdict"] in {"Supported", "Not Supported", "Inconclusive", "Graveyard"}
     # recorded in the SEPARATE discovery namespace, not the H INDEX

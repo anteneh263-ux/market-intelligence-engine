@@ -32,6 +32,22 @@ PASSIVITY.  Every wrapper delegates to the real object and returns its result
 unchanged, with exactly one deliberate exception: when a test explicitly arms
 it, the shim substitutes the result of PRAGMA integrity_check.  That substitution
 is the instrument under test and is never enabled implicitly.
+
+TERMINAL EVENTS (P1B, opt-in, default off).  `observe(..., terminal_events=True)`
+makes every wrapper emit a SECOND event once its delegated call has resolved:
+`<kind>:ok` after a normal return, `<kind>:err` after an exception, each
+carrying `seq` -- the sequence number of its own pre-event.  Omitting the
+option, or passing False, reproduces the historical pre-event stream exactly:
+same events, same order, same rendering, same count, same return values, same
+exceptions.  A pre-event with no terminal event means the operation was still
+IN FLIGHT, never that it succeeded.
+
+SCOPE LIMIT, STATED SO IT CANNOT BE OVERLOOKED.  Operations this seam never
+wrapped acquire no terminal event and remain outside the trace entirely: every
+`os.path.*` call (routed through `_OsPathProxy`), `os.fspath`, the builtin
+`open()` used for the anchor content read, and any cursor method obtained from
+`connection.cursor()`.  Closing that gap is a separate decision and is not part
+of the terminal-event extension.
 """
 
 import hashlib
@@ -227,19 +243,97 @@ def read_bytes(path):
 # ordering claim spanning the two -- which is exactly what H2-A asserts -- is
 # expressible without correlating two clocks.
 
+TERMINAL_SUBSTITUTED = "substituted"
+
+
+def _require_bool(value, name):
+    """Reject anything that is not exactly a bool.  1 and 0 are not booleans."""
+    if not isinstance(value, bool):
+        raise TypeError(
+            "%s must be a bool, got %s" % (name, type(value).__name__)
+        )
+    return value
+
+
+def _fd_evidence(result):
+    """The descriptor os.open actually returned."""
+    if isinstance(result, int):
+        return "fd=%d" % (result,)
+    return "fd=<non-integer>"
+
+
+def _byte_count_evidence(result):
+    """The count os.write actually accepted -- short writes included."""
+    if isinstance(result, int):
+        return "bytes=%d" % (result,)
+    return "bytes=<non-integer>"
+
+
 class _Recorder:
-    def __init__(self):
+    """One ordered index space.  Pre-events always; terminal events on request.
+
+    A pre-event proves only that control reached the wrapper.  With terminal
+    events armed, each delegated call additionally emits `<kind>:ok` after it
+    returns or `<kind>:err` after it raises, keyed to the pre-event's own
+    sequence number -- so pairing stays exact under concurrency and under
+    descriptor reuse, neither of which adjacency can handle.
+    """
+
+    def __init__(self, terminal_events=False):
         self.entries = []
+        self.terminal_events = _require_bool(terminal_events, "terminal_events")
         self._lock = threading.Lock()
 
     def record(self, kind, target, payload):
+        """Append the pre-event and return its sequence number, atomically.
+
+        The sequence is assigned and returned under the recorder's existing
+        lock, so a concurrent recorder cannot hand two operations the same one.
+        """
+        with self._lock:
+            index = len(self.entries)
+            self.entries.append({
+                "index": index,
+                "kind": kind,
+                "target": target,
+                "payload": payload,
+            })
+            return index
+
+    def terminal(self, kind, target, seq, payload):
+        """Append a terminal event paired to `seq`.  A no-op when disabled."""
+        if not self.terminal_events:
+            return
         with self._lock:
             self.entries.append({
                 "index": len(self.entries),
                 "kind": kind,
                 "target": target,
                 "payload": payload,
+                "seq": seq,
             })
+
+    def resolve(self, kind, target, seq, call, evidence=None):
+        """Run `call`; emit its terminal event ONLY once it has resolved.
+
+        The exception is re-raised bare, so its identity, type, arguments and
+        context are exactly what the delegate produced.  Only the type NAME is
+        recorded: messages are non-contractual and are never traced.
+        """
+        try:
+            result = call()
+        except BaseException as exc:  # noqa: BLE001 -- every outcome is evidence
+            self.terminal("%s:err" % (kind,), target, seq,
+                          "error=%s" % (type(exc).__name__,))
+            raise
+        self.terminal("%s:ok" % (kind,), target, seq,
+                      evidence(result) if evidence is not None else "")
+        return result
+
+    def delegate(self, kind, target, payload, call, evidence=None):
+        """Record the pre-event, delegate, then record the terminal event."""
+        return self.resolve(kind, target, self.record(kind, target, payload),
+                            call, evidence)
 
     def indices(self, target=None, kind=None, contains=None, lowered=False):
         found = []
@@ -262,11 +356,28 @@ class _Recorder:
         return found[0] if found else None
 
     def render(self):
-        return "\n".join(
-            "%3d  %-9s %-8s %s"
-            % (e["index"], e["kind"], e["target"], e["payload"][:110])
-            for e in self.entries
-        )
+        """Serialize the trace.  This text IS the artifact a reader receives.
+
+        A terminal event serializes its pairing key as the canonical token
+        `seq=<decimal pre-operation index>`, placed BEFORE the payload so that
+        payload truncation can never remove it.  Without it an interleaved
+        terminal event could not be paired from the artifact alone, and
+        adjacency is not a sound substitute -- that was the R1 defect
+        (STOP_TRACE_ARTIFACT_PAIRING_LOST).
+
+        A pre-operation event renders exactly as it always has, character for
+        character, and carries no `seq=` token.
+        """
+        return "\n".join(self._render_entry(e) for e in self.entries)
+
+    def _render_entry(self, entry):
+        if "seq" in entry:
+            return ("%3d  %-9s %-8s seq=%d %s"
+                    % (entry["index"], entry["kind"], entry["target"],
+                       entry["seq"], entry["payload"][:110]))
+        return ("%3d  %-9s %-8s %s"
+                % (entry["index"], entry["kind"], entry["target"],
+                   entry["payload"][:110]))
 
 
 class _FakeCursor:
@@ -296,29 +407,40 @@ class _TracedConnection:
         return getattr(self._real, name)
 
     def execute(self, sql, *args, **kwargs):
-        self._rec.record("execute", self._target, sql)
+        seq = self._rec.record("execute", self._target, sql)
         if (self._substitute_integrity is not None
                 and self._target == "registry"
                 and INTEGRITY_STATEMENT_FRAGMENT in sql.lower()):
             # The one deliberate substitution.  Armed only by an explicit test.
-            return _FakeCursor(self._substitute_integrity)
-        return self._real.execute(sql, *args, **kwargs)
+            # Its terminal evidence is the literal `substituted`, so the trace
+            # records a deterministic completion without ever claiming that
+            # SQLite executed the statement.
+            cursor = _FakeCursor(self._substitute_integrity)
+            self._rec.terminal("execute:ok", self._target, seq,
+                               TERMINAL_SUBSTITUTED)
+            return cursor
+        return self._rec.resolve(
+            "execute", self._target, seq,
+            lambda: self._real.execute(sql, *args, **kwargs),
+        )
 
     def executemany(self, sql, *args, **kwargs):
-        self._rec.record("executemany", self._target, sql)
-        return self._real.executemany(sql, *args, **kwargs)
+        return self._rec.delegate(
+            "executemany", self._target, sql,
+            lambda: self._real.executemany(sql, *args, **kwargs),
+        )
 
     def commit(self):
-        self._rec.record("commit", self._target, "COMMIT")
-        return self._real.commit()
+        return self._rec.delegate("commit", self._target, "COMMIT",
+                                  lambda: self._real.commit())
 
     def rollback(self):
-        self._rec.record("rollback", self._target, "ROLLBACK")
-        return self._real.rollback()
+        return self._rec.delegate("rollback", self._target, "ROLLBACK",
+                                  lambda: self._real.rollback())
 
     def close(self):
-        self._rec.record("close", self._target, "")
-        return self._real.close()
+        return self._rec.delegate("close", self._target, "",
+                                  lambda: self._real.close())
 
     def cursor(self, *args, **kwargs):
         return self._real.cursor(*args, **kwargs)
@@ -345,10 +467,12 @@ class _Sqlite3Shim:
         target = ("registry"
                   if os.path.abspath(os.fspath(database)) == self._registry_path
                   else "mutex")
-        self._rec.record("connect", target, str(database))
+        real = self._rec.delegate(
+            "connect", target, str(database),
+            lambda: self._real.connect(database, *args, **kwargs),
+        )
         return _TracedConnection(
-            self._real.connect(database, *args, **kwargs),
-            self._rec, target, self._substitute_integrity,
+            real, self._rec, target, self._substitute_integrity,
         )
 
 
@@ -370,28 +494,42 @@ class _OsShim:
         return getattr(self._real, name)
 
     def open(self, path, *args, **kwargs):
-        self._rec.record("open", "fs", str(path))
-        return self._real.open(path, *args, **kwargs)
+        # The pre-event cannot name the descriptor -- it does not exist yet.
+        # `open:ok` carries the one os.open actually returned.
+        return self._rec.delegate(
+            "open", "fs", str(path),
+            lambda: self._real.open(path, *args, **kwargs),
+            _fd_evidence,
+        )
 
     def write(self, fd, data):
-        self._rec.record("write", "fs", "fd=%s bytes=%d" % (fd, len(data)))
-        return self._real.write(fd, data)
+        # The pre-event records the REQUESTED length; `write:ok` records the
+        # count the kernel accepted, which is what a short write differs on.
+        return self._rec.delegate(
+            "write", "fs", "fd=%s bytes=%d" % (fd, len(data)),
+            lambda: self._real.write(fd, data),
+            _byte_count_evidence,
+        )
 
     def fsync(self, fd):
-        self._rec.record("fsync", "fs", "fd=%s" % (fd,))
-        return self._real.fsync(fd)
+        return self._rec.delegate("fsync", "fs", "fd=%s" % (fd,),
+                                  lambda: self._real.fsync(fd))
 
     def close(self, fd):
-        self._rec.record("close", "fs", "fd=%s" % (fd,))
-        return self._real.close(fd)
+        return self._rec.delegate("close", "fs", "fd=%s" % (fd,),
+                                  lambda: self._real.close(fd))
 
     def replace(self, src, dst, *args, **kwargs):
-        self._rec.record("replace", "fs", "%s->%s" % (src, dst))
-        return self._real.replace(src, dst, *args, **kwargs)
+        return self._rec.delegate(
+            "replace", "fs", "%s->%s" % (src, dst),
+            lambda: self._real.replace(src, dst, *args, **kwargs),
+        )
 
     def rename(self, src, dst, *args, **kwargs):
-        self._rec.record("rename", "fs", "%s->%s" % (src, dst))
-        return self._real.rename(src, dst, *args, **kwargs)
+        return self._rec.delegate(
+            "rename", "fs", "%s->%s" % (src, dst),
+            lambda: self._real.rename(src, dst, *args, **kwargs),
+        )
 
 
 class _Installed:
@@ -424,10 +562,21 @@ class _Installed:
         return False
 
 
-def observe(registry_path, substitute_integrity=None):
-    """Install the seam.  ``substitute_integrity=None`` observes only."""
-    return _Installed(production(), _Recorder(), registry_path,
-                      substitute_integrity)
+def observe(registry_path, substitute_integrity=None, *,
+            terminal_events=False):
+    """Install the seam.  ``substitute_integrity=None`` observes only.
+
+    ``terminal_events`` is keyword-only and defaults to False, which reproduces
+    the historical pre-event stream exactly.  True additionally emits
+    ``<kind>:ok`` / ``<kind>:err`` once each delegated call has resolved.  Only
+    the two boolean values are accepted; 1 and 0 are rejected.
+    """
+    return _Installed(
+        production(),
+        _Recorder(_require_bool(terminal_events, "terminal_events")),
+        registry_path,
+        substitute_integrity,
+    )
 
 
 # ---------------------------------------------------------------------------

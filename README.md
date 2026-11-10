@@ -1,5 +1,12 @@
 # Market Intelligence Engine
 
+## Lokal applikasjon
+
+Dobbeltklikk **Start MIE.command** for å åpne den lokale arbeidsflaten.
+Den samler arkiv, rapportvisning, eksport og Pine-beskrivelse.
+[Bruksveiledning og avgrensninger](docs/WORKSPACE_APP.md). Ingen nye markedstester startes fra appen.
+
+
 A reproducible, auditable research platform that treats every trading strategy as a **falsifiable
 scientific hypothesis** — not a signal to trust. It evaluates strategies through one frozen,
 versioned pipeline, compounds the results into a queryable Knowledge Base, learns which traits
