@@ -170,7 +170,8 @@ def scan(root):
             raise ValueError("segment chain mismatch")
         last = {"number": number, "sha256": footer["sha256"],
                 "last_received_utc": footer["last_received_utc"],
-                "last_trade_id": footer["last_trade_id"]}
+                "last_trade_id": footer["last_trade_id"],
+                "ended_utc": footer["ended_utc"]}
         files.append(path.name)
     return dict(sealed=files, partials=partials, bytes=total, last=last, next_number=largest + 1)
 
@@ -209,9 +210,9 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
         duplicates = jumps = 0
         started = clock(); reason = "duration"
         with partial.open("xb") as f:
-            def write(item):
+            def write(item, reserve=RESERVE):
                 raw = line(item)
-                if f.tell() + len(raw) + RESERVE > budget:
+                if f.tell() + len(raw) + reserve > budget:
                     return False
                 try:
                     f.write(raw); f.flush()
@@ -220,6 +221,18 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
                 digest.update(raw)
                 return True
 
+            def write_gap(reason, **fields):
+                # Data records reserve space for interruption records and the footer.
+                if not write({"kind": "gap", "reason": reason, **fields}, reserve=1024):
+                    raise RuntimeError("gap record exceeds budget; partial retained")
+
+            def record_pause(previous, current, label):
+                delta = (datetime.fromisoformat(current) - datetime.fromisoformat(previous)).total_seconds()
+                if delta > 10 or delta < 0:
+                    write_gap(label, previous_utc=previous, received_utc=current)
+                    return True
+                return False
+
             header = {"kind": "header", "schema": SCHEMA, "number": number,
                       "provider": "coinbase_exchange", "product": PRODUCT,
                       "started_utc": started, "previous": state["last"],
@@ -227,13 +240,19 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
                       "continuity": "UNKNOWN_AT_CONNECTION_BOUNDARY"}
             if not write(header):
                 raise ValueError("header exceeds budget")
+            if state["last"] is not None:
+                record_pause(state["last"]["ended_utc"], started, "between_connections_pause_or_change")
             os.fsync(f.fileno()); sync_dir(root)
+            previous_time = started
+            pause_recorded = False
             try:
                 with connect(ENDPOINT, open_timeout=10, close_timeout=2, max_size=MAX_FRAME) as ws:
                     ws.send(json.dumps({"type": "subscribe", "product_ids": [PRODUCT],
                                         "channels": ["ticker", "heartbeat"]}))
                     deadline = monotonic() + seconds
-                    previous_time = datetime.fromisoformat(clock())
+                    connected = clock()
+                    pause_recorded = record_pause(previous_time, connected, "connection_start_pause_or_change")
+                    previous_time = connected
                     while count < max_messages and monotonic() < deadline:
                         try:
                             raw = ws.recv(timeout=min(5, max(0.001, deadline - monotonic())))
@@ -241,13 +260,8 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
                             reason = "receive_timeout" if monotonic() < deadline else "duration"
                             break
                         received = clock()
-                        receipt = datetime.fromisoformat(received)
-                        delta = (receipt - previous_time).total_seconds()
-                        gap = delta > 10 or delta < 0
-                        if gap:
-                            write({"kind": "gap", "reason": "wall_clock_pause_or_change",
-                                   "previous_utc": previous_time.isoformat(), "received_utc": received})
-                        previous_time = receipt
+                        gap = record_pause(previous_time, received, "wall_clock_pause_or_change")
+                        previous_time = received
                         payload = raw.encode("utf-8") if isinstance(raw, str) else bytes(raw)
                         if len(payload) > MAX_FRAME:
                             reason = "oversize_frame"; break
@@ -259,16 +273,27 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
                         highwater, dup, jump = trade_diagnostics(payload, received, highwater)
                         duplicates += dup; jumps += jump
                         if gap:
+                            pause_recorded = True
                             reason = "wall_clock_pause_or_change"
                             break
                     if count == max_messages and reason == "duration":
                         reason = "message_limit"
             except errors as exc:
                 reason = "connection_failed:" + type(exc).__name__
-            if reason not in {"duration", "message_limit", "segment_capacity"}:
-                write({"kind": "gap", "reason": reason, "utc": clock()})
+            # A suspended receive can time out after the monotonic deadline, or
+            # the loop can exit without receiving another frame after wake.
+            # Compare wall-clock time at exit even when no message was received.
+            ended = clock()
+            if record_pause(previous_time, ended, "wall_clock_pause_or_change"):
+                pause_recorded = True
+                if reason in {"duration", "receive_timeout", "message_limit"}:
+                    reason = "wall_clock_pause_or_change"
+            if reason not in {"duration", "message_limit", "segment_capacity"} and not (
+                reason == "wall_clock_pause_or_change" and pause_recorded
+            ):
+                write_gap(reason, utc=ended)
             footer = {"kind": "footer", "messages": count,
-                      "last_received_utc": last_received, "ended_utc": clock(),
+                      "last_received_utc": last_received, "ended_utc": ended,
                       "last_trade_id": highwater, "duplicates_or_reordered": duplicates,
                       "trade_id_jumps": jumps,
                       "reason": reason, "complete_trade_history": False}

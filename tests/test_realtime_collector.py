@@ -97,6 +97,35 @@ def test_wall_clock_pause_marked_and_next_capture_resumes(root):
     assert capture(root, "resumed", max_messages=1)["file"] == "000000000002.jsonl"
 
 
+@pytest.mark.parametrize("timeout_after_deadline", [True, False])
+def test_sleep_past_deadline_without_next_message_records_gap(root, timeout_after_deadline):
+    # Simulate the machine sleeping for five minutes while either recv or
+    # the next loop condition is pending. Neither path receives a frame.
+    stamps = iter(["2026-11-19T10:00:00+00:00", "2026-11-19T10:00:00+00:00",
+                   "2026-11-19T10:05:00+00:00"])
+    ticks = iter([0., 0., 0., 300.] if timeout_after_deadline else [0., 300.])
+    result = capture(root, TimeoutError(), seconds=60, clock=lambda: next(stamps),
+                     monotonic=lambda: next(ticks))
+    assert result["reason"] == "wall_clock_pause_or_change"
+    gap = next(r for r in records(root / result["file"]) if r["kind"] == "gap")
+    assert gap["previous_utc"] == "2026-11-19T10:00:00+00:00"
+    assert gap["received_utc"] == "2026-11-19T10:05:00+00:00"
+    assert result["messages"] == 0
+    assert inspect_root(root)["last"]["sha256"] == result["sha256"]
+
+
+def test_shutdown_between_segments_has_explicit_gap(root):
+    first_time = "2026-11-19T10:00:00+00:00"
+    second_time = "2026-11-20T08:00:00+00:00"
+    first = capture(root, "first", max_messages=1, clock=lambda: first_time)
+    second = capture(root, "second", max_messages=1, clock=lambda: second_time)
+    rows = records(root / second["file"])
+    assert rows[0]["previous"]["sha256"] == first["sha256"]
+    gap = next(r for r in rows if r.get("reason") == "between_connections_pause_or_change")
+    assert (gap["previous_utc"], gap["received_utc"]) == (first_time, second_time)
+    assert inspect_root(root)["next_number"] == 3
+
+
 def test_footer_tamper_fails_closed(root):
     result = capture(root, "first", max_messages=1)
     path = root / result["file"]

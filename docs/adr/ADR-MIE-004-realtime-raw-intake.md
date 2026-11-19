@@ -28,6 +28,10 @@ records preserve WebSocket payload bytes (base64), frame type and receipt UTC;
 malformed messages remain raw. Separate gap records mark timeout, disconnect,
 or a wall-clock pause. A footer gives counts, terminal reason and SHA-256 over
 the exact preceding bytes plus the canonical footer without its hash field.
+Compare wall clock on exit even without another frame, including timeout past
+the segment deadline; compare the last sealed end time with the next start time
+to mark extended downtime across process restarts. These comparisons flag
+possible interruptions, not proof of the exact cause or missing market events.
 Validated ticker trade IDs carry a high-water mark across sealed segments;
 duplicate/reordered IDs and jumps are diagnostic counts only, not removed data.
 Sealed files are fsynced, published without replacing
