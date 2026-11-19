@@ -21,6 +21,8 @@ from .realtime_probe import ENDPOINT, parse_ticker
 SCHEMA = "mie.raw-intake.v1"
 PRODUCT = "BTC-USD"
 ROOT_FILE = "root.json"
+CAPACITY_FILE = "capacity-v1.json"
+CAPACITY_PARTIAL = "capacity-v1.partial"
 FILE_PATTERN = re.compile(r"(\d{12})\.(jsonl|partial)")
 MAX_FRAME = 1024 * 1024
 RESERVE = 4096
@@ -87,7 +89,8 @@ def load_root(path):
     file = root / ROOT_FILE
     if file.is_symlink() or not file.is_file():
         raise ValueError("explicit initialized root required")
-    marker = json.loads(file.read_bytes())
+    root_bytes = file.read_bytes()
+    marker = json.loads(root_bytes)
     if (marker.get("schema") != SCHEMA or marker.get("root") != str(root)
             or marker.get("provider") != "coinbase_exchange"
             or marker.get("product") != PRODUCT or marker.get("evidence") is not False
@@ -95,7 +98,59 @@ def load_root(path):
             or type(marker.get("max_total_bytes")) is not int
             or not 16_000_000 <= marker["max_total_bytes"] <= 100_000_000_000):
         raise ValueError("invalid root marker")
+    amendment_path = root / CAPACITY_FILE
+    if amendment_path.is_symlink():
+        raise ValueError("symlink capacity amendment")
+    if amendment_path.exists():
+        raw = amendment_path.read_bytes()
+        amendment = json.loads(raw)
+        if not isinstance(amendment, dict):
+            raise ValueError("invalid capacity amendment")
+        unsigned = {k: v for k, v in amendment.items() if k != "sha256"}
+        expected = hashlib.sha256(line(unsigned)).hexdigest()
+        if (raw != line(amendment) or amendment.get("schema") != "mie.raw-intake.capacity.v1"
+                or amendment.get("sha256") != expected
+                or amendment.get("root_marker_sha256") != hashlib.sha256(root_bytes).hexdigest()
+                or amendment.get("previous_max_total_bytes") != marker["max_total_bytes"]
+                or type(amendment.get("max_total_bytes")) is not int
+                or not marker["max_total_bytes"] < amendment["max_total_bytes"] <= 100_000_000_000):
+            raise ValueError("invalid capacity amendment")
+        marker = {**marker, "max_total_bytes": amendment["max_total_bytes"]}
     return root, marker
+
+
+def extend_capacity(path, *, expected_bytes, new_bytes):
+    """Publish one operator-authorized increase; preserve root.json and segments."""
+    root, _ = load_root(path)
+    lock_fd = os.open(root / ".lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    try:
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        root, marker = load_root(path)
+        state = scan(root)
+        final = root / CAPACITY_FILE
+        if final.exists() or final.is_symlink():
+            raise ValueError("capacity amendment already exists; no overwrite")
+        if (type(expected_bytes) is not int or type(new_bytes) is not int
+                or marker["max_total_bytes"] != expected_bytes
+                or not expected_bytes < new_bytes <= 100_000_000_000):
+            raise ValueError("capacity mismatch or invalid increase")
+        if shutil.disk_usage(root).free < new_bytes - state["bytes"] + 50_000_000:
+            raise ValueError("insufficient free space for requested capacity")
+        amendment = {"schema": "mie.raw-intake.capacity.v1", "created_utc": utcnow(),
+                     "root_marker_sha256": hashlib.sha256((root / ROOT_FILE).read_bytes()).hexdigest(),
+                     "previous_max_total_bytes": expected_bytes, "max_total_bytes": new_bytes}
+        amendment["sha256"] = hashlib.sha256(line(amendment)).hexdigest()
+        partial = root / CAPACITY_PARTIAL
+        with partial.open("xb") as f:
+            f.write(line(amendment)); f.flush(); os.fsync(f.fileno())
+        sync_dir(root)
+        os.link(partial, final)
+        sync_dir(root)
+        partial.unlink()
+        sync_dir(root)
+        return amendment
+    finally:
+        os.close(lock_fd)
 
 
 def verify_segment(path):
@@ -156,7 +211,7 @@ def scan(root):
         if path.is_symlink() or not path.is_file():
             raise ValueError(f"unexpected root entry: {path.name}")
         total += path.stat().st_size
-        if path.name in {ROOT_FILE, ".lock"}:
+        if path.name in {ROOT_FILE, ".lock", CAPACITY_FILE}:
             continue
         match = FILE_PATTERN.fullmatch(path.name)
         if not match:
@@ -177,8 +232,8 @@ def scan(root):
 
 
 def inspect_root(path):
-    root, _ = load_root(path)
-    return scan(root)
+    root, marker = load_root(path)
+    return {**scan(root), "max_total_bytes": marker["max_total_bytes"]}
 
 
 def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000_000,
@@ -197,6 +252,7 @@ def collect_one(path, *, seconds=60, max_messages=10000, max_segment_bytes=8_000
     lock_fd = os.open(root / ".lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     try:
         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        root, marker = load_root(path)
         state = scan(root)
         budget = min(max_segment_bytes, marker["max_total_bytes"] - state["bytes"],
                      shutil.disk_usage(root).free - 50_000_000)
@@ -320,6 +376,9 @@ def main(argv=None):
     init = sub.add_parser("init"); init.add_argument("--owner", required=True)
     init.add_argument("--max-total-bytes", type=int, default=2_000_000_000)
     sub.add_parser("verify")
+    capacity = sub.add_parser("extend-capacity")
+    capacity.add_argument("--expected-bytes", type=int, required=True)
+    capacity.add_argument("--new-bytes", type=int, required=True)
     sub.add_parser("launchd-plist", help="print launch agent config; does not install or start it")
     collect = sub.add_parser("collect")
     collect.add_argument("--seconds", type=int, default=60)
@@ -329,6 +388,9 @@ def main(argv=None):
         print(json.dumps(init_root(args.root, args.owner, max_total_bytes=args.max_total_bytes)))
     elif args.action == "verify":
         print(json.dumps(inspect_root(args.root)))
+    elif args.action == "extend-capacity":
+        print(json.dumps(extend_capacity(args.root, expected_bytes=args.expected_bytes,
+                                         new_bytes=args.new_bytes)))
     elif args.action == "launchd-plist":
         # Keep activation explicit. The emitted plist never invokes a shell.
         root, _ = load_root(args.root)

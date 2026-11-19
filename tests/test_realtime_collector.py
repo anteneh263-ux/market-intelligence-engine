@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from app.data.realtime_collector import collect_one, init_root, inspect_root, line, main
+from app.data.realtime_collector import collect_one, extend_capacity, init_root, inspect_root, line, main
 
 
 class Socket:
@@ -169,3 +169,40 @@ def test_launchd_config_is_read_only_and_resumes_at_login(root, capsys):
     assert config["RunAtLoad"] and config["StartInterval"] == 60
     assert config["ProgramArguments"][3:6] == ["--root", str(root), "collect"]
     assert set(root.iterdir()) == before
+
+
+def test_capacity_extension_preserves_marker_and_existing_segments(root):
+    first = capture(root, "first", max_messages=1)
+    marker_before = (root / "root.json").read_bytes()
+    segment_before = (root / first["file"]).read_bytes()
+    with patch("app.data.realtime_collector.shutil.disk_usage", return_value=type("Disk", (), {"free": 10_000_000_000})()):
+        result = extend_capacity(root, expected_bytes=2_000_000_000, new_bytes=6_000_000_000)
+    assert result["max_total_bytes"] == 6_000_000_000
+    assert (root / "root.json").read_bytes() == marker_before
+    assert (root / first["file"]).read_bytes() == segment_before
+    assert inspect_root(root)["max_total_bytes"] == 6_000_000_000
+    second = capture(root, "second", max_messages=1)
+    assert records(root / second["file"])[0]["previous"]["sha256"] == first["sha256"]
+    with pytest.raises(ValueError, match="already exists"):
+        extend_capacity(root, expected_bytes=6_000_000_000, new_bytes=8_000_000_000)
+
+
+def test_capacity_extension_refuses_mismatch_reduction_and_low_space(root):
+    for expected, new in [(1_000_000_000, 6_000_000_000), (2_000_000_000, 1_000_000_000)]:
+        with pytest.raises(ValueError, match="capacity mismatch"):
+            extend_capacity(root, expected_bytes=expected, new_bytes=new)
+    with patch("app.data.realtime_collector.shutil.disk_usage", return_value=type("Disk", (), {"free": 1})()):
+        with pytest.raises(ValueError, match="insufficient free space"):
+            extend_capacity(root, expected_bytes=2_000_000_000, new_bytes=6_000_000_000)
+    assert not (root / "capacity-v1.json").exists()
+
+
+def test_tampered_capacity_amendment_stops_capture(root):
+    with patch("app.data.realtime_collector.shutil.disk_usage", return_value=type("Disk", (), {"free": 10_000_000_000})()):
+        extend_capacity(root, expected_bytes=2_000_000_000, new_bytes=6_000_000_000)
+    path = root / "capacity-v1.json"
+    record = json.loads(path.read_bytes()); record["max_total_bytes"] = 7_000_000_000
+    path.write_bytes(line(record))
+    with pytest.raises(ValueError, match="invalid capacity amendment"):
+        capture(root, "not written")
+    assert not (root / "000000000001.partial").exists()

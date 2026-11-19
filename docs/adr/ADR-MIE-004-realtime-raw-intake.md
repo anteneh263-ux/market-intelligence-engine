@@ -19,6 +19,19 @@ No automatic deletion, overwrite, retention pruning, or repair. A single
 operator process holds an advisory exclusive lock. Limit total bytes, segment
 bytes, duration, messages, number of sessions, and free space; stop at capacity.
 
+### Operator-approved capacity amendment (2026-11-19)
+
+The operator approved preparing a 2,000,000,000 to 6,000,000,000 byte increase
+after confirming adequate local free space. Stop the LaunchAgent before the
+change. `extend-capacity` checks the exact prior limit, verifies the existing
+segment chain, verifies free disk space, and exclusively publishes a separate
+canonical `capacity-v1.json` linked to the original root marker hash. It never
+changes `root.json` or raw segments. Its SHA-256 is checked on load; the collector
+honors the effective limit under the existing lock. No reduction or second
+amendment is supported by v1. An interrupted amendment staging file fails
+closed and requires review; no repair is automatic. No scientific authority,
+schema migration, or historical equivalence is claimed.
+
 ## Raw segments and restart
 
 Each connection opens a uniquely numbered `.partial` JSONL segment before
