@@ -1,6 +1,8 @@
+import builtins
 import json
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
 
 from app.data.realtime_probe import parse_ticker, probe
 
@@ -29,6 +31,20 @@ class Socket:
 
 
 class RealtimeProbeTests(unittest.TestCase):
+    def test_injected_connection_requires_no_websockets_package(self):
+        real_import = builtins.__import__
+
+        def import_without_websockets(name, *args, **kwargs):
+            if name == "websockets" or name.startswith("websockets."):
+                raise ModuleNotFoundError("websockets is not installed", name=name)
+            return real_import(name, *args, **kwargs)
+
+        ws = Socket([ticker()])
+        with patch("builtins.__import__", side_effect=import_without_websockets):
+            result = probe(connect=lambda *a, **k: ws)
+        self.assertEqual(result["quotes"], 1)
+        self.assertEqual(result["status"], "INCOMPLETE")
+
     def test_parse(self):
         q = parse_ticker(ticker(), "BTC-USD", datetime.now(timezone.utc))
         self.assertEqual(q.bid, "99.9")

@@ -58,9 +58,11 @@ def probe(product="BTC-USD", seconds=30, max_messages=2000, *, connect=None):
         raise ValueError("invalid product")
     if not 1 <= seconds <= 300 or not 1 <= max_messages <= 10000:
         raise ValueError("probe bounds exceeded")
-    from websockets.exceptions import WebSocketException
+    connection_errors = (OSError, TimeoutError)
     if connect is None:
+        from websockets.exceptions import WebSocketException
         from websockets.sync.client import connect
+        connection_errors += (WebSocketException,)
     report = dict(schema="mie.realtime_probe.v1", source="coinbase_exchange", product=product,
                   evidence=False, complete_trade_history=False, messages=0, quotes=0,
                   heartbeats=0, invalid=0, duplicates_or_reordered=0, trade_id_jumps=0,
@@ -108,7 +110,7 @@ def probe(product="BTC-USD", seconds=30, max_messages=2000, *, connect=None):
                     report["invalid"] += 1
             if report["quotes"] and report["subscription_confirmed"] and not report["invalid"]:
                 report["status"] = "OBSERVED_QUOTES"
-    except (OSError, TimeoutError, WebSocketException) as exc:
+    except connection_errors as exc:
         report["status"] = "CONNECTION_FAILED"
         report["error_type"] = type(exc).__name__
     return report
