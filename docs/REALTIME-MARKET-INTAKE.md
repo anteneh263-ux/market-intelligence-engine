@@ -36,3 +36,32 @@ Research Core and controlled sessions retain their authority; no dataset or
 prospective evidence binding until separately approved and validated under
 ADR-MIE-001. Level-2 order-book reconstruction, feature calculation, and strategy
 evaluation are later, distinct work packages. No live-money execution.
+
+## Raw collector v1 — proposed local deployment
+
+See [ADR-MIE-004](adr/ADR-MIE-004-realtime-raw-intake.md). The dedicated root
+must be operator-approved and separate from the checkout and every research
+store. These commands are for the operator's Mac only, after review; they have
+not been executed against a real root. Replace `APPROVED_ROOT` with the approved
+absolute location and create its parent separately if needed.
+
+```sh
+pip install -e '.[realtime]'
+python -m app.data.realtime_collector --root APPROVED_ROOT init --owner "operator"
+python -m app.data.realtime_collector --root APPROVED_ROOT collect --seconds 60 --segments 1
+python -m app.data.realtime_collector --root APPROVED_ROOT verify
+```
+
+Re-running `collect` starts the next numbered segment; previously sealed files
+are verified and never overwritten. An interrupted `.partial` remains available
+for inspection; it is never promoted to evidence. Connection failures and
+wall-clock pauses are recorded. A Mac launch agent (RunAtLoad and bounded retry)
+can be generated with `python -m app.data.realtime_collector --root APPROVED_ROOT launchd-plist`.
+It prints configuration only; installing it in `~/Library/LaunchAgents` and
+bootstrapping it with launchctl are separate operator-approved activation steps
+after the reviewed smoke test. At login it starts capture; a periodic retry
+does not create an overlapping process. Capacity/integrity failures stop each
+invocation rather than deleting or repairing files. After system restart a new
+login is required for this user LaunchAgent.
+No data can be collected while the Mac is powered off or asleep. Resume records
+the boundary and resumes the live feed; it does not backfill or invent events.
