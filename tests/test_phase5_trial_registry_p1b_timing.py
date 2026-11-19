@@ -324,6 +324,18 @@ def normalise(text, workspace):
     return text.replace(workspace["root"], "<ROOT>")
 
 
+def fresh_workspace_at_same_path(root, archive):
+    """Keep the first temporary fixture, then start fresh at its exact path.
+
+    Rendered payloads are truncated before textual normalisation. Comparing
+    different absolute paths can therefore produce unequal truncated bytes even
+    for identical events. Reusing the path keeps the real renderer under test.
+    Both directories are confined to the test's tmp_path.
+    """
+    root.rename(archive)
+    return make_workspace(str(root))
+
+
 def seed_complete(workspace):
     """A genuine COMPLETE registry, built with NO seam installed."""
     result = initializer()(workspace["registry"], workspace["anchor"])
@@ -358,11 +370,12 @@ def test_p1b_01_omitted_option_preserves_the_legacy_stream(tmp_path):
 
 def test_p1b_02_explicit_false_preserves_the_legacy_stream(tmp_path):
     """2.  terminal_events=False is byte-identical to omitting it."""
-    omitted_ws = make_workspace(str(tmp_path / "a"))
+    root = tmp_path / "shared"
+    omitted_ws = make_workspace(str(root))
     with seam.observe(omitted_ws["registry"]) as omitted:
         initializer()(omitted_ws["registry"], omitted_ws["anchor"])
 
-    false_ws = make_workspace(str(tmp_path / "b"))
+    false_ws = fresh_workspace_at_same_path(root, tmp_path / "first-run")
     with seam.observe(false_ws["registry"], terminal_events=False) as disabled:
         result = initializer()(false_ws["registry"], false_ws["anchor"])
 
@@ -375,8 +388,7 @@ def test_p1b_02_explicit_false_preserves_the_legacy_stream(tmp_path):
         "event count must be identical: omitted %d, False %d"
         % (len(omitted.entries), len(disabled.entries))
     )
-    assert (normalise(disabled.render(), false_ws)
-            == normalise(omitted.render(), omitted_ws)), (
+    assert disabled.render() == omitted.render(), (
         "terminal_events=False must render exactly as the legacy stream"
     )
 
@@ -727,19 +739,20 @@ def test_p1b_15_production_attributes_are_restored_after_failure(workspace):
 
 def test_p1b_16_two_equivalent_opt_in_runs_render_identically(tmp_path):
     """16.  Canonical output is determined by the operations, not the run."""
-    first = make_workspace(str(tmp_path / "run1"))
+    root = tmp_path / "shared"
+    first = make_workspace(str(root))
     with seam.observe(first["registry"], terminal_events=True) as trace1:
         initializer()(first["registry"], first["anchor"])
 
-    second = make_workspace(str(tmp_path / "run2"))
+    second = fresh_workspace_at_same_path(root, tmp_path / "first-run")
     with seam.observe(second["registry"], terminal_events=True) as trace2:
         initializer()(second["registry"], second["anchor"])
 
-    rendered1 = normalise(trace1.render(), first)
-    rendered2 = normalise(trace2.render(), second)
+    rendered1 = trace1.render()
+    rendered2 = trace2.render()
     assert rendered1 == rendered2, (
-        "two equivalent opt-in runs must render identically after path"
-        " normalisation\n--- run 1 ---\n%s\n--- run 2 ---\n%s"
+        "two equivalent opt-in runs at the same path must render identically"
+        "\n--- run 1 ---\n%s\n--- run 2 ---\n%s"
         % (rendered1, rendered2)
     )
     # R2.  The serialized artifact must carry the pairing key.  R1 kept `seq`
@@ -1069,9 +1082,14 @@ def test_p1b_29_pre_operation_lines_serialize_no_sequence(workspace):
         )
 
 
-def test_p1b_29b_legacy_rendering_carries_no_sequence_token(tmp_path):
+@pytest.mark.parametrize("long_path", [False, True])
+def test_p1b_29b_legacy_rendering_carries_no_sequence_token(tmp_path, long_path):
     """29 (legacy).  With the option off the artifact is the historical one."""
-    off = make_workspace(str(tmp_path / "off"))
+    if long_path:
+        tmp_path = tmp_path / ("x" * 120)
+        tmp_path.mkdir()
+    root = tmp_path / "shared"
+    off = make_workspace(str(root))
     with seam.observe(off["registry"], terminal_events=False) as disabled:
         initializer()(off["registry"], off["anchor"])
     rendered = disabled.render()
@@ -1084,11 +1102,10 @@ def test_p1b_29b_legacy_rendering_carries_no_sequence_token(tmp_path):
         "the legacy artifact must contain no terminal event"
     )
 
-    omitted = make_workspace(str(tmp_path / "omitted"))
+    omitted = fresh_workspace_at_same_path(root, tmp_path / "first-run")
     with seam.observe(omitted["registry"]) as default:
         initializer()(omitted["registry"], omitted["anchor"])
-    assert (normalise(disabled.render(), off)
-            == normalise(default.render(), omitted)), (
+    assert disabled.render() == default.render(), (
         "terminal_events=False must render exactly as the default"
     )
 
