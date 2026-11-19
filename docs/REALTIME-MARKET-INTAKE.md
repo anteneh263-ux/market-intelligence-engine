@@ -65,3 +65,19 @@ invocation rather than deleting or repairing files. After system restart a new
 login is required for this user LaunchAgent.
 No data can be collected while the Mac is powered off or asleep. Resume records
 the boundary and resumes the live feed; it does not backfill or invent events.
+
+### Extend an existing root's capacity (operator-approved, v1)
+
+Stop the launch agent first, update to the reviewed code, and confirm the root
+is not collecting. The following command checks the existing limit and free
+space, verifies the chain, and writes a separate capacity amendment. The root
+marker and all existing segments remain byte-identical. An interrupted
+collection may leave a `.partial`; preserve it. Do not manually edit markers.
+
+```sh
+python -m app.data.realtime_collector --root APPROVED_ROOT extend-capacity --expected-bytes 2000000000 --new-bytes 6000000000
+python -m app.data.realtime_collector --root APPROVED_ROOT verify
+```
+
+After successful verification of `max_total_bytes: 6000000000`, restart the
+existing launch agent. No new research dataset or experiment is activated.
