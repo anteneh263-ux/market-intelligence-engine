@@ -1,0 +1,22 @@
+{
+  "asof_utc": "2026-10-29T19:53:32.522000+00:00",
+  "raw_candles": 5000,
+  "closed_candles": 4999,
+  "excluded_unclosed_candles": 1,
+  "first_closed_utc": "2026-04-04T12:00:00+00:00",
+  "last_closed_open_utc": "2026-10-29T18:00:00+00:00",
+  "hourly_gaps": 0,
+  "invalid_candles": 0,
+  "funding_records": 5000,
+  "closed_hours_without_funding": 0,
+  "issues": [],
+  "sha256": {
+    "docs/diagnostics/hyperliquid-snapshot-20261029/btc_1h.json": "71508103fa7bc487d5f67e81ccd3e1ff6bde8b8dd639d74083f1b50a1fd1d1d0",
+    "docs/diagnostics/hyperliquid-snapshot-20261029/btc_funding.json": "755ba9c443bcefb7baa6570fdc34c2221f2022e255e0b268305b004f5f05839d"
+  },
+  "limits": [
+    "Funding assigned to UTC hour only; exact settlement alignment not verified.",
+    "Public candle snapshot, not verified validator reference prices.",
+    "No strategy or stop simulation executed."
+  ]
+}

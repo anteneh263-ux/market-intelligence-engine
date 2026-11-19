@@ -1,0 +1,247 @@
+{
+  "diagnostic_version": "VANTA-SMA200-SCREEN-v1",
+  "data_sha256": "d3085c72f4d0e0b646a050756fa3f3252e1befe214910417999b70bcfc744841",
+  "bars": 3111,
+  "scenarios": {
+    "zero_cost_lower_bound": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 981.2422,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 981.2422,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-02-17",
+          "intraday_low_proxy_gt_5pct": "2020-02-19",
+          "main_eod_gt_8pct": "2020-02-25",
+          "inactivity_60_days": "2020-06-29"
+        },
+        "unrestricted_return_pct": 582.268,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "challenge_eod_gt_5pct": "2021-01-10",
+          "main_eod_gt_8pct": "2021-01-11",
+          "inactivity_60_days": "2021-03-02"
+        },
+        "unrestricted_return_pct": 140.914,
+        "unrestricted_close_max_drawdown_pct": 63.49
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09"
+        },
+        "unrestricted_return_pct": 201.0523,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09",
+          "inactivity_60_days": "2023-03-15"
+        },
+        "unrestricted_return_pct": 201.0523,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2024-01-03",
+          "challenge_eod_gt_5pct": "2024-01-12",
+          "main_eod_gt_8pct": "2024-01-12",
+          "inactivity_60_days": "2024-03-01"
+        },
+        "unrestricted_return_pct": 54.1679,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2025-01-07",
+          "challenge_eod_gt_5pct": "2025-01-07",
+          "main_eod_gt_8pct": "2025-01-09",
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -15.7127,
+        "unrestricted_close_max_drawdown_pct": 31.352
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ],
+    "illustrative_8bps_side_flat_carry": [
+      {
+        "start": "2018-07-20",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2018-09-18",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 543.4577,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2019-01-01",
+        "end": "2026-07-08",
+        "orders": 60,
+        "first_breaches": {
+          "inactivity_60_days": "2019-03-02",
+          "intraday_low_proxy_gt_5pct": "2019-04-11",
+          "challenge_eod_gt_5pct": "2019-04-25",
+          "main_eod_gt_8pct": "2019-05-17"
+        },
+        "unrestricted_return_pct": 543.4577,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2020-01-01",
+        "end": "2026-07-08",
+        "orders": 56,
+        "first_breaches": {
+          "challenge_eod_gt_5pct": "2020-02-17",
+          "intraday_low_proxy_gt_5pct": "2020-02-19",
+          "main_eod_gt_8pct": "2020-02-25",
+          "inactivity_60_days": "2020-06-29"
+        },
+        "unrestricted_return_pct": 334.3157,
+        "unrestricted_close_max_drawdown_pct": 67.2605
+      },
+      {
+        "start": "2021-01-01",
+        "end": "2026-07-08",
+        "orders": 52,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2021-01-04",
+          "challenge_eod_gt_5pct": "2021-01-10",
+          "main_eod_gt_8pct": "2021-01-11",
+          "inactivity_60_days": "2021-03-02"
+        },
+        "unrestricted_return_pct": 59.9757,
+        "unrestricted_close_max_drawdown_pct": 66.8643
+      },
+      {
+        "start": "2022-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "inactivity_60_days": "2022-03-02",
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09"
+        },
+        "unrestricted_return_pct": 124.3591,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2023-01-01",
+        "end": "2026-07-08",
+        "orders": 32,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2023-02-09",
+          "challenge_eod_gt_5pct": "2023-02-09",
+          "main_eod_gt_8pct": "2023-02-09",
+          "inactivity_60_days": "2023-03-15"
+        },
+        "unrestricted_return_pct": 124.3591,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2024-01-01",
+        "end": "2026-07-08",
+        "orders": 28,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2024-01-03",
+          "challenge_eod_gt_5pct": "2024-01-12",
+          "main_eod_gt_8pct": "2024-01-12",
+          "inactivity_60_days": "2024-03-01"
+        },
+        "unrestricted_return_pct": 25.3909,
+        "unrestricted_close_max_drawdown_pct": 34.4047
+      },
+      {
+        "start": "2025-01-01",
+        "end": "2026-07-08",
+        "orders": 18,
+        "first_breaches": {
+          "intraday_low_proxy_gt_5pct": "2025-01-07",
+          "challenge_eod_gt_5pct": "2025-01-07",
+          "main_eod_gt_8pct": "2025-01-09",
+          "inactivity_60_days": "2025-03-02"
+        },
+        "unrestricted_return_pct": -23.9607,
+        "unrestricted_close_max_drawdown_pct": 33.3099
+      },
+      {
+        "start": "2026-01-01",
+        "end": "2026-07-08",
+        "orders": 0,
+        "first_breaches": {
+          "inactivity_60_days": "2026-03-02"
+        },
+        "unrestricted_return_pct": 0.0,
+        "unrestricted_close_max_drawdown_pct": 0.0
+      }
+    ]
+  },
+  "limitations": [
+    "Historical exploratory screening only; no H-025 evidence.",
+    "Fixed-unit spot proxy differs from Vanta leveraged position accounting.",
+    "Daily lows do not establish intraday path, funding timing or gap execution.",
+    "Flat carry is illustrative; live Hyperliquid funding not supplied.",
+    "Curves continue after breaches for diagnostics, not surviving-account returns.",
+    "No ranking, payouts, collateral losses, challenge pass or profit estimates."
+  ]
+}
